@@ -27,7 +27,7 @@ export default async function EditBookPage({ params }) {
   const notes = await listBookNotes(user.uid, id);
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]" style={{ colorScheme: "light" }}>
       <div className="px-5 pt-8">
         <Link href="/dashboard/books" className="text-sm text-[#a89a7f]">
           ← Back to library

@@ -1,15 +1,10 @@
-const LABELS = {
-  to_read: "TO READ",
-  reading: "READING",
-  read: "READ",
-  abandoned: "ABANDONED",
-};
+import { statusLabel } from "@/lib/books/statuses";
 
 export default function StatusBadge({ status, currentPage, totalPages, className = "" }) {
-  const label = LABELS[status] || LABELS.to_read;
+  const label = statusLabel(status).toUpperCase();
   const progress =
     status === "reading" && totalPages
-      ? Math.round(((Number(currentPage) || 0) / totalPages) * 100)
+      ? Math.min(100, Math.round(((Number(currentPage) || 0) / totalPages) * 100))
       : null;
   const dark = status === "read";
 

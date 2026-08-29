@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   const profile = await getCurrentUserProfile(user);
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-8 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-8 text-[#20180f]" style={{ colorScheme: "light" }}>
       <h1 className="font-serif text-3xl font-bold">Profile</h1>
       <p className="mt-1 text-sm text-[#a89a7f]">{user.email}</p>
 

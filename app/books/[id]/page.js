@@ -15,7 +15,7 @@ export default async function PublicBookPage({ params }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] px-5 py-10 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] px-5 py-10 text-[#20180f]" style={{ colorScheme: "light" }}>
       <div className="mx-auto max-w-md">
         <div className="mx-auto w-48 overflow-hidden rounded-lg shadow-[0_15px_35px_rgba(0,0,0,0.2)]">
           {book.coverUrl ? (

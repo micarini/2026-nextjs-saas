@@ -44,7 +44,7 @@ export default function Navbar({ actions, profile, user }) {
           { href: "/dashboard/books", label: "Books" },
         ]
       : []),
-    ...(isAdmin ? [{ href: "/dashboard/users", label: "Usuarios" }] : []),
+    ...(isAdmin ? [{ href: "/dashboard/users", label: "Users" }] : []),
   ];
 
   function closeMenu() {

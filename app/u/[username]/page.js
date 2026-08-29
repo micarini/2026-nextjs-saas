@@ -23,11 +23,13 @@ export default async function PublicProfilePage({ params }) {
   })).filter((shelf) => shelf.books.length > 0);
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] px-5 py-10 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] px-5 py-10 text-[#20180f]" style={{ colorScheme: "light" }}>
       <div className="mx-auto max-w-md">
-        <p className="text-center font-serif text-[15px] text-[#6b5f4a]">
-          {profile.displayName || profile.email}
-        </p>
+        {profile.displayName ? (
+          <p className="text-center font-serif text-[15px] text-[#6b5f4a]">
+            {profile.displayName}
+          </p>
+        ) : null}
         <h1 className="text-center font-serif text-4xl font-bold">@{profile.username}</h1>
 
         <div className="mt-8">

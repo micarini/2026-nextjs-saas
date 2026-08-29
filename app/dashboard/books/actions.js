@@ -123,7 +123,7 @@ export async function addNote(bookId, formData) {
     text,
     page: parseOptionalInt(formData.get("page")),
   });
-  revalidatePath(`/dashboard/books/${bookId}/edit`);
+  revalidatePath("/dashboard/books/[id]/edit", "page");
 }
 
 export async function deleteNote(bookId, noteId) {
@@ -134,5 +134,5 @@ export async function deleteNote(bookId, noteId) {
   }
 
   await deleteBookNote(user.uid, bookId, noteId);
-  revalidatePath(`/dashboard/books/${bookId}/edit`);
+  revalidatePath("/dashboard/books/[id]/edit", "page");
 }

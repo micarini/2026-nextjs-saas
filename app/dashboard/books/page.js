@@ -34,7 +34,7 @@ export default async function BooksPage({ searchParams }) {
     }`;
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]" style={{ colorScheme: "light" }}>
       <div className="px-5 pb-2 pt-8">
         <p className="font-serif text-[15px] text-[#6b5f4a]">My Favourite</p>
         <h1 className="font-serif text-[40px] font-bold leading-none">BOOKS</h1>

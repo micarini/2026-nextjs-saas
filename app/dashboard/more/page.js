@@ -17,7 +17,7 @@ export default async function MorePage() {
   const isAdmin = profile?.user_type === "admin";
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-10 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-10 text-[#20180f]" style={{ colorScheme: "light" }}>
       <h1 className="font-serif text-3xl font-bold">More</h1>
 
       <div className="mt-6 grid gap-3">

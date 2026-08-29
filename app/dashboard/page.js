@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   const currentlyReading = books.filter((book) => book.status === "reading");
 
   return (
-    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-10 text-[#20180f]">
+    <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-10 text-[#20180f]" style={{ colorScheme: "light" }}>
       <p className="font-serif text-[15px] text-[#6b5f4a]">Welcome back</p>
       <h1 className="mt-1 font-serif text-4xl font-bold">
         {profile?.displayName || "Reader"}
