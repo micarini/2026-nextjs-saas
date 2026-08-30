@@ -2,7 +2,7 @@
 
 Starter profesional para construir aplicaciones SaaS con Next.js, Firebase Authentication, Firebase Admin SDK, Cloud Firestore y Tailwind CSS.
 
-La base prioriza renderizado server-side, rutas protegidas, sesion HTTP-only, aislamiento de datos por usuario y una estructura extensible para reemplazar la entidad `items` por la entidad principal de cada producto.
+La base prioriza renderizado server-side, rutas protegidas, sesion HTTP-only, aislamiento de datos por usuario y una estructura extensible para adaptar la entidad principal a cada producto. En este proyecto la entidad principal es `books`, un seguimiento de lectura personal con perfiles publicos.
 
 ## SaaS
 
@@ -48,11 +48,12 @@ Casos posibles:
 - Dashboard privado en `/dashboard`.
 - Perfiles de usuario en la coleccion `users`.
 - Roles simples mediante `user_type`.
-- ABM base en `/dashboard/items`.
-- Publicacion de registros en la home.
-- Ruta publica por item en `/items/[id]`.
-- Imagen local por defecto.
-- Upload opcional con Cloud Storage for Firebase mediante `FIREBASE_STORAGE=true`.
+- ABM de libros en `/dashboard/books`.
+- Notas de lectura por libro, en subcoleccion `notes`.
+- Busqueda de libros por titulo/autor via Google Books y Open Library.
+- Ruta publica por libro en `/books/[id]`.
+- Perfil publico por usuario en `/u/[username]`, con estanterias agrupadas por genero.
+- Portada de libro opcional mediante URL externa (sin upload de archivos).
 
 ## Arquitectura
 
@@ -73,19 +74,28 @@ app/
       login/
       logout/
   dashboard/
-    items/
+    books/
+      [id]/
+      new/
+    profile/
+    more/
     users/
-  items/
+      [uid]/
+  books/
     [id]/
+  u/
+    [username]/
   login/
 
 components/
-  items/
+  books/
+  nav/
   users/
 
 lib/
+  books/
+    providers/
   firebase/
-  items/
   users/
 ```
 
@@ -212,7 +222,7 @@ Para crear el primer administrador, modificar manualmente en Firestore el docume
 
 ## Firestore
 
-El ABM base utiliza la coleccion `items`.
+El ABM principal utiliza la coleccion `books`.
 
 Cada documento guarda la relacion con el usuario autenticado mediante `userId`.
 
@@ -221,27 +231,44 @@ Ejemplo:
 ```js
 {
   userId: "uid-del-usuario",
-  title: "Registro de ejemplo",
-  description: "Descripcion del registro",
-  status: "pending",
-  published: false,
-  imageUrl: "/items/ejemplo.jpg",
-  imagePath: "",
+  title: "El nombre del viento",
+  author: "Patrick Rothfuss",
+  genre: "fantasy",
+  status: "reading",
+  rating: null,
+  coverUrl: "https://...",
+  isbn: "9788401352836",
+  totalPages: 620,
+  currentPage: 180,
+  startDate: Timestamp,
+  finishDate: null,
+  targetDate: null,
+  published: true,
   createdAt: serverTimestamp(),
   updatedAt: serverTimestamp()
 }
 ```
 
+Cada libro tiene ademas una subcoleccion `notes` con las anotaciones de lectura:
+
+```js
+{
+  text: "Buen ritmo en el segundo acto.",
+  page: 210,
+  createdAt: serverTimestamp()
+}
+```
+
 El acceso a datos privados debe conservar siempre la validacion de propiedad:
 
-- Un usuario solo lista sus propios documentos.
-- Un usuario solo edita sus propios documentos.
-- Un usuario solo elimina sus propios documentos.
-- Los registros publicados pueden consultarse desde rutas publicas.
+- Un usuario solo lista sus propios libros.
+- Un usuario solo edita sus propios libros.
+- Un usuario solo elimina sus propios libros (y sus notas asociadas).
+- Los libros publicados (`published: true`) pueden consultarse desde rutas publicas, tanto en `/books/[id]` como en el perfil publico `/u/[username]`.
 
 ## Adaptacion De La Entidad Principal
 
-La entidad `items` funciona como referencia inicial. Para construir un producto real, puede reemplazarse por una entidad propia del dominio.
+El starter parte originalmente de una entidad generica `items` como referencia inicial. En este proyecto ya fue reemplazada por `books`. Para construir otro producto a partir de este mismo starter, la entidad principal puede reemplazarse nuevamente por una entidad propia del dominio.
 
 Ejemplos:
 
@@ -264,9 +291,11 @@ Al adaptar la entidad, revisar:
 - Carpeta de imagenes locales.
 - Reglas de Storage, si se usa Firebase Storage.
 
-## Imagenes
+## Imagenes (Boilerplate Heredado, No Usado Por `books`)
 
-El proyecto soporta dos estrategias para imagenes:
+> Esta seccion documenta capacidades heredadas del starter original (imagen local y upload a Cloud Storage). La entidad `books` de este proyecto **no las usa**: la portada de un libro (`coverUrl`) se ingresa siempre como una URL externa en el formulario, sin subir archivos. Se conserva la documentacion como referencia para quien adapte el starter a otra entidad que si necesite upload de imagenes.
+
+El starter soporta dos estrategias para imagenes:
 
 - Imagen local en `public`, activa por defecto.
 - Cloud Storage for Firebase, opcional mediante `FIREBASE_STORAGE=true`.
@@ -312,9 +341,11 @@ public/
     producto.jpg
 ```
 
-## Firebase Storage Opcional
+## Firebase Storage Opcional (Boilerplate Heredado, No Usado Por `books`)
 
-Cloud Storage for Firebase puede activarse para permitir upload de archivos desde el formulario.
+> Igual que la seccion anterior, esto es boilerplate heredado del starter. `books` no sube archivos a Storage.
+
+Cloud Storage for Firebase puede activarse para permitir upload de archivos desde el formulario, en una entidad que lo requiera.
 
 Configuracion requerida:
 
@@ -324,7 +355,7 @@ Configuracion requerida:
 4. Configurar `FIREBASE_STORAGE=true`.
 5. Reiniciar el servidor de desarrollo.
 
-Reglas sugeridas para Storage con la entidad `items`:
+Reglas sugeridas para Storage, usando `items` como nombre de entidad de ejemplo (no una coleccion presente en este proyecto):
 
 ```js
 rules_version = '2';
