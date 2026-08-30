@@ -39,10 +39,7 @@ export default function Navbar({ actions, profile, user }) {
   const links = [
     { href: "/", label: "Home" },
     ...(user
-      ? [
-          { href: "/dashboard", label: "Dashboard" },
-          { href: "/dashboard/books", label: "Books" },
-        ]
+      ? [{ href: "/dashboard", label: "Dashboard" }]
       : []),
     ...(isAdmin ? [{ href: "/dashboard/users", label: "Users" }] : []),
   ];

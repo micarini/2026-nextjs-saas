@@ -74,8 +74,8 @@ export async function createBook(formData) {
 
   await createUserBook(user.uid, parseBookForm(formData));
   revalidatePath("/");
-  revalidatePath("/dashboard/books");
-  redirect("/dashboard/books");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function updateBook(bookId, formData) {
@@ -88,8 +88,8 @@ export async function updateBook(bookId, formData) {
   await updateUserBook(user.uid, bookId, parseBookForm(formData));
   revalidatePath("/");
   revalidatePath(`/books/${bookId}`);
-  revalidatePath("/dashboard/books");
-  redirect("/dashboard/books");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function deleteBook(bookId) {
@@ -102,8 +102,8 @@ export async function deleteBook(bookId) {
   await deleteUserBook(user.uid, bookId);
   revalidatePath("/");
   revalidatePath(`/books/${bookId}`);
-  revalidatePath("/dashboard/books");
-  redirect("/dashboard/books");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function addNote(bookId, formData) {

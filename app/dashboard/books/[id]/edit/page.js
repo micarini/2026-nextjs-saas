@@ -29,7 +29,7 @@ export default async function EditBookPage({ params }) {
   return (
     <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]" style={{ colorScheme: "light" }}>
       <div className="px-5 pt-8">
-        <Link href="/dashboard/books" className="text-sm text-[#a89a7f]">
+        <Link href="/dashboard" className="text-sm text-[#a89a7f]">
           ← Back to library
         </Link>
         <h1 className="mt-3 font-serif text-3xl font-bold">Edit book</h1>
@@ -57,7 +57,7 @@ export default async function EditBookPage({ params }) {
         </div>
       </div>
 
-      <BottomNav active="library" />
+      <BottomNav active="home" />
     </main>
   );
 }
