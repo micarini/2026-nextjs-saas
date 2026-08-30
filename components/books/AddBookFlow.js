@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import BookForm from "@/components/books/BookForm";
 import BookSearchResults from "@/components/books/BookSearchResults";
 import { searchBooksAction } from "@/app/dashboard/books/new/actions";
 import { createBook } from "@/app/dashboard/books/actions";
 
-export default function AddBookFlow() {
-  const [query, setQuery] = useState("");
+export default function AddBookFlow({ initialQuery = "" }) {
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
@@ -15,19 +15,32 @@ export default function AddBookFlow() {
   const [mode, setMode] = useState("search");
   const [isPending, startTransition] = useTransition();
 
-  function handleSearch(event) {
-    event.preventDefault();
+  function runSearch(term) {
     setError("");
 
     startTransition(async () => {
       try {
-        const found = await searchBooksAction(query);
+        const found = await searchBooksAction(term);
         setResults(found);
         setSearched(true);
       } catch (err) {
         setError(err.message || "Search failed.");
       }
     });
+  }
+
+  useEffect(() => {
+    if (initialQuery.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      runSearch(initialQuery);
+    }
+    // Only ever auto-run once, for the query the page loaded with.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleSearch(event) {
+    event.preventDefault();
+    runSearch(query);
   }
 
   if (mode === "form") {
