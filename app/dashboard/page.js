@@ -62,6 +62,7 @@ export default async function DashboardPage({ searchParams }) {
             type="text"
             name="q"
             placeholder="Search to add a book..."
+            aria-label="Search to add a book"
             className="flex-1 bg-transparent text-sm text-[#20180f] outline-none placeholder:text-[#a89a7f]"
           />
         </div>
@@ -95,26 +96,24 @@ export default async function DashboardPage({ searchParams }) {
         />
       </div>
 
-      <div className="mt-2 border-t border-[#e7dfcf] px-5 pb-5 pt-6">
+      <div id="library" className="mt-2 border-t border-[#e7dfcf] px-5 pb-5 pt-6">
         <h2 className="mb-4 font-serif text-2xl font-bold">Your library</h2>
 
         <div className="flex gap-2 overflow-x-auto">
-          <Link href="/dashboard" className={chipClass(!statusFilter)}>
+          <Link href="/dashboard#library" className={chipClass(!statusFilter)}>
             All
           </Link>
           {STATUSES.map((status) => (
             <Link
               key={status.value}
-              href={`/dashboard?status=${status.value}`}
+              href={`/dashboard?status=${status.value}#library`}
               className={chipClass(statusFilter === status.value)}
             >
               {status.label}
             </Link>
           ))}
         </div>
-      </div>
 
-      <div className="px-5">
         {genreShelves.length === 0 ? (
           <div className="mt-4 rounded-lg border border-[#e7dfcf] bg-white p-6 text-center text-sm text-[#6b5f4a]">
             No books yet. Search above or add one manually to start your library.

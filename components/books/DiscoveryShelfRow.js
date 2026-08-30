@@ -1,4 +1,4 @@
-export default function DiscoveryShelfRow({ label, books, emptyMessage }) {
+export default function DiscoveryShelfRow({ label, books = [], emptyMessage }) {
   return (
     <section className="mb-8">
       <h2 className="mb-3 text-[15px] font-semibold text-[#20180f]">{label}</h2>
@@ -15,6 +15,7 @@ export default function DiscoveryShelfRow({ label, books, emptyMessage }) {
                   <img
                     src={book.coverUrl}
                     alt={book.title}
+                    loading="lazy"
                     className="h-full w-full object-cover"
                   />
                 ) : null}

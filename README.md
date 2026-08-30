@@ -45,10 +45,10 @@ Casos posibles:
 - Firebase Admin SDK para validacion segura desde servidor.
 - Cloud Firestore como base de datos.
 - Rutas protegidas mediante middleware.
-- Dashboard privado en `/dashboard`.
+- Dashboard privado en `/dashboard`, con estanterias de descubrimiento (populares, novedades) ademas de la biblioteca del usuario.
 - Perfiles de usuario en la coleccion `users`.
 - Roles simples mediante `user_type`.
-- ABM de libros en `/dashboard/books`.
+- ABM de libros: alta en `/dashboard/books/new`, edicion en `/dashboard/books/[id]/edit`.
 - Notas de lectura por libro, en subcoleccion `notes`.
 - Busqueda de libros por titulo/autor via Google Books y Open Library.
 - Ruta publica por libro en `/books/[id]`.
@@ -78,7 +78,7 @@ app/
       [id]/
       new/
     profile/
-    more/
+    stats/
     users/
       [uid]/
   books/
@@ -95,6 +95,9 @@ components/
 lib/
   books/
     providers/
+  discovery/
+    trending.js
+    newReleases.js
   firebase/
   users/
 ```
@@ -166,9 +169,14 @@ FIREBASE_STORAGE=false
 FIREBASE_PROJECT_ID=
 FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# New York Times Books API
+NYT_BOOKS_API_KEY=
 ```
 
 Las variables con prefijo `NEXT_PUBLIC_` son visibles desde el cliente. Las variables `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL` y `FIREBASE_PRIVATE_KEY` son privadas y se utilizan desde Firebase Admin SDK en el servidor.
+
+`NYT_BOOKS_API_KEY` es privada y solo es necesaria para la estanteria "New releases" del dashboard (`/dashboard`), que consulta la API de listas de libros de The New York Times. Sin esta variable la aplicacion sigue funcionando con normalidad: esa estanteria simplemente muestra su mensaje de estado vacio ("Couldn't load new releases right now.") en lugar de fallar.
 
 La clave privada debe conservar los saltos de linea escapados mediante `\n`.
 
