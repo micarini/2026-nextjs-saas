@@ -39,7 +39,7 @@ export default async function PublicProfilePage({ params }) {
             shelves.map((shelf) => (
               <BookShelfRow
                 key={shelf.genre}
-                genreLabel={shelf.label}
+                label={shelf.label}
                 books={shelf.books}
                 hrefFor={(book) => `/books/${book.id}`}
               />

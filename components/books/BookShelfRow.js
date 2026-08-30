@@ -4,11 +4,11 @@ import StatusBadge from "@/components/books/StatusBadge";
 
 const defaultHrefFor = (book) => `/dashboard/books/${book.id}/edit`;
 
-export default function BookShelfRow({ genreLabel, books, hrefFor = defaultHrefFor }) {
+export default function BookShelfRow({ label, books, hrefFor = defaultHrefFor }) {
   return (
     <section className="mb-8">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-[15px] font-semibold text-[#20180f]">{genreLabel}</h2>
+        <h2 className="text-[15px] font-semibold text-[#20180f]">{label}</h2>
         <span className="text-[11px] text-[#a89a7f]">
           {books.length} book{books.length === 1 ? "" : "s"}
         </span>
