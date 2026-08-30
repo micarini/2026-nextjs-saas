@@ -16,6 +16,7 @@ export default async function ProfilePage() {
   }
 
   const profile = await getCurrentUserProfile(user);
+  const isAdmin = profile?.user_type === "admin";
 
   return (
     <main className="min-h-screen bg-[#f6f1e7] px-5 pb-24 pt-8 text-[#20180f]" style={{ colorScheme: "light" }}>
@@ -30,7 +31,16 @@ export default async function ProfilePage() {
         </p>
       ) : null}
 
-      <form action={logout} className="mt-8">
+      {isAdmin ? (
+        <a
+          href="/dashboard/users"
+          className="mt-8 block rounded-md border border-[#e7dfcf] bg-white p-4 text-sm font-semibold text-[#20180f]"
+        >
+          Admin: manage users →
+        </a>
+      ) : null}
+
+      <form action={logout} className={isAdmin ? "mt-4" : "mt-8"}>
         <button
           type="submit"
           className="h-11 w-full rounded-md border border-[#e7dfcf] bg-white text-sm font-semibold text-[#20180f]"
