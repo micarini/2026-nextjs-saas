@@ -3,167 +3,202 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+
 import { logout } from "@/app/dashboard/actions";
 
-function isActivePath(pathname, href) {
-  if (href === "/") {
-    return pathname === "/";
-  }
-
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function NavLink({ href, label, onClick, pathname }) {
-  const active = isActivePath(pathname, href);
-
-  return (
-    <Link
-      className={`block border px-3 py-2 text-sm font-medium transition ${
-        active
-          ? "border-zinc-700 bg-zinc-900 text-zinc-100"
-          : "border-transparent text-zinc-400 hover:border-zinc-800 hover:bg-zinc-900 hover:text-zinc-100"
-      }`}
-      href={href}
-      onClick={onClick}
-    >
-      {label}
-    </Link>
-  );
-}
-
-export default function Navbar({ actions, profile, user }) {
+export default function Navbar({ profile, user }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const userType = profile?.user_type || "user";
-  const isAdmin = userType === "admin";
-  const links = [
-    { href: "/", label: "Home" },
-    ...(user
-      ? [{ href: "/dashboard", label: "Dashboard" }]
-      : []),
-    ...(isAdmin ? [{ href: "/dashboard/users", label: "Users" }] : []),
-  ];
+
+  const isDashboard = pathname?.startsWith("/dashboard");
 
   function closeMenu() {
     setIsOpen(false);
   }
 
   return (
-    <nav className="border-b border-zinc-800 bg-zinc-950">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="flex min-h-16 items-center justify-between gap-3 py-3">
-          <Link
-            className="min-w-0 overflow-wrap-anywhere text-sm font-semibold uppercase tracking-[0.14em] text-zinc-100"
-            href="/"
-            onClick={closeMenu}
-          >
-            SaaS Starter
-          </Link>
+    <header className="sticky top-0 z-50 border-b border-violet-100 bg-white/80 backdrop-blur-xl">
+      <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 lg:px-8">
+        {/* LOGO */}
 
-          <div className="hidden min-w-0 flex-1 items-center justify-between gap-4 md:flex">
-            <div className="ml-4 flex min-w-0 flex-wrap items-center gap-1">
-              {links.map((link) => (
-                <NavLink
-                  href={link.href}
-                  key={link.href}
-                  label={link.label}
-                  pathname={pathname}
-                />
-              ))}
-            </div>
-
-            <div className="flex min-w-0 items-center justify-end gap-3">
-              {actions}
-              {user ? (
-                <>
-                  <span className="min-w-0 max-w-64 overflow-wrap-anywhere text-right text-sm text-zinc-500">
-                    {user.email || "Sin email"} ({userType})
-                  </span>
-                  <form action={logout}>
-                    <button
-                      className="h-10 border border-zinc-700 bg-transparent px-4 text-sm font-semibold text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-900"
-                      type="submit"
-                    >
-                      Cerrar sesion
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <Link
-                  className="inline-flex h-10 items-center justify-center border border-cyan-400 bg-cyan-400 px-4 text-sm font-semibold text-zinc-950 transition hover:border-cyan-300 hover:bg-cyan-300"
-                  href="/login"
-                >
-                  Login
-                </Link>
-              )}
-            </div>
+        <Link
+          href="/"
+          onClick={closeMenu}
+          className="flex items-center gap-3"
+        >
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-xl shadow-lg shadow-purple-200">
+            📚
           </div>
 
-          <button
-            aria-controls="mobile-menu"
-            aria-expanded={isOpen}
-            className="grid size-10 place-items-center border border-zinc-700 bg-transparent text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-900 md:hidden"
-            onClick={() => setIsOpen((value) => !value)}
-            type="button"
-          >
-            <span className="sr-only">Abrir menu</span>
-            <span className="grid gap-1.5">
-              <span className="block h-px w-5 bg-zinc-100" />
-              <span className="block h-px w-5 bg-zinc-100" />
-              <span className="block h-px w-5 bg-zinc-100" />
-            </span>
-          </button>
-        </div>
+          <span className="text-lg font-bold tracking-tight text-zinc-900">
+            Bookly
+          </span>
+        </Link>
 
-        <div
-          className={`grid gap-3 overflow-hidden transition-[grid-template-rows,padding] duration-200 md:hidden ${
-            isOpen ? "grid-rows-[1fr] pb-4" : "grid-rows-[0fr] pb-0"
-          }`}
-          id="mobile-menu"
-        >
-          <div className="min-h-0 overflow-hidden">
-            <div className="grid gap-1 border-t border-zinc-800 pt-3">
-              {links.map((link) => (
-                <NavLink
-                  href={link.href}
-                  key={link.href}
-                  label={link.label}
-                  onClick={closeMenu}
-                  pathname={pathname}
-                />
-              ))}
-            </div>
+        {/* DESKTOP NAVIGATION */}
 
-            <div className="mt-3 grid min-w-0 gap-3 border-t border-zinc-800 pt-3">
-              {actions}
-              {user ? (
-                <span className="overflow-wrap-anywhere text-sm text-zinc-500">
-                  {user.email || "Sin email"} ({userType})
-                </span>
-              ) : null}
-            </div>
-
-          {user ? (
-            <form action={logout} className="mt-3">
-              <button
-                className="h-10 w-full border border-zinc-700 bg-transparent px-4 text-sm font-semibold text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-900"
-                type="submit"
+        <div className="hidden items-center gap-8 md:flex">
+          {!user && (
+            <>
+              <a
+                href="#features"
+                className="text-sm font-medium text-zinc-500 transition hover:text-violet-600"
               >
-                Cerrar sesion
-              </button>
-            </form>
-          ) : (
+                Features
+              </a>
+
+              <a
+                href="#community"
+                className="text-sm font-medium text-zinc-500 transition hover:text-violet-600"
+              >
+                Community
+              </a>
+            </>
+          )}
+
+          {user && !isDashboard && (
             <Link
-              className="mt-3 inline-flex h-10 w-full items-center justify-center border border-cyan-400 bg-cyan-400 px-4 text-sm font-semibold text-zinc-950 transition hover:border-cyan-300 hover:bg-cyan-300"
-              href="/login"
-              onClick={closeMenu}
+              href="/dashboard"
+              className="text-sm font-medium text-zinc-500 transition hover:text-violet-600"
             >
-              Login
+              My library
             </Link>
           )}
         </div>
+
+        {/* DESKTOP ACTIONS */}
+
+        <div className="hidden items-center gap-3 md:flex">
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-700"
+              >
+                My library
+              </Link>
+
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                >
+                  Log out
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-700"
+              >
+                Log in
+              </Link>
+
+              <Link
+                href="/login"
+                className="rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-200 transition hover:-translate-y-0.5 hover:shadow-xl"
+              >
+                Get started
+              </Link>
+            </>
+          )}
         </div>
-      </div>
-    </nav>
+
+        {/* MOBILE MENU BUTTON */}
+
+        <button
+          type="button"
+          onClick={() => setIsOpen((value) => !value)}
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50 md:hidden"
+          aria-label="Open menu"
+          aria-expanded={isOpen}
+        >
+          {isOpen ? (
+            <span className="text-xl">×</span>
+          ) : (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="h-5 w-5"
+            >
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h16" />
+            </svg>
+          )}
+        </button>
+      </nav>
+
+      {/* MOBILE MENU */}
+
+      {isOpen && (
+        <div className="border-t border-violet-100 bg-white px-5 py-5 md:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col gap-2">
+            {!user && (
+              <>
+                <a
+                  href="#features"
+                  onClick={closeMenu}
+                  className="rounded-xl px-4 py-3 text-sm font-semibold text-zinc-600 hover:bg-violet-50"
+                >
+                  Features
+                </a>
+
+                <a
+                  href="#community"
+                  onClick={closeMenu}
+                  className="rounded-xl px-4 py-3 text-sm font-semibold text-zinc-600 hover:bg-violet-50"
+                >
+                  Community
+                </a>
+              </>
+            )}
+
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={closeMenu}
+                  className="rounded-xl bg-violet-50 px-4 py-3 text-center text-sm font-bold text-violet-700"
+                >
+                  Go to my library
+                </Link>
+
+                <form action={logout}>
+                  <button
+                    type="submit"
+                    className="mt-2 w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm font-semibold text-zinc-600"
+                  >
+                    Log out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="mt-2 rounded-xl border border-zinc-200 px-4 py-3 text-center text-sm font-semibold text-zinc-700"
+                >
+                  Log in
+                </Link>
+
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="rounded-xl bg-gradient-to-r from-violet-600 to-pink-500 px-4 py-3 text-center text-sm font-bold text-white"
+                >
+                  Get started
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
   );
 }

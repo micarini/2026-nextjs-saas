@@ -2,44 +2,56 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="mt-10 border-t border-zinc-800 bg-zinc-950">
-      <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 text-sm text-zinc-500 sm:px-6 md:grid-cols-[1fr_auto] md:items-center lg:px-8">
-        <div className="min-w-0">
-          <p className="font-semibold uppercase tracking-[0.14em] text-zinc-300">
-            SaaS Starter
-          </p>
-          <p className="mt-2 max-w-2xl leading-6">
-            Starter para aplicaciones SaaS con Next.js, Firebase
-            Authentication, Firestore y rutas protegidas.
-          </p>
-          <p className="mt-2 text-xs uppercase tracking-[0.14em] text-zinc-600">
-            Next.js + Firebase
-          </p>
-        </div> 
+    <footer className="border-t border-violet-100 bg-white">
+      <div className="mx-auto w-full max-w-7xl px-5 py-10 lg:px-8">
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-lg shadow-md shadow-purple-200">
+                📚
+              </div>
 
-        <nav
-          aria-label="Links secundarios"
-          className="flex flex-wrap gap-2 md:justify-end"
-        >
-          <Link
-            className="border border-zinc-800 px-3 py-2 font-medium text-zinc-400 transition hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100"
-            href="/"
-          >
-            Home
-          </Link>
-          <Link
-            className="border border-zinc-800 px-3 py-2 font-medium text-zinc-400 transition hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100"
-            href="/dashboard"
-          >
-            Dashboard
-          </Link>
-          <Link
-            className="border border-zinc-800 px-3 py-2 font-medium text-zinc-400 transition hover:border-zinc-600 hover:bg-zinc-900 hover:text-zinc-100"
-            href="/login"
-          >
-            Login
-          </Link>
-        </nav>
+              <span className="text-lg font-bold text-zinc-900">
+                Bookly
+              </span>
+            </div>
+
+            <p className="mt-4 max-w-sm text-sm leading-6 text-zinc-500">
+              Your personal space to discover books, track your reading and
+              build a library that feels completely yours.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/"
+              className="rounded-xl px-4 py-2 text-sm font-medium text-zinc-500 transition hover:bg-violet-50 hover:text-violet-700"
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/dashboard"
+              className="rounded-xl px-4 py-2 text-sm font-medium text-zinc-500 transition hover:bg-violet-50 hover:text-violet-700"
+            >
+              My library
+            </Link>
+
+            <Link
+              href="/login"
+              className="rounded-xl px-4 py-2 text-sm font-medium text-zinc-500 transition hover:bg-violet-50 hover:text-violet-700"
+            >
+              Log in
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-zinc-100 pt-6">
+          <p className="text-xs text-zinc-400">
+            © {new Date().getFullYear()} Bookly. Made for people who love
+            books.
+          </p>
+        </div>
       </div>
     </footer>
   );

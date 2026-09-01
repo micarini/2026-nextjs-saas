@@ -42,13 +42,16 @@ export default function AddBookFlow({ initialQuery = "" }) {
     event.preventDefault();
     runSearch(query);
   }
-
-  if (mode === "form") {
-    return (
-      <BookForm action={createBook} initialValues={selected || {}} submitLabel="Add to library" />
-    );
-  }
-
+if (mode === "form") {
+  return (
+    <BookForm
+      action={createBook}
+      initialValues={selected || {}}
+      submitLabel="Add to library"
+      allowMetadataEditing={!selected}
+    />
+  );
+}
   return (
     <div className="grid gap-4">
       <form onSubmit={handleSearch} className="flex gap-2">
