@@ -53,16 +53,16 @@ if (mode === "form") {
   );
 }
   return (
-    <div className="grid gap-4">
-      <form onSubmit={handleSearch} className="flex gap-2">
+    <div className="grid gap-5">
+      <form onSubmit={handleSearch} className="flex gap-3">
         <input
-          className="h-11 flex-1 rounded-md border border-[#e7dfcf] bg-white px-3 outline-none focus:border-[#c96a1f]"
+          className="h-14 flex-1 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
           placeholder="Search by title, author, or ISBN"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
         <button
-          className="h-11 rounded-md bg-[#20180f] px-4 text-sm font-semibold text-white disabled:opacity-60"
+          className="h-14 bg-amber-400 hover:bg-amber-500 text-white font-extrabold px-6 rounded-2xl shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >
@@ -70,7 +70,7 @@ if (mode === "form") {
         </button>
       </form>
 
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="text-sm font-medium text-red-500">{error}</p> : null}
 
       <BookSearchResults
         results={results}
@@ -81,7 +81,7 @@ if (mode === "form") {
       />
 
       {searched && results.length === 0 && !isPending ? (
-        <p className="text-sm text-[#a89a7f]">No matches found.</p>
+        <p className="text-sm font-medium text-gray-500">No matches found.</p>
       ) : null}
 
       <button
@@ -90,7 +90,7 @@ if (mode === "form") {
           setSelected(null);
           setMode("form");
         }}
-        className="text-sm font-semibold text-[#c96a1f] underline"
+        className="text-sm font-bold text-amber-500 hover:text-amber-600 transition-colors mt-2 text-left"
       >
         Add manually instead
       </button>

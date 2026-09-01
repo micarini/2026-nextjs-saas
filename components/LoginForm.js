@@ -213,20 +213,20 @@ export default function LoginForm() {
 
   return (
     <section
-      className="w-full rounded-[2rem] border border-white/80 bg-white/90 p-5 shadow-2xl shadow-violet-300/30 backdrop-blur-xl sm:p-7"
+      className="w-full flex flex-col gap-6"
       aria-labelledby="login-title"
     >
       {/* LOGIN / SIGNUP TABS */}
 
-      <div className="mb-7 grid grid-cols-2 rounded-2xl bg-zinc-100 p-1">
+      <div className="grid grid-cols-2 rounded-full bg-gray-100/80 p-1 shadow-inner">
         <button
           type="button"
           onClick={() => changeMode("signin")}
           disabled={loading}
-          className={`h-11 rounded-xl text-sm font-semibold transition ${
+          className={`h-12 rounded-full text-sm font-extrabold transition-all ${
             mode === "signin"
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-400 hover:text-zinc-600"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           Log in
@@ -236,65 +236,16 @@ export default function LoginForm() {
           type="button"
           onClick={() => changeMode("signup")}
           disabled={loading}
-          className={`h-11 rounded-xl text-sm font-semibold transition ${
+          className={`h-12 rounded-full text-sm font-extrabold transition-all ${
             mode === "signup"
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-400 hover:text-zinc-600"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           Sign up
         </button>
       </div>
 
-      {/* TITLE */}
-
-      <div>
-        <p className="text-sm font-medium text-violet-600">
-          {mode === "signin"
-            ? "Welcome back"
-            : "Start your reading journey"}
-        </p>
-
-        <h2
-          id="login-title"
-          className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl"
-        >
-          {mode === "signin"
-            ? "Ready for your next chapter?"
-            : "Create your library."}
-        </h2>
-
-        <p className="mt-3 text-sm leading-6 text-zinc-500">
-          {mode === "signin"
-            ? "Log in to continue tracking your reading."
-            : "Save your books, track your progress and make the library your own."}
-        </p>
-      </div>
-
-      {/* GOOGLE */}
-
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        disabled={loading}
-        className="mt-7 flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-700 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <GoogleIcon />
-
-        Continue with Google
-      </button>
-
-      {/* DIVIDER */}
-
-      <div className="my-6 flex items-center gap-4">
-        <span className="h-px flex-1 bg-zinc-200" />
-
-        <span className="text-xs font-medium text-zinc-400">
-          OR
-        </span>
-
-        <span className="h-px flex-1 bg-zinc-200" />
-      </div>
 
       {/* EMAIL FORM */}
 
@@ -305,10 +256,6 @@ export default function LoginForm() {
         {/* EMAIL */}
 
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-zinc-700">
-            Email address
-          </span>
-
           <input
             type="email"
             value={email}
@@ -319,16 +266,13 @@ export default function LoginForm() {
             placeholder="you@example.com"
             disabled={loading}
             required
-            className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed"
+            className="h-14 w-full rounded-full border border-gray-100 bg-white px-6 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-amber-400 shadow-sm disabled:cursor-not-allowed"
           />
         </label>
 
         {/* PASSWORD */}
 
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-zinc-700">
-            Password
-          </span>
 
           <div className="relative">
             <input
@@ -354,7 +298,7 @@ export default function LoginForm() {
               }
               disabled={loading}
               required
-              className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 pr-12 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed"
+              className="h-14 w-full rounded-full border border-gray-100 bg-white px-6 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-amber-400 shadow-sm disabled:cursor-not-allowed"
             />
 
             <button
@@ -362,7 +306,7 @@ export default function LoginForm() {
               onClick={() =>
                 setShowPassword((value) => !value)
               }
-              className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-xl text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700"
+              className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-700"
               aria-label={
                 showPassword
                   ? "Hide password"
@@ -378,7 +322,7 @@ export default function LoginForm() {
 
         {error ? (
           <div
-            className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-red-600"
+            className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-medium leading-6 text-red-600"
             role="alert"
           >
             {error}
@@ -390,30 +334,52 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-13 h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 px-4 text-sm font-bold text-white shadow-lg shadow-purple-300/50 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-amber-400 hover:bg-amber-500 text-gray-900 text-base font-extrabold shadow-[0_4px_14px_rgba(251,191,36,0.4)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 mt-2"
         >
           {loading ? (
             <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-900/40 border-t-gray-900" />
               Please wait...
             </>
           ) : mode === "signup" ? (
             <>
               Create my account
-              <span>→</span>
             </>
           ) : (
             <>
-              Log in
-              <span>→</span>
+              Continue with email
             </>
           )}
         </button>
       </form>
 
+      {/* DIVIDER */}
+
+      <div className="flex items-center gap-4 py-2">
+        <span className="h-px flex-1 bg-gray-200" />
+
+        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          Or
+        </span>
+
+        <span className="h-px flex-1 bg-gray-200" />
+      </div>
+
+      {/* GOOGLE */}
+
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        disabled={loading}
+        className="flex h-14 w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white px-4 text-base font-bold text-gray-900 shadow-sm transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <GoogleIcon />
+        Continue with Google
+      </button>
+
       {/* CHANGE MODE */}
 
-      <p className="mt-6 text-center text-sm text-zinc-500">
+      <p className="text-center text-sm font-medium text-gray-500 mt-2">
         {mode === "signin"
           ? "New here?"
           : "Already have an account?"}
@@ -428,7 +394,7 @@ export default function LoginForm() {
                 : "signin",
             )
           }
-          className="ml-1 font-semibold text-violet-600 transition hover:text-violet-800"
+          className="ml-1 font-extrabold text-gray-900 transition-colors hover:underline"
         >
           {mode === "signin"
             ? "Create an account"
