@@ -15,7 +15,7 @@ export default function Footer() {
           <p className="mt-2 text-xs uppercase tracking-[0.14em] text-zinc-600">
             Next.js + Firebase
           </p>
-        </div>
+        </div> 
 
         <nav
           aria-label="Links secundarios"

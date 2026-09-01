@@ -1,40 +1,117 @@
 import Link from "next/link";
 import RatingStars from "@/components/books/RatingStars";
-import StatusBadge from "@/components/books/StatusBadge";
 
-const defaultHrefFor = (book) => `/dashboard/books/${book.id}/edit`;
+function defaultHrefFor(book) {
+  return `/dashboard/books/${book.id}`;
+}
 
-export default function BookShelfRow({ label, books, hrefFor = defaultHrefFor }) {
+export default function BookShelfRow({
+  label,
+  books = [],
+  hrefFor = defaultHrefFor,
+  showProgress = false,
+}) {
+  if (!books.length) {
+    return null;
+  }
+
   return (
-    <section className="mb-8">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-[15px] font-semibold text-[#20180f]">{label}</h2>
-        <span className="text-[11px] text-[#a89a7f]">
-          {books.length} book{books.length === 1 ? "" : "s"}
-        </span>
-      </div>
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {books.map((book) => (
-          <Link key={book.id} href={hrefFor(book)} className="w-[92px] shrink-0">
-            <div className="relative aspect-[0.68] overflow-hidden rounded-md bg-[#ebe3d0] shadow-[0_8px_18px_rgba(0,0,0,0.15)]">
-              {book.coverUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={book.coverUrl} alt={book.title} className="h-full w-full object-cover" />
-              ) : null}
-              <StatusBadge
-                status={book.status}
-                currentPage={book.currentPage}
-                totalPages={book.totalPages}
-                className="absolute left-1.5 top-1.5"
-              />
-            </div>
-            <p className="mt-1.5 line-clamp-2 text-[13px] leading-tight text-[#20180f]">
-              {book.title}
-            </p>
-            <p className="text-[11px] text-[#a89a7f]">{book.author}</p>
-            <RatingStars rating={book.rating} />
-          </Link>
-        ))}
+    <section>
+      {/* El título solo aparece si enviamos una etiqueta */}
+      {label ? (
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-serif text-2xl text-[#2c3025]">
+            {label}
+          </h2>
+
+          <span className="text-xs text-[#8a877f]">
+            {books.length} book{books.length === 1 ? "" : "s"}
+          </span>
+        </div>
+      ) : null}
+
+      {/* Carrusel horizontal */}
+      <div className="-mx-5 flex gap-4 overflow-x-auto px-5 pb-3 scrollbar-hide">
+        {books.map((book) => {
+          const progress =
+            book.totalPages > 0
+              ? Math.min(
+                  100,
+                  Math.round(
+                    ((book.currentPage || 0) / book.totalPages) * 100
+                  )
+                )
+              : 0;
+
+          return (
+            <Link
+              key={book.id}
+              href={hrefFor(book)}
+              className="w-[135px] shrink-0"
+            >
+              {/* PORTADA */}
+              <div className="relative aspect-[0.68] overflow-hidden rounded-2xl bg-[#e9e5da] shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md">
+                {book.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={book.coverUrl}
+                    alt={book.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-4 text-center">
+                    <span className="font-serif text-sm text-[#77766d]">
+                      {book.title}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* INFORMACIÓN */}
+              <div className="pt-3">
+                <h3 className="line-clamp-2 text-sm font-medium leading-snug text-[#2c3025]">
+                  {book.title}
+                </h3>
+
+                <p className="mt-1 truncate text-xs text-[#858178]">
+                  {book.author || "Unknown author"}
+                </p>
+
+                {/* PROGRESO */}
+                {showProgress ? (
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-[#858178]">
+                        {book.currentPage || 0}
+                        {book.totalPages
+                          ? ` / ${book.totalPages} pages`
+                          : " pages"}
+                      </span>
+
+                      <span className="text-[11px] font-medium text-[#4f6549]">
+                        {progress}%
+                      </span>
+                    </div>
+
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e7e4dc]">
+                      <div
+                        className="h-full rounded-full bg-[#4f6549] transition-all"
+                        style={{
+                          width: `${progress}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* RATING PARA LAS DEMÁS ESTANTERÍAS */
+                  <div className="mt-2">
+                    <RatingStars rating={book.rating} />
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
