@@ -1,23 +1,23 @@
 export default function MotivationCard() {
   return (
-    <section className="rounded-3xl border border-[#e7dfcf] bg-white p-5">
-      <div className="flex gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#ece8dd] text-2xl">
+    <section className="rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="flex gap-5 items-center">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-amber-100 bg-amber-50 text-2xl drop-shadow-sm">
           🌿
         </div>
 
         <div>
-          <h2 className="font-serif text-xl text-[#2c3025]">
+          <h2 className="text-xl font-extrabold text-gray-900">
             You&apos;re doing great!
           </h2>
 
-          <p className="mt-1 text-sm leading-relaxed text-[#77766d]">
+          <p className="mt-1 text-sm font-medium leading-relaxed text-gray-500">
             Keep going and make a little progress with every page.
           </p>
         </div>
       </div>
 
-      <blockquote className="mt-5 border-t border-[#ece8dd] pt-4 text-sm italic leading-relaxed text-[#77766d]">
+      <blockquote className="mt-6 border-t border-gray-100 pt-5 text-sm font-medium italic leading-relaxed text-gray-400">
         &quot;A reader lives a thousand lives before he dies.&quot;
       </blockquote>
     </section>

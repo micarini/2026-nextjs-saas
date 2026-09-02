@@ -17,20 +17,20 @@ export default function ProfileStats({ books = [] }) {
     );
 
   return (
-    <section className="rounded-3xl border border-[#e7dfcf] bg-[#f0eee7] p-5">
-      <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6f765f]">
+    <div className="flex flex-col gap-4">
+      <div className="mb-2 ml-1">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
           Your reading journey
         </p>
 
-        <h2 className="mt-2 font-serif text-2xl text-[#2c3025]">
+        <h2 className="mt-1 text-xl font-extrabold text-gray-900">
           Keep turning the pages.
         </h2>
       </div>
 
-      {/* Main stats */}
+      {/* Main stats Grid */}
 
-      <div className="grid grid-cols-3 divide-x divide-[#dcd8ce]">
+      <div className="grid grid-cols-3 gap-3">
         <Stat
           value={totalBooks}
           label="Books"
@@ -47,37 +47,38 @@ export default function ProfileStats({ books = [] }) {
         />
       </div>
 
-      {/* Pages */}
+      {/* Pages Card */}
 
-      <div className="mt-5 flex items-center justify-between rounded-2xl bg-white/70 px-4 py-4">
+      <div className="mt-2 flex items-center justify-between rounded-3xl border border-amber-100/60 bg-amber-50/50 px-6 py-5 shadow-sm">
         <div>
-          <p className="text-sm font-medium text-[#2c3025]">
+          <p className="text-sm font-extrabold text-gray-900">
             Pages read
           </p>
 
-          <p className="mt-1 text-xs text-[#858178]">
+          <p className="mt-1 text-xs font-medium text-gray-500">
             Across your finished books
           </p>
         </div>
 
-        <p className="font-serif text-2xl text-[#59634f]">
+        <p className="text-2xl font-extrabold text-amber-500">
           {totalPagesRead.toLocaleString()}
         </p>
       </div>
-    </section>
+    </div>
   );
 }
 
+// Sub-componente de métricas
 function Stat({ value, label }) {
   return (
-    <div className="px-2 text-center">
-      <p className="font-serif text-3xl text-[#2c3025]">
-        {value}
-      </p>
-
-      <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-[#858178]">
+    <div className="flex flex-col items-center justify-center rounded-[2rem] border border-gray-50 bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] transition-all hover:-translate-y-1 hover:shadow-md">
+      <span className="mb-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
         {label}
-      </p>
+      </span>
+      <span className="text-3xl font-extrabold text-gray-900">
+        {value}
+      </span>
+      <div className="mt-3 h-1 w-8 rounded-full bg-amber-400/80"></div>
     </div>
   );
 }

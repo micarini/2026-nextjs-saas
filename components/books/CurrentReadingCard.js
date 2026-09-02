@@ -1,20 +1,23 @@
 import Link from "next/link";
 
 export default function CurrentReadingCard({ book }) {
+  // ============================================================================
+  // EMPTY STATE: Si no pasas ningún libro, muestra la tarjeta de "Find a book"
+  // ============================================================================
   if (!book) {
     return (
-      <section className="rounded-3xl border border-[#e7dfcf] bg-white p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b806d]">
+      <section className="rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
           Currently reading
         </p>
 
-        <h2 className="mt-4 font-serif text-2xl text-[#2c3025]">
+        <h2 className="mt-3 text-xl font-extrabold text-gray-900">
           You&apos;re not reading anything yet.
         </h2>
 
         <Link
           href="/dashboard/books/new"
-          className="mt-5 inline-flex rounded-full bg-[#4f6549] px-5 py-3 text-sm font-medium text-white"
+          className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-amber-400 text-base font-extrabold text-gray-900 shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] hover:bg-amber-500"
         >
           Find a book
         </Link>
@@ -22,6 +25,9 @@ export default function CurrentReadingCard({ book }) {
     );
   }
 
+  // ============================================================================
+  // CURRENT BOOK: Calcula el progreso y muestra el libro actual
+  // ============================================================================
   const progress =
     book.totalPages > 0
       ? Math.min(
@@ -31,13 +37,17 @@ export default function CurrentReadingCard({ book }) {
       : 0;
 
   return (
-    <section className="rounded-3xl border border-[#e7dfcf] bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6f7566]">
-        Currently reading
+    <section className="relative overflow-hidden rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      {/* Fondo sutil con gradiente (Opcional para que destaque como en tus referencias) */}
+      <div className="absolute right-0 top-0 -z-10 h-40 w-40 rounded-bl-full bg-gradient-to-bl from-amber-100/40 to-transparent blur-2xl" />
+
+      <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+        Continue Reading
       </p>
 
-      <div className="mt-5 flex gap-4">
-        <div className="w-28 shrink-0 overflow-hidden rounded-xl bg-[#e9e5da] shadow-md">
+      <div className="mt-5 flex gap-5">
+        {/* PORTADA */}
+        <div className="w-24 shrink-0 overflow-hidden rounded-2xl bg-gray-100 border border-gray-100 shadow-sm">
           <div className="aspect-[0.68]">
             {book.coverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -46,31 +56,35 @@ export default function CurrentReadingCard({ book }) {
                 alt={book.title}
                 className="h-full w-full object-cover"
               />
-            ) : null}
+            ) : (
+               <div className="flex h-full items-center justify-center p-3 text-center bg-gray-100">
+                 <span className="text-3xl text-gray-300">📚</span>
+               </div>
+            )}
           </div>
         </div>
 
+        {/* INFO Y PROGRESO */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <h2 className="font-serif text-2xl leading-tight text-[#2c3025]">
+          <h2 className="text-xl font-extrabold leading-tight text-gray-900 line-clamp-2">
             {book.title}
           </h2>
 
-          <p className="mt-1 text-sm text-[#7d7a70]">
+          <p className="mt-1 text-sm font-medium text-gray-500 line-clamp-1">
             {book.author}
           </p>
 
           <div className="mt-auto pt-6">
-            <div className="flex items-center justify-between text-xs text-[#77766d]">
+            <div className="mb-2 flex items-center justify-between text-xs font-bold text-gray-600">
               <span>
                 Page {book.currentPage || 0} of {book.totalPages || "?"}
               </span>
-
               <span>{progress}%</span>
             </div>
 
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#ece9e1]">
+            <div className="h-2.5 overflow-hidden rounded-full bg-gray-200/60 shadow-inner">
               <div
-                className="h-full rounded-full bg-[#4f6549]"
+                className="h-full rounded-full bg-amber-400"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -80,7 +94,7 @@ export default function CurrentReadingCard({ book }) {
 
       <Link
         href={`/dashboard/books/${book.id}/edit`}
-        className="mt-5 flex w-full items-center justify-center rounded-full bg-[#4f6549] py-3 text-sm font-medium text-white transition hover:bg-[#40553b]"
+        className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-amber-400 text-base font-extrabold text-gray-900 shadow-[0_4px_14px_rgba(251,191,36,0.4)] transition-all hover:scale-[1.02] hover:bg-amber-500"
       >
         Update progress
       </Link>

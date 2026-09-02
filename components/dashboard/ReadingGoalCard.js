@@ -8,42 +8,43 @@ export default function ReadingGoalCard({
   );
 
   return (
-    <section className="rounded-3xl border border-[#e7dfcf] bg-[#f0eee7] p-5">
+    <section className="rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6f7566]">
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
             Reading goal 2026
           </p>
 
-          <h2 className="mt-3 font-serif text-3xl text-[#2c3025]">
-            {completedBooks} of {goal}
+          <h2 className="mt-3 text-3xl font-extrabold text-gray-900">
+            <span className="text-amber-500">{completedBooks}</span> of {goal}
           </h2>
 
-          <p className="mt-1 text-sm text-[#77766d]">
+          <p className="mt-1 text-sm font-medium text-gray-500">
             books completed this year
           </p>
         </div>
 
         <div
-          className="relative flex h-24 w-24 items-center justify-center rounded-full"
+          className="relative flex h-24 w-24 items-center justify-center rounded-full shadow-sm"
           style={{
             background: `conic-gradient(
-              #4f6549 ${percentage * 3.6}deg,
-              #dedbd3 ${percentage * 3.6}deg
-            )`,
+              #fbbf24 ${percentage * 3.6}deg,
+              #f3f4f6 ${percentage * 3.6}deg
+            )`, // #fbbf24 = amber-400, #f3f4f6 = gray-100
           }}
         >
-          <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#f0eee7]">
-            <span className="text-lg font-medium text-[#2c3025]">
+          <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white shadow-inner">
+            <span className="text-lg font-extrabold text-gray-900">
               {percentage}%
             </span>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#dedbd3]">
+      {/* Barra de progreso inferior */}
+      <div className="mt-6 h-2.5 overflow-hidden rounded-full bg-gray-100 shadow-inner">
         <div
-          className="h-full rounded-full bg-[#4f6549]"
+          className="h-full rounded-full bg-amber-400"
           style={{ width: `${percentage}%` }}
         />
       </div>

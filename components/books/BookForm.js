@@ -13,7 +13,6 @@ function getInitialStatus(values) {
   if (values.status === "abandoned") {
     return "dnf";
   }
-
   return values.status || "to_read";
 }
 
@@ -30,20 +29,50 @@ export default function BookForm({
   const values = book || initialValues || {};
 
   const [status, setStatus] = useState(getInitialStatus(values));
-
   const [rating, setRating] = useState(values.rating || 0);
+
+  // ============================================================================
+  // LÓGICA DE GÉNERO SEGURO (Previene errores 500 del backend)
+  // ============================================================================
+  let safeGenreValue = GENRES[0]?.value || "fantasy";
+  let safeGenreLabel = GENRES[0]?.label || "Fantasy";
+
+  if (values.genre) {
+    const incoming = (Array.isArray(values.genre) ? values.genre[0] : values.genre)
+      .toString()
+      .toLowerCase()
+      .trim();
+    
+    // Busca si la categoría de la API coincide con nuestros géneros permitidos
+    const match = GENRES.find(
+      (g) => g.value.toLowerCase() === incoming || g.label.toLowerCase() === incoming
+    );
+
+    if (match) {
+      safeGenreValue = match.value;
+      safeGenreLabel = match.label;
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    // 1. Extraemos los datos ANTES de hacer setLoading(true)
+    // Si los inputs se deshabilitan primero, el FormData los ignora y se envían vacíos.
+    const formData = new FormData(event.currentTarget);
+    
+    // 2. Red de seguridad: Forzar el género válido si por algún motivo no se capturó
+    if (!formData.get("genre")) {
+      formData.set("genre", safeGenreValue);
+    }
 
     setError("");
     setLoading(true);
 
     try {
-      await action(new FormData(event.currentTarget));
+      await action(formData);
     } catch (err) {
       setError(err.message || "Something went wrong while saving your book.");
-
       setLoading(false);
     }
   }
@@ -73,7 +102,6 @@ export default function BookForm({
 
           <div className="flex gap-4">
             {/* COVER */}
-
             <div className="w-28 shrink-0">
               <div className="aspect-[0.68] overflow-hidden rounded-2xl bg-gray-100/80 shadow-sm border border-gray-100">
                 {values.coverUrl ? (
@@ -92,7 +120,6 @@ export default function BookForm({
             </div>
 
             {/* BOOK DETAILS */}
-
             <div className="flex min-w-0 flex-1 flex-col justify-center">
               <h1 className="text-xl font-extrabold leading-tight text-gray-900">
                 {values.title || "Untitled book"}
@@ -103,9 +130,10 @@ export default function BookForm({
               </p>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {values.genre ? (
+                {/* Mostramos la etiqueta segura adaptada a tu BD */}
+                {safeGenreLabel ? (
                   <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-700 border border-gray-200">
-                    {values.genre}
+                    {safeGenreLabel}
                   </span>
                 ) : null}
 
@@ -121,14 +149,14 @@ export default function BookForm({
       </section>
 
       {/* =====================================================
-          HIDDEN BOOK DATA
+          HIDDEN BOOK DATA (Usando safeGenreValue)
       ====================================================== */}
 
       {!allowMetadataEditing && (
         <>
           <input type="hidden" name="title" value={values.title || ""} />
           <input type="hidden" name="author" value={values.author || ""} />
-          <input type="hidden" name="genre" value={values.genre || ""} />
+          <input type="hidden" name="genre" value={safeGenreValue} />
           <input type="hidden" name="coverUrl" value={values.coverUrl || ""} />
           <input type="hidden" name="isbn" value={values.isbn || ""} />
           <input type="hidden" name="totalPages" value={values.totalPages || ""} />
@@ -185,7 +213,7 @@ export default function BookForm({
 
               <select
                 name="genre"
-                defaultValue={values.genre || GENRES[0]?.value || ""}
+                defaultValue={safeGenreValue}
                 disabled={loading}
                 className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 outline-none appearance-none focus:ring-2 focus:ring-amber-400 cursor-pointer transition-all shadow-inner"
               >
@@ -265,7 +293,6 @@ export default function BookForm({
 
         <div className="mt-6 grid grid-cols-2 gap-4">
           {/* WANT TO READ */}
-
           <button
             type="button"
             onClick={() => setStatus("to_read")}
@@ -276,14 +303,11 @@ export default function BookForm({
             }`}
           >
             <span className="text-2xl">🔖</span>
-
             <p className="mt-4 text-sm font-extrabold text-gray-900">Want to read</p>
-
             <p className="mt-1 text-xs font-medium text-gray-500">Save it for later</p>
           </button>
 
           {/* READING */}
-
           <button
             type="button"
             onClick={() => setStatus("reading")}
@@ -294,14 +318,11 @@ export default function BookForm({
             }`}
           >
             <span className="text-2xl">📖</span>
-
             <p className="mt-4 text-sm font-extrabold text-gray-900">Reading</p>
-
             <p className="mt-1 text-xs font-medium text-gray-500">Reading it now</p>
           </button>
 
           {/* FINISHED */}
-
           <button
             type="button"
             onClick={() => setStatus("read")}
@@ -312,14 +333,11 @@ export default function BookForm({
             }`}
           >
             <span className="text-2xl">🎉</span>
-
             <p className="mt-4 text-sm font-extrabold text-gray-900">Finished</p>
-
             <p className="mt-1 text-xs font-medium text-gray-500">I read it all</p>
           </button>
 
           {/* DNF */}
-
           <button
             type="button"
             onClick={() => setStatus("dnf")}
@@ -330,9 +348,7 @@ export default function BookForm({
             }`}
           >
             <span className="text-2xl">🚫</span>
-
             <p className="mt-4 text-sm font-extrabold text-gray-900">DNF</p>
-
             <p className="mt-1 text-xs font-medium text-gray-500">Did not finish</p>
           </button>
         </div>
@@ -341,22 +357,18 @@ export default function BookForm({
       {/* =====================================================
           CONDITIONAL: WANT TO READ
       ====================================================== */}
-
       {status === "to_read" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <h2 className="text-lg font-extrabold text-gray-900">
             Save it for later ✨
           </h2>
-
           <p className="mt-1 text-sm font-medium text-gray-500">
             You can set a target date if you have one in mind.
           </p>
-
           <label className="mt-6 block">
             <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
               When do you want to read it?
             </span>
-
             <input
               name="targetDate"
               type="date"
@@ -371,23 +383,19 @@ export default function BookForm({
       {/* =====================================================
           CONDITIONAL: CURRENTLY READING
       ====================================================== */}
-
       {status === "reading" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <h2 className="text-lg font-extrabold text-gray-900">
             Your reading progress 📖
           </h2>
-
           <p className="mt-1 text-sm font-medium text-gray-500">
             Tell us where you currently are.
           </p>
-
           <div className="mt-6 space-y-5">
             <label className="block">
               <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 Current page
               </span>
-
               <input
                 name="currentPage"
                 type="number"
@@ -398,32 +406,25 @@ export default function BookForm({
                 className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
                 placeholder="0"
               />
-
               {values.totalPages ? (
                 <div className="mt-4">
                   <div className="flex justify-between text-xs font-bold text-gray-600 mb-2">
                     <span>{initialProgress}% complete</span>
-
                     <span>{values.totalPages} pages</span>
                   </div>
-
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-gray-200/60 shadow-inner">
                     <div
                       className="h-full rounded-full bg-amber-400"
-                      style={{
-                        width: `${initialProgress}%`,
-                      }}
+                      style={{ width: `${initialProgress}%` }}
                     />
                   </div>
                 </div>
               ) : null}
             </label>
-
             <label className="block">
               <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 When did you start reading?
               </span>
-
               <input
                 name="startDate"
                 type="date"
@@ -439,27 +440,22 @@ export default function BookForm({
       {/* =====================================================
           CONDITIONAL: FINISHED
       ====================================================== */}
-
       {status === "read" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <div>
             <span className="text-3xl">🎉</span>
-
             <h2 className="mt-3 text-xl font-extrabold text-gray-900">
               You finished this book!
             </h2>
-
             <p className="mt-1 text-sm font-medium text-gray-500">
               Add the finishing date and your rating.
             </p>
           </div>
-
           <div className="mt-6 space-y-5">
             <label className="block">
               <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 When did you finish it?
               </span>
-
               <input
                 name="finishDate"
                 type="date"
@@ -468,14 +464,11 @@ export default function BookForm({
                 className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
               />
             </label>
-
             <div>
               <span className="mb-3 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 How would you rate it?
               </span>
-
               <input type="hidden" name="rating" value={rating || ""} />
-
               <div className="flex gap-2 bg-white w-fit px-4 py-2 rounded-2xl border border-gray-100 shadow-sm">
                 {RATING_OPTIONS.map((value) => (
                   <button
@@ -497,14 +490,12 @@ export default function BookForm({
                   </button>
                 ))}
               </div>
-
               {rating > 0 && (
                 <p className="mt-3 text-sm font-bold text-amber-500 ml-1">
                   {rating} out of 5 stars
                 </p>
               )}
             </div>
-
             <input
               type="hidden"
               name="currentPage"
@@ -517,25 +508,20 @@ export default function BookForm({
       {/* =====================================================
           CONDITIONAL: DNF
       ====================================================== */}
-
       {status === "dnf" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <span className="text-3xl">📕</span>
-
           <h2 className="mt-3 text-xl font-extrabold text-gray-900">
             Not every book is for everyone.
           </h2>
-
           <p className="mt-1 text-sm font-medium text-gray-500">
             You can still keep track of where you stopped reading.
           </p>
-
           <div className="mt-6 space-y-5">
             <label className="block">
               <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 Last page you read
               </span>
-
               <input
                 name="currentPage"
                 type="number"
@@ -547,12 +533,10 @@ export default function BookForm({
                 placeholder="0"
               />
             </label>
-
             <label className="block">
               <span className="mb-2 block text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">
                 When did you stop reading?
               </span>
-
               <input
                 name="finishDate"
                 type="date"
@@ -568,7 +552,6 @@ export default function BookForm({
       {/* =====================================================
           PUBLIC BOOK
       ====================================================== */}
-
       <label className="flex cursor-pointer items-center gap-4 rounded-3xl bg-white p-5 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:border-gray-200">
         <input
           name="published"
@@ -577,12 +560,10 @@ export default function BookForm({
           disabled={loading}
           className="h-6 w-6 accent-amber-400 rounded focus:ring-amber-400 transition-all cursor-pointer"
         />
-
         <span>
           <span className="block text-sm font-extrabold text-gray-900">
             Share this book publicly
           </span>
-
           <span className="mt-1 block text-sm font-medium text-gray-500">
             Show this reading activity on your public profile.
           </span>
@@ -592,11 +573,10 @@ export default function BookForm({
       {/* =====================================================
           SAVE BUTTON
       ====================================================== */}
-
       <button
         type="submit"
         disabled={loading}
-        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-500 text-white text-base font-extrabold shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 mt-8"
+        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-500 text-gray-900 text-base font-extrabold shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 mt-8"
       >
         {loading ? (
           "Saving..."
@@ -609,7 +589,6 @@ export default function BookForm({
       </button>
 
       {/* ERROR */}
-
       {error ? (
         <div className="rounded-2xl border-none bg-red-50 p-4 text-sm font-medium text-red-600 mt-4">
           {error}

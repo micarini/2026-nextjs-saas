@@ -27,7 +27,7 @@ function parseDateInput(value) {
 function parseBookForm(formData) {
   const title = String(formData.get("title") || "").trim();
   const author = String(formData.get("author") || "").trim();
-  const genre = String(formData.get("genre") || "");
+  let genre = String(formData.get("genre") || "");
   const status = String(formData.get("status") || "to_read");
   const ratingRaw = String(formData.get("rating") || "").trim();
   const published = formData.get("published") === "on";
@@ -40,8 +40,12 @@ function parseBookForm(formData) {
     throw new Error("Author is required.");
   }
 
+  // ============================================================================
+  // FIX: En lugar de tirar error, asignamos un género válido por defecto
+  // ============================================================================
   if (!GENRES.some((entry) => entry.value === genre)) {
-    throw new Error("Choose a valid genre.");
+    // Si la API mandó "Fiction" u otra cosa rara, forzamos el primer género válido (ej. "fantasy")
+    genre = GENRES[0]?.value || "fantasy"; 
   }
 
   if (!STATUSES.some((entry) => entry.value === status)) {
