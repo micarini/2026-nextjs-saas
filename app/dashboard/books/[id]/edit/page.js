@@ -36,7 +36,12 @@ export default async function EditBookPage({ params }) {
       </div>
 
       <div className="px-5 py-6">
-        <BookForm action={updateBook.bind(null, book.id)} book={book} submitLabel="Save changes" />
+        <BookForm
+          action={updateBook.bind(null, book.id)}
+          book={book}
+          submitLabel="Save changes"
+          allowMetadataEditing
+        />
 
         <form action={deleteBook.bind(null, book.id)} className="mt-4">
           <button
