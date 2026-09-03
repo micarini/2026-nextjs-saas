@@ -69,44 +69,32 @@ export default function BookShelfRow({
 
               {/* INFORMACIÓN */}
               <div className="pt-3">
-                <h3 className="line-clamp-2 text-sm font-medium leading-snug text-[#2c3025]">
-                  {book.title}
-                </h3>
-
-                <p className="mt-1 truncate text-xs text-[#858178]">
-                  {book.author || "Unknown author"}
-                </p>
-
-                {/* PROGRESO */}
                 {showProgress ? (
-                  <div className="mt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-[#858178]">
-                        {book.currentPage || 0}
-                        {book.totalPages
-                          ? ` / ${book.totalPages} pages`
-                          : " pages"}
-                      </span>
+                  /* CURRENTLY READING: solo título + porcentaje */
+                  <>
+                    <h3 className="truncate text-sm font-medium leading-snug text-[#2c3025]">
+                      {book.title}
+                    </h3>
 
-                      <span className="text-[11px] font-medium text-[#4f6549]">
-                        {progress}%
-                      </span>
-                    </div>
-
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e7e4dc]">
-                      <div
-                        className="h-full rounded-full bg-[#4f6549] transition-all"
-                        style={{
-                          width: `${progress}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
+                    <p className="mt-1 text-xs font-medium text-[#8a877f]">
+                      {progress}%
+                    </p>
+                  </>
                 ) : (
-                  /* RATING PARA LAS DEMÁS ESTANTERÍAS */
-                  <div className="mt-2">
-                    <RatingStars rating={book.rating} />
-                  </div>
+                  <>
+                    <h3 className="line-clamp-2 text-sm font-medium leading-snug text-[#2c3025]">
+                      {book.title}
+                    </h3>
+
+                    <p className="mt-1 truncate text-xs text-[#858178]">
+                      {book.author || "Unknown author"}
+                    </p>
+
+                    {/* RATING PARA LAS DEMÁS ESTANTERÍAS */}
+                    <div className="mt-2">
+                      <RatingStars rating={book.rating} />
+                    </div>
+                  </>
                 )}
               </div>
             </Link>
