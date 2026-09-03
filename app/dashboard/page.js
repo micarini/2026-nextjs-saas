@@ -5,6 +5,7 @@ import { listUserBooks } from "@/lib/books/books";
 
 import { getTrendingBooks } from "@/lib/discovery/trending";
 import { getNewReleases } from "@/lib/discovery/newReleases";
+import { getBooksBySubject } from "@/lib/discovery/subjects";
 
 import CurrentReadingCard from "@/components/books/CurrentReadingCard";
 import BookShelfRow from "@/components/books/BookShelfRow";
@@ -17,6 +18,15 @@ import BottomNav from "@/components/nav/BottomNav";
 
 export const dynamic = "force-dynamic";
 
+const GENRE_SHELVES = [
+  { label: "Fantasy", subject: "fantasy", accentColor: "rgba(167, 139, 250, 0.65)" },
+  { label: "Romance", subject: "romance", accentColor: "rgba(244, 114, 182, 0.65)" },
+  { label: "Classics", subject: "classics", accentColor: "rgba(180, 140, 90, 0.65)" },
+  { label: "Fiction", subject: "fiction", accentColor: "rgba(52, 211, 153, 0.65)" },
+  { label: "Non-fiction", subject: "nonfiction", accentColor: "rgba(148, 163, 184, 0.65)" },
+  { label: "Young Adult", subject: "young_adult_fiction", accentColor: "rgba(248, 113, 113, 0.65)" },
+];
+
 export default async function DashboardPage() {
   // Obtener el usuario actual
   const user = await getCurrentUser();
@@ -27,10 +37,11 @@ export default async function DashboardPage() {
   }
 
   // Cargar todos los datos en paralelo
-  const [books, trending, newReleases] = await Promise.all([
+  const [books, trending, newReleases, genreShelves] = await Promise.all([
     listUserBooks(user.uid),
     getTrendingBooks(16),
     getNewReleases(16),
+    Promise.all(GENRE_SHELVES.map((genre) => getBooksBySubject(genre.subject, 16))),
   ]);
 
   // Libros que el usuario está leyendo actualmente
@@ -206,7 +217,7 @@ export default async function DashboardPage() {
 
           {/* New releases */}
 
-          <div>
+          <div className="mb-10">
             <DiscoveryShelfRow
               label="New releases"
               books={newReleases}
@@ -214,6 +225,19 @@ export default async function DashboardPage() {
               accentColor="rgba(96, 165, 250, 0.65)"
             />
           </div>
+
+          {/* Popular genres */}
+
+          {GENRE_SHELVES.map((genre, index) => (
+            <div key={genre.subject} className="mb-10 last:mb-0">
+              <DiscoveryShelfRow
+                label={genre.label}
+                books={genreShelves[index]}
+                emptyMessage={`Couldn't load ${genre.label.toLowerCase()} books right now.`}
+                accentColor={genre.accentColor}
+              />
+            </div>
+          ))}
         </section>
       </div>
 
