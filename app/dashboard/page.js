@@ -178,6 +178,7 @@ export default async function DashboardPage() {
               label="Trending books"
               books={trending}
               emptyMessage="Couldn't load trending books right now."
+              accentColor="#e8a15c"
             />
           </div>
 
@@ -188,6 +189,7 @@ export default async function DashboardPage() {
               label="New releases"
               books={newReleases}
               emptyMessage="Couldn't load new releases right now."
+              accentColor="#c96a4a"
             />
           </div>
         </section>
