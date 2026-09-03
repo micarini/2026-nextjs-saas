@@ -76,9 +76,9 @@ export default function BookShelfRow({
                       {book.title}
                     </h3>
 
-                    <p className="mt-1 text-xs font-medium text-[#8a877f]">
+                    <span className="mt-1.5 inline-block rounded-full bg-[#eeece6] px-2.5 py-1 text-sm font-semibold text-[#2c3025]">
                       {progress}%
-                    </p>
+                    </span>
                   </>
                 ) : (
                   <>
