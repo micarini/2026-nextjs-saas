@@ -29,8 +29,8 @@ export default async function DashboardPage() {
   // Cargar todos los datos en paralelo
   const [books, trending, newReleases] = await Promise.all([
     listUserBooks(user.uid),
-    getTrendingBooks(),
-    getNewReleases(),
+    getTrendingBooks(16),
+    getNewReleases(16),
   ]);
 
   // Libros que el usuario está leyendo actualmente
