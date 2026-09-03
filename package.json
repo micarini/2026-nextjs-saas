@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -22,7 +22,7 @@
     "tailwindcss": "^4.3.3"
   },
   "overrides": {
-    "jose": "^5.10.0"
+    "jose": "^4.15.9"
   },
   "resolutions": {
     "jose": "^4.15.9"
