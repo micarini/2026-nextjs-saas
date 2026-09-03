@@ -56,6 +56,39 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-[#f7f5f0] pb-28 text-[#2c3025]">
       <div className="mx-auto w-full max-w-6xl px-5 pt-8">
         {/* =========================
+            SEARCH
+        ========================== */}
+
+        <form action="/dashboard/books/new" method="GET" className="mb-6">
+          <div className="flex h-14 items-center gap-3 rounded-full border border-[#e7e3da] bg-white px-5 shadow-[0_4px_14px_rgba(0,0,0,0.03)]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#77766d" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+
+            <input
+              type="text"
+              name="q"
+              placeholder="Title, author or ISBN"
+              aria-label="Search to add a book"
+              className="flex-1 bg-transparent text-[15px] text-[#2c3025] outline-none placeholder:text-[#a09c8f]"
+            />
+
+            {/* Decorativo por ahora: escaneo de portada/código de barras no implementado */}
+            <button
+              type="button"
+              aria-label="Scan a book cover"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#2c3025] transition hover:bg-[#f0eee8]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M4 8a2 2 0 0 1 2-2h1l1.2-1.6A2 2 0 0 1 9.8 3.6h4.4a2 2 0 0 1 1.6.8L17 6h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        {/* =========================
             HEADER
         ========================== */}
 
