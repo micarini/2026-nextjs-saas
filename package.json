@@ -2,9 +2,6 @@
   "name": "tp5-saas",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
@@ -23,5 +20,11 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4.3.3"
+  },
+  "overrides": {
+    "jose": "^5.10.0"
+  },
+  "resolutions": {
+    "jose": "^4.15.9"
   }
 }
