@@ -74,17 +74,6 @@ export default async function DashboardPage() {
               className="flex-1 bg-transparent text-[15px] text-[#2c3025] outline-none placeholder:text-[#a09c8f]"
             />
 
-            {/* Decorativo por ahora: escaneo de portada/código de barras no implementado */}
-            <button
-              type="button"
-              aria-label="Scan a book cover"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#2c3025] transition hover:bg-[#f0eee8]"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M4 8a2 2 0 0 1 2-2h1l1.2-1.6A2 2 0 0 1 9.8 3.6h4.4a2 2 0 0 1 1.6.8L17 6h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
-                <circle cx="12" cy="13" r="3.5" />
-              </svg>
-            </button>
           </div>
         </form>
 
@@ -211,7 +200,7 @@ export default async function DashboardPage() {
               label="Trending books"
               books={trending}
               emptyMessage="Couldn't load trending books right now."
-              accentColor="rgba(232, 161, 92, 0.55)"
+              accentColor="rgba(245, 158, 11, 0.65)"
             />
           </div>
 
@@ -222,7 +211,7 @@ export default async function DashboardPage() {
               label="New releases"
               books={newReleases}
               emptyMessage="Couldn't load new releases right now."
-              accentColor="rgba(201, 106, 74, 0.55)"
+              accentColor="rgba(96, 165, 250, 0.65)"
             />
           </div>
         </section>
