@@ -6,7 +6,7 @@ export default function DiscoveryShelfRow({
   label,
   books = [],
   emptyMessage,
-  accentColor = "#e8a15c",
+  accentColor = "rgba(232, 161, 92, 0.55)",
 }) {
   const scrollRef = useRef(null);
 
@@ -26,7 +26,7 @@ export default function DiscoveryShelfRow({
             </span>
             <button
               type="button"
-              onClick={() => scrollByAmount(-240)}
+              onClick={() => scrollByAmount(-260)}
               aria-label="Scroll left"
               className="flex size-6 items-center justify-center rounded-full text-[#cfc4ac] transition hover:text-[#20180f]"
             >
@@ -36,7 +36,7 @@ export default function DiscoveryShelfRow({
             </button>
             <button
               type="button"
-              onClick={() => scrollByAmount(240)}
+              onClick={() => scrollByAmount(260)}
               aria-label="Scroll right"
               className="flex size-6 items-center justify-center rounded-full text-[#20180f] transition hover:text-[#c96a1f]"
             >
@@ -52,39 +52,30 @@ export default function DiscoveryShelfRow({
         <p className="text-sm text-[#a89a7f]">{emptyMessage}</p>
       ) : (
         <div ref={scrollRef} className="overflow-x-auto pb-2">
-          <div className="inline-block px-1">
-            <div className="flex">
-              {books.map((book, index) => (
-                <div
-                  key={`${book.title}-${index}`}
-                  className="relative w-[86px] shrink-0"
-                  style={{
-                    marginLeft: index === 0 ? 0 : "-14px",
-                    transform: `rotate(${index % 2 === 0 ? -2 : 1.5}deg)`,
-                    zIndex: index + 1,
-                  }}
-                >
-                  <div className="aspect-[0.68] overflow-hidden rounded-[4px] bg-[#ebe3d0] shadow-[0_10px_18px_rgba(0,0,0,0.22)]">
-                    {book.coverUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={book.coverUrl}
-                        alt={book.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : null}
-                  </div>
+          <div className="relative inline-flex gap-1.5">
+            {books.map((book, index) => (
+              <div key={`${book.title}-${index}`} className="w-24 shrink-0">
+                <div className="aspect-[0.68] overflow-hidden rounded-sm bg-[#ebe3d0] shadow-[0_10px_18px_rgba(0,0,0,0.22)]">
+                  {book.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={book.coverUrl}
+                      alt={book.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : null}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
 
+            {/* Translucent shelf ledge — sits ON TOP of the lower third of the covers */}
             <div
-              className="relative -mt-4 h-11 rounded-md"
-              style={{ backgroundColor: accentColor, boxShadow: "inset 0 -3px 6px rgba(0,0,0,0.08)" }}
+              className="pointer-events-none absolute inset-x-2 -bottom-2 h-[52px] rounded-md"
+              style={{ backgroundColor: accentColor }}
             >
-              <span className="absolute left-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/70" />
-              <span className="absolute right-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/70" />
+              <span className="absolute left-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/80" />
+              <span className="absolute right-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/80" />
             </div>
           </div>
         </div>
