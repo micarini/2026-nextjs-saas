@@ -2,11 +2,23 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getUserBook } from "@/lib/books/books";
+import { listBookNotes } from "@/lib/books/notes";
 import { genreLabel } from "@/lib/books/genres";
-import { statusLabel } from "@/lib/books/statuses";
-import ChangeStatusModal from "@/components/books/ChangeStatusModal";
+import StatusPill from "@/components/books/StatusPill";
+import PersonalRatingStars from "@/components/books/PersonalRatingStars";
+import CurrentPageEditor from "@/components/books/CurrentPageEditor";
+import BookDatesEditor from "@/components/books/BookDatesEditor";
+import NotesList from "@/components/books/NotesList";
 import BottomNav from "@/components/nav/BottomNav";
-import { changeBookStatus } from "../actions";
+import {
+  changeBookStatus,
+  changeBookRating,
+  changeBookProgress,
+  changeBookDates,
+  deleteBook,
+  addNote,
+  deleteNote,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +36,13 @@ export default async function BookDetailPage({ params }) {
     notFound();
   }
 
+  const notes = await listBookNotes(user.uid, id);
+
   return (
     <main className="min-h-screen bg-[#F8F8FA] pb-28 text-[#2c3025]">
       {/* Cover panel */}
       <div className="relative bg-gradient-to-b from-[#eae7fb] to-[#F8F8FA] px-5 pb-10 pt-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           <Link
             href="/dashboard"
             aria-label="Back"
@@ -36,17 +50,6 @@ export default async function BookDetailPage({ params }) {
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2c3025" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </Link>
-
-          <Link
-            href={`/dashboard/books/${book.id}/edit`}
-            aria-label="Edit book"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 shadow-sm"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2c3025" strokeWidth="2">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" />
             </svg>
           </Link>
         </div>
@@ -89,7 +92,16 @@ export default async function BookDetailPage({ params }) {
           )}
         </div>
 
-        <div className="mt-6 grid grid-cols-3 divide-x divide-[#e7e3da] rounded-2xl bg-[#f8f8fa] py-4">
+        <div className="mt-4">
+          <StatusPill currentStatus={book.status} action={changeBookStatus.bind(null, book.id)} />
+        </div>
+
+        <PersonalRatingStars
+          currentRating={book.rating}
+          action={changeBookRating.bind(null, book.id)}
+        />
+
+        <div className="mt-6 grid grid-cols-2 divide-x divide-[#e7e3da] rounded-2xl bg-[#f8f8fa] py-4">
           <div className="text-center">
             <p className="text-xs text-[#a09c8f]">Genre</p>
             <p className="mt-1 text-sm font-semibold text-[#20180f]">{genreLabel(book.genre)}</p>
@@ -100,22 +112,42 @@ export default async function BookDetailPage({ params }) {
               {book.totalPages ? `${book.totalPages} pages` : "—"}
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-xs text-[#a09c8f]">Status</p>
-            <p className="mt-1 text-sm font-semibold text-[#20180f]">{statusLabel(book.status)}</p>
-          </div>
         </div>
+
+        <CurrentPageEditor
+          currentPage={book.currentPage}
+          totalPages={book.totalPages}
+          action={changeBookProgress.bind(null, book.id)}
+        />
+
+        <BookDatesEditor
+          startDate={book.startDate}
+          finishDate={book.finishDate}
+          targetDate={book.targetDate}
+          action={changeBookDates.bind(null, book.id)}
+        />
 
         {book.description ? (
           <p className="mt-6 text-sm leading-relaxed text-[#4b473f]">{book.description}</p>
         ) : null}
 
         <div className="mt-8">
-          <ChangeStatusModal
-            currentStatus={book.status}
-            action={changeBookStatus.bind(null, book.id)}
+          <h2 className="text-lg font-bold text-[#20180f]">Notes</h2>
+          <NotesList
+            notes={notes}
+            addNoteAction={addNote.bind(null, book.id)}
+            deleteNoteAction={deleteNote.bind(null, book.id)}
           />
         </div>
+
+        <form action={deleteBook.bind(null, book.id)} className="mt-8">
+          <button
+            type="submit"
+            className="h-11 w-full rounded-xl border border-red-200 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+          >
+            Delete book
+          </button>
+        </form>
       </div>
 
       <BottomNav active="home" />

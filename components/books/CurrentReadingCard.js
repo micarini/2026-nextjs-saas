@@ -57,9 +57,7 @@ export default function CurrentReadingCard({ book }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-               <div className="flex h-full items-center justify-center p-3 text-center bg-gray-100">
-                 <span className="text-3xl text-gray-300">📚</span>
-               </div>
+              <div className="h-full bg-gray-100" />
             )}
           </div>
         </div>
@@ -93,7 +91,7 @@ export default function CurrentReadingCard({ book }) {
       </div>
 
       <Link
-        href={`/dashboard/books/${book.id}/edit`}
+        href={`/dashboard/books/${book.id}`}
         className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-amber-400 text-base font-extrabold text-gray-900 shadow-[0_4px_14px_rgba(251,191,36,0.4)] transition-all hover:scale-[1.02] hover:bg-amber-500"
       >
         Update progress

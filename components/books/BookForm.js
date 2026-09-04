@@ -112,9 +112,7 @@ export default function BookForm({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center p-3 text-center">
-                    <span className="text-3xl text-gray-300">📚</span>
-                  </div>
+                  <div className="h-full bg-gray-100" />
                 )}
               </div>
             </div>
@@ -143,8 +141,31 @@ export default function BookForm({
                   </span>
                 ) : null}
               </div>
+
+              {values.averageRating ? (
+                <div className="mt-3 flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span
+                      key={n}
+                      className={`text-sm ${
+                        n <= Math.round(values.averageRating) ? "text-amber-400" : "text-gray-200"
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                  <span className="ml-1 text-xs font-semibold text-gray-500">
+                    {values.averageRating.toFixed(1)} / 5.0
+                    {values.ratingsCount ? ` (${values.ratingsCount})` : ""}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
+
+          {values.description ? (
+            <p className="mt-4 text-sm leading-relaxed text-gray-500">{values.description}</p>
+          ) : null}
         </div>
       </section>
 
@@ -305,8 +326,7 @@ export default function BookForm({
                 : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
-            <span className="text-2xl">🔖</span>
-            <p className="mt-4 text-sm font-extrabold text-gray-900">Want to read</p>
+            <p className="text-sm font-extrabold text-gray-900">Want to read</p>
             <p className="mt-1 text-xs font-medium text-gray-500">Save it for later</p>
           </button>
 
@@ -320,8 +340,7 @@ export default function BookForm({
                 : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
-            <span className="text-2xl">📖</span>
-            <p className="mt-4 text-sm font-extrabold text-gray-900">Reading</p>
+            <p className="text-sm font-extrabold text-gray-900">Reading</p>
             <p className="mt-1 text-xs font-medium text-gray-500">Reading it now</p>
           </button>
 
@@ -335,8 +354,7 @@ export default function BookForm({
                 : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
-            <span className="text-2xl">🎉</span>
-            <p className="mt-4 text-sm font-extrabold text-gray-900">Finished</p>
+            <p className="text-sm font-extrabold text-gray-900">Finished</p>
             <p className="mt-1 text-xs font-medium text-gray-500">I read it all</p>
           </button>
 
@@ -350,8 +368,7 @@ export default function BookForm({
                 : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
-            <span className="text-2xl">🚫</span>
-            <p className="mt-4 text-sm font-extrabold text-gray-900">DNF</p>
+            <p className="text-sm font-extrabold text-gray-900">DNF</p>
             <p className="mt-1 text-xs font-medium text-gray-500">Did not finish</p>
           </button>
         </div>
@@ -363,7 +380,7 @@ export default function BookForm({
       {status === "to_read" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <h2 className="text-lg font-extrabold text-gray-900">
-            Save it for later ✨
+            Save it for later
           </h2>
           <p className="mt-1 text-sm font-medium text-gray-500">
             You can set a target date if you have one in mind.
@@ -389,7 +406,7 @@ export default function BookForm({
       {status === "reading" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <h2 className="text-lg font-extrabold text-gray-900">
-            Your reading progress 📖
+            Your reading progress
           </h2>
           <p className="mt-1 text-sm font-medium text-gray-500">
             Tell us where you currently are.
@@ -446,8 +463,7 @@ export default function BookForm({
       {status === "read" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
           <div>
-            <span className="text-3xl">🎉</span>
-            <h2 className="mt-3 text-xl font-extrabold text-gray-900">
+            <h2 className="text-xl font-extrabold text-gray-900">
               You finished this book!
             </h2>
             <p className="mt-1 text-sm font-medium text-gray-500">
@@ -513,8 +529,7 @@ export default function BookForm({
       ====================================================== */}
       {status === "dnf" && (
         <section className="rounded-3xl bg-gray-50 p-6 border border-gray-100">
-          <span className="text-3xl">📕</span>
-          <h2 className="mt-3 text-xl font-extrabold text-gray-900">
+          <h2 className="text-xl font-extrabold text-gray-900">
             Not every book is for everyone.
           </h2>
           <p className="mt-1 text-sm font-medium text-gray-500">
@@ -551,27 +566,6 @@ export default function BookForm({
           </div>
         </section>
       )}
-
-      {/* =====================================================
-          PUBLIC BOOK
-      ====================================================== */}
-      <label className="flex cursor-pointer items-center gap-4 rounded-3xl bg-white p-5 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:border-gray-200">
-        <input
-          name="published"
-          type="checkbox"
-          defaultChecked={Boolean(values.published)}
-          disabled={loading}
-          className="h-6 w-6 accent-amber-400 rounded focus:ring-amber-400 transition-all cursor-pointer"
-        />
-        <span>
-          <span className="block text-sm font-extrabold text-gray-900">
-            Share this book publicly
-          </span>
-          <span className="mt-1 block text-sm font-medium text-gray-500">
-            Show this reading activity on your public profile.
-          </span>
-        </span>
-      </label>
 
       {/* =====================================================
           SAVE BUTTON

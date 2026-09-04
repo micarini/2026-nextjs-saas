@@ -15,6 +15,7 @@ import ReadingGoalCard from "@/components/dashboard/ReadingGoalCard";
 import MotivationCard from "@/components/dashboard/MotivationCard";
 
 import BottomNav from "@/components/nav/BottomNav";
+import HomeSearchBar from "@/components/books/HomeSearchBar";
 
 export const dynamic = "force-dynamic";
 
@@ -64,23 +65,7 @@ export default async function DashboardPage() {
             SEARCH
         ========================== */}
 
-        <form action="/dashboard/books/new" method="GET" className="mb-6">
-          <div className="flex h-14 items-center gap-3 rounded-full border border-[#e7e3da] bg-white px-5 shadow-[0_4px_14px_rgba(0,0,0,0.03)]">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#77766d" strokeWidth="2">
-              <circle cx="11" cy="11" r="7" />
-              <path d="M21 21l-4.3-4.3" />
-            </svg>
-
-            <input
-              type="text"
-              name="q"
-              placeholder="Title, author or ISBN"
-              aria-label="Search to add a book"
-              className="flex-1 bg-transparent text-[15px] text-[#2c3025] outline-none placeholder:text-[#a09c8f]"
-            />
-
-          </div>
-        </form>
+        <HomeSearchBar />
 
         {/* =========================
             HERO

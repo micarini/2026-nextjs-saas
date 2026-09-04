@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import SelectSearchResultForm from "@/components/books/SelectSearchResultForm";
 
 export default function DiscoveryShelfRow({
   label,
@@ -65,19 +66,29 @@ export default function DiscoveryShelfRow({
           <div ref={scrollRef} className="overflow-x-auto pb-2">
             <div className="flex gap-1.5">
               {books.map((book, index) => (
-                <div key={`${book.title}-${index}`} className="w-24 shrink-0">
-                  <div className="aspect-[0.68] overflow-hidden rounded-sm bg-[#ebe3d0] shadow-[0_10px_18px_rgba(0,0,0,0.22)]">
-                    {book.coverUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={book.coverUrl}
-                        alt={book.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : null}
-                  </div>
-                </div>
+                <SelectSearchResultForm
+                  key={`${book.title}-${index}`}
+                  result={book}
+                  className="w-24 shrink-0"
+                >
+                  <button
+                    type="submit"
+                    aria-label={`Add ${book.title}`}
+                    className="block w-full text-left transition hover:-translate-y-0.5"
+                  >
+                    <div className="aspect-[0.68] overflow-hidden rounded-sm bg-[#ebe3d0] shadow-[0_10px_18px_rgba(0,0,0,0.22)]">
+                      {book.coverUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={book.coverUrl}
+                          alt={book.title}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : null}
+                    </div>
+                  </button>
+                </SelectSearchResultForm>
               ))}
             </div>
           </div>

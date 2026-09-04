@@ -8,6 +8,9 @@ import {
   deleteUserBook,
   updateUserBook,
   updateUserBookStatus,
+  updateUserBookRating,
+  updateUserBookProgress,
+  updateUserBookDates,
 } from "@/lib/books/books";
 import { addBookNote, deleteBookNote } from "@/lib/books/notes";
 import { GENRES } from "@/lib/books/genres";
@@ -95,10 +98,10 @@ export async function createBook(formData) {
     redirect("/login");
   }
 
-  await createUserBook(user.uid, parseBookForm(formData));
+  const bookId = await createUserBook(user.uid, parseBookForm(formData));
   revalidatePath("/");
   revalidatePath("/dashboard");
-  redirect("/dashboard");
+  redirect(`/dashboard/books/${bookId}`);
 }
 
 export async function updateBook(bookId, formData) {
@@ -134,6 +137,47 @@ export async function changeBookStatus(bookId, formData) {
   revalidatePath(`/dashboard/books/${bookId}`);
 }
 
+export async function changeBookRating(bookId, formData) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const rating = parseOptionalInt(formData.get("rating"));
+
+  await updateUserBookRating(user.uid, bookId, rating);
+  revalidatePath(`/dashboard/books/${bookId}`);
+}
+
+export async function changeBookProgress(bookId, formData) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const currentPage = parseOptionalInt(formData.get("currentPage"));
+
+  await updateUserBookProgress(user.uid, bookId, currentPage);
+  revalidatePath(`/dashboard/books/${bookId}`);
+}
+
+export async function changeBookDates(bookId, formData) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  await updateUserBookDates(user.uid, bookId, {
+    startDate: parseDateInput(formData.get("startDate")),
+    finishDate: parseDateInput(formData.get("finishDate")),
+    targetDate: parseDateInput(formData.get("targetDate")),
+  });
+  revalidatePath(`/dashboard/books/${bookId}`);
+}
+
 export async function deleteBook(bookId) {
   const user = await getCurrentUser();
 
@@ -165,7 +209,7 @@ export async function addNote(bookId, formData) {
     text,
     page: parseOptionalInt(formData.get("page")),
   });
-  revalidatePath("/dashboard/books/[id]/edit", "page");
+  revalidatePath("/dashboard/books/[id]", "page");
 }
 
 export async function deleteNote(bookId, noteId) {
@@ -176,5 +220,5 @@ export async function deleteNote(bookId, noteId) {
   }
 
   await deleteBookNote(user.uid, bookId, noteId);
-  revalidatePath("/dashboard/books/[id]/edit", "page");
+  revalidatePath("/dashboard/books/[id]", "page");
 }

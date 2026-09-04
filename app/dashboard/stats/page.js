@@ -159,7 +159,7 @@ export default async function StatsPage() {
           {/* Yearly Goal Card */}
           <div className="flex flex-col items-center justify-center rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center">
             <div className="relative mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-amber-50">
-              <span className="text-4xl drop-shadow-sm">🌻</span>
+              <span className="text-2xl font-extrabold text-amber-500">{totalBooksFinished}</span>
               <svg className="absolute inset-0 h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="46" fill="none" stroke="#fef3c7" strokeWidth="8" />
                 <circle cx="50" cy="50" r="46" fill="none" stroke="#fbbf24" strokeWidth="8" strokeDasharray={`${(totalBooksFinished/yearlyGoal)*289} 289`} strokeLinecap="round" />
@@ -178,7 +178,6 @@ export default async function StatsPage() {
             <div className="mb-3 flex h-20 w-20 items-center justify-center">
               <div className="relative h-16 w-12 rounded bg-purple-100 shadow-sm rotate-[-10deg]"></div>
               <div className="absolute h-16 w-12 rounded bg-amber-200 shadow-md rotate-[5deg]"></div>
-              <span className="absolute text-2xl z-10 drop-shadow-sm">📖</span>
             </div>
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Pages read
@@ -242,7 +241,6 @@ export default async function StatsPage() {
           {totalBooksFinished > 0 && (
             <div className="mt-6 rounded-3xl bg-amber-50 p-5 border border-amber-100">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-amber-500 drop-shadow-sm">✨</span>
                 <h3 className="font-extrabold text-amber-700">Reader insight</h3>
               </div>
               <p className="text-sm font-medium text-amber-900/80">

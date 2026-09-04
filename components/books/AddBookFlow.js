@@ -11,7 +11,6 @@ export default function AddBookFlow({ initialQuery = "" }) {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState(null);
   const [mode, setMode] = useState("search");
   const [isPending, startTransition] = useTransition();
 
@@ -34,7 +33,7 @@ export default function AddBookFlow({ initialQuery = "" }) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       runSearch(initialQuery);
     }
-    // Only ever auto-run once, for the query the page loaded with.
+    // Only ever runs once, for whatever the page loaded with.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -42,16 +41,13 @@ export default function AddBookFlow({ initialQuery = "" }) {
     event.preventDefault();
     runSearch(query);
   }
-if (mode === "form") {
-  return (
-    <BookForm
-      action={createBook}
-      initialValues={selected || {}}
-      submitLabel="Add to library"
-      allowMetadataEditing={!selected}
-    />
-  );
-}
+
+  if (mode === "manual") {
+    return (
+      <BookForm action={createBook} initialValues={{}} submitLabel="Add to library" allowMetadataEditing />
+    );
+  }
+
   return (
     <div className="grid gap-5">
       <form onSubmit={handleSearch} className="flex gap-3">
@@ -72,13 +68,7 @@ if (mode === "form") {
 
       {error ? <p className="text-sm font-medium text-red-500">{error}</p> : null}
 
-      <BookSearchResults
-        results={results}
-        onSelect={(result) => {
-          setSelected(result);
-          setMode("form");
-        }}
-      />
+      <BookSearchResults results={results} />
 
       {searched && results.length === 0 && !isPending ? (
         <p className="text-sm font-medium text-gray-500">No matches found.</p>
@@ -86,10 +76,7 @@ if (mode === "form") {
 
       <button
         type="button"
-        onClick={() => {
-          setSelected(null);
-          setMode("form");
-        }}
+        onClick={() => setMode("manual")}
         className="text-sm font-bold text-amber-500 hover:text-amber-600 transition-colors mt-2 text-left"
       >
         Add manually instead
