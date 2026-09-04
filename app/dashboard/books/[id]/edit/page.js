@@ -32,7 +32,7 @@ export default async function EditBookPage({ params }) {
         <Link href="/dashboard" className="text-sm text-[#a89a7f]">
           ← Back to library
         </Link>
-        <h1 className="mt-3 font-serif text-3xl font-bold">Edit book</h1>
+        <h1 className="mt-3 text-3xl font-bold">Edit book</h1>
       </div>
 
       <div className="px-5 py-6">
@@ -48,7 +48,7 @@ export default async function EditBookPage({ params }) {
         </form>
 
         <div className="mt-8">
-          <h2 className="font-serif text-xl font-bold">Notes</h2>
+          <h2 className="text-xl font-bold">Notes</h2>
           <NotesList
             notes={notes}
             addNoteAction={addNote.bind(null, book.id)}

@@ -21,7 +21,7 @@ export default async function NewBookPage({ searchParams }) {
         <Link href="/dashboard" className="text-sm text-[#a89a7f]">
           ← Back to library
         </Link>
-        <h1 className="mt-3 font-serif text-3xl font-bold">Add a book</h1>
+        <h1 className="mt-3 text-3xl font-bold">Add a book</h1>
       </div>
 
       <div className="px-5 py-6">

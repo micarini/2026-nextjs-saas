@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/firebase/session";
-import { createUserBook, deleteUserBook, updateUserBook } from "@/lib/books/books";
+import {
+  createUserBook,
+  deleteUserBook,
+  updateUserBook,
+  updateUserBookStatus,
+} from "@/lib/books/books";
 import { addBookNote, deleteBookNote } from "@/lib/books/notes";
 import { GENRES } from "@/lib/books/genres";
 import { STATUSES } from "@/lib/books/statuses";
@@ -16,6 +21,17 @@ function parseOptionalInt(value) {
   }
 
   const parsed = Number.parseInt(trimmed, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function parseOptionalFloat(value) {
+  const trimmed = String(value ?? "").trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsed = Number.parseFloat(trimmed);
   return Number.isNaN(parsed) ? null : parsed;
 }
 
@@ -55,8 +71,11 @@ function parseBookForm(formData) {
   return {
     title,
     author,
+    description: String(formData.get("description") || "").trim(),
     genre,
     status,
+    averageRating: parseOptionalFloat(formData.get("averageRating")),
+    ratingsCount: parseOptionalInt(formData.get("ratingsCount")),
     rating: ratingRaw ? Number(ratingRaw) : null,
     coverUrl: String(formData.get("coverUrl") || "").trim(),
     isbn: String(formData.get("isbn") || "").trim(),
@@ -94,6 +113,25 @@ export async function updateBook(bookId, formData) {
   revalidatePath(`/books/${bookId}`);
   revalidatePath("/dashboard");
   redirect("/dashboard");
+}
+
+export async function changeBookStatus(bookId, formData) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const status = String(formData.get("status") || "");
+
+  if (!STATUSES.some((entry) => entry.value === status)) {
+    throw new Error("Choose a valid status.");
+  }
+
+  await updateUserBookStatus(user.uid, bookId, status);
+  revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/books/${bookId}`);
 }
 
 export async function deleteBook(bookId) {

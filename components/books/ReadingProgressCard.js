@@ -15,7 +15,7 @@ export default function ReadingGoalCard({
             Reading goal 2026
           </p>
 
-          <h2 className="mt-3 font-serif text-3xl text-[#2c3025]">
+          <h2 className="mt-3 text-3xl text-[#2c3025]">
             {completedBooks} of {goal}
           </h2>
 

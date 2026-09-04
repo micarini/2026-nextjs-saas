@@ -160,6 +160,9 @@ export default function BookForm({
           <input type="hidden" name="coverUrl" value={values.coverUrl || ""} />
           <input type="hidden" name="isbn" value={values.isbn || ""} />
           <input type="hidden" name="totalPages" value={values.totalPages || ""} />
+          <input type="hidden" name="description" value={values.description || ""} />
+          <input type="hidden" name="averageRating" value={values.averageRating ?? ""} />
+          <input type="hidden" name="ratingsCount" value={values.ratingsCount ?? ""} />
         </>
       )}
 

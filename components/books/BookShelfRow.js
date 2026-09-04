@@ -20,7 +20,7 @@ export default function BookShelfRow({
       {/* El título solo aparece si enviamos una etiqueta */}
       {label ? (
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-2xl text-[#2c3025]">
+          <h2 className="text-2xl text-[#2c3025]">
             {label}
           </h2>
 
@@ -60,7 +60,7 @@ export default function BookShelfRow({
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center p-4 text-center">
-                    <span className="font-serif text-sm text-[#77766d]">
+                    <span className="text-sm text-[#77766d]">
                       {book.title}
                     </span>
                   </div>

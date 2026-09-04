@@ -57,14 +57,8 @@ export default async function DashboardPage() {
   // El primer libro en lectura será el destacado
   const currentBook = continueReading[0] || null;
 
-  // Obtener solamente el primer nombre del usuario
-  const userName =
-    user.displayName?.split(" ")[0] ||
-    user.email?.split("@")[0] ||
-    "Reader";
-
   return (
-    <main className="min-h-screen bg-[#f7f5f0] pb-28 text-[#2c3025]">
+    <main className="min-h-screen bg-[#F8F8FA] pb-28 text-[#2c3025]">
       <div className="mx-auto w-full max-w-6xl px-5 pt-8">
         {/* =========================
             SEARCH
@@ -89,59 +83,6 @@ export default async function DashboardPage() {
         </form>
 
         {/* =========================
-            HEADER
-        ========================== */}
-
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm text-[#77766d]">
-              Let&apos;s keep your reading journey going.
-            </p>
-
-            <h1 className="mt-1 font-serif text-3xl leading-tight sm:text-4xl">
-              Good evening, {userName}
-              <span className="ml-2 text-2xl">🌿</span>
-            </h1>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            {/* Botón de notificaciones */}
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e7e3da] bg-white transition hover:bg-[#f0eee8]"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-              >
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-
-                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-              </svg>
-            </button>
-
-            {/* Avatar */}
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#dcd8ce] text-sm font-medium text-[#2c3025]">
-              {user.photoURL ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.photoURL}
-                  alt={userName}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                userName.charAt(0).toUpperCase()
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* =========================
             HERO
             MOBILE: una debajo de otra
             DESKTOP: dos columnas
@@ -163,7 +104,7 @@ export default async function DashboardPage() {
         {continueReading.length > 0 && (
           <section className="mt-10">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-serif text-2xl text-[#2c3025]">
+              <h2 className="text-2xl text-[#2c3025]">
                 Currently reading
               </h2>
 
@@ -195,7 +136,7 @@ export default async function DashboardPage() {
 
         <section className="mt-10">
           <div className="mb-6">
-            <h2 className="font-serif text-3xl text-[#2c3025]">
+            <h2 className="text-3xl text-[#2c3025]">
               Discover
             </h2>
 

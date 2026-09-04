@@ -24,7 +24,7 @@ export default async function PublicBookPage({ params }) {
           ) : null}
         </div>
 
-        <h1 className="mt-6 text-center font-serif text-3xl font-bold">{book.title}</h1>
+        <h1 className="mt-6 text-center text-3xl font-bold">{book.title}</h1>
         <p className="mt-1 text-center text-[#a89a7f]">{book.author}</p>
 
         <div className="mt-4 flex justify-center gap-2 text-[11px]">
