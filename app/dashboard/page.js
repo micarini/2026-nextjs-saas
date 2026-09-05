@@ -20,12 +20,12 @@ import HomeSearchBar from "@/components/books/HomeSearchBar";
 export const dynamic = "force-dynamic";
 
 const GENRE_SHELVES = [
-  { label: "Fantasy", subject: "fantasy", accentColor: "rgba(167, 139, 250, 0.65)" },
-  { label: "Romance", subject: "romance", accentColor: "rgba(244, 114, 182, 0.65)" },
-  { label: "Classics", subject: "classics", accentColor: "rgba(180, 140, 90, 0.65)" },
-  { label: "Fiction", subject: "fiction", accentColor: "rgba(52, 211, 153, 0.65)" },
-  { label: "Non-fiction", subject: "nonfiction", accentColor: "rgba(148, 163, 184, 0.65)" },
-  { label: "Young Adult", subject: "young_adult_fiction", accentColor: "rgba(248, 113, 113, 0.65)" },
+  { label: "Fantasy", subject: "fantasy", accentColor: "rgba(157, 111, 224, 0.8)" },
+  { label: "Romance", subject: "romance", accentColor: "rgba(232, 85, 143, 0.8)" },
+  { label: "Classics", subject: "classics", accentColor: "rgba(217, 138, 78, 0.8)" },
+  { label: "Fiction", subject: "fiction", accentColor: "rgba(67, 184, 147, 0.8)" },
+  { label: "Non-fiction", subject: "nonfiction", accentColor: "rgba(76, 111, 176, 0.8)" },
+  { label: "Young Adult", subject: "young_adult_fiction", accentColor: "rgba(232, 93, 76, 0.8)" },
 ];
 
 export default async function DashboardPage() {
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
               label="Trending books"
               books={trending}
               emptyMessage="Couldn't load trending books right now."
-              accentColor="rgba(245, 158, 11, 0.65)"
+              accentColor="rgba(201, 226, 101, 0.85)"
             />
           </div>
 
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
               label="New releases"
               books={newReleases}
               emptyMessage="Couldn't load new releases right now."
-              accentColor="rgba(96, 165, 250, 0.65)"
+              accentColor="rgba(108, 99, 255, 0.8)"
             />
           </div>
 

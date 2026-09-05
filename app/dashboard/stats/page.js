@@ -138,7 +138,7 @@ export default async function StatsPage() {
     <main className="relative min-h-screen overflow-hidden bg-[#FAFAFA] pb-28 text-gray-900">
       {/* BACKGROUND BLOBS */}
       <div className="absolute right-0 top-0 -z-10 h-80 w-80 bg-gradient-to-bl from-purple-200/40 via-pink-100/40 to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute bottom-40 left-0 -z-10 h-72 w-72 bg-gradient-to-tr from-amber-200/30 to-orange-100/20 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 left-0 -z-10 h-72 w-72 bg-gradient-to-tr from-[#322F7A]/15 to-[#EDEBF7]/40 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto w-full max-w-3xl px-6 pt-10">
         
@@ -158,15 +158,15 @@ export default async function StatsPage() {
         <div className="mb-6 grid grid-cols-2 gap-4">
           {/* Yearly Goal Card */}
           <div className="flex flex-col items-center justify-center rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center">
-            <div className="relative mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-amber-50">
-              <span className="text-2xl font-extrabold text-amber-500">{totalBooksFinished}</span>
+            <div className="relative mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#EDEBF7]/70">
+              <span className="text-2xl font-extrabold text-[#322F7A]">{totalBooksFinished}</span>
               <svg className="absolute inset-0 h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="46" fill="none" stroke="#fef3c7" strokeWidth="8" />
-                <circle cx="50" cy="50" r="46" fill="none" stroke="#fbbf24" strokeWidth="8" strokeDasharray={`${(totalBooksFinished/yearlyGoal)*289} 289`} strokeLinecap="round" />
+                <circle cx="50" cy="50" r="46" fill="none" stroke="#EDEBF7" strokeWidth="8" />
+                <circle cx="50" cy="50" r="46" fill="none" stroke="#322F7A" strokeWidth="8" strokeDasharray={`${(totalBooksFinished/yearlyGoal)*289} 289`} strokeLinecap="round" />
               </svg>
             </div>
             <p className="text-2xl font-extrabold text-gray-900">
-              <span className="text-amber-500">{totalBooksFinished}</span> of {yearlyGoal}
+              <span className="text-[#322F7A]">{totalBooksFinished}</span> of {yearlyGoal}
             </p>
             <p className="mt-1 text-xs font-bold uppercase tracking-wider text-gray-400">
               Books finished
@@ -177,12 +177,12 @@ export default async function StatsPage() {
           <div className="flex flex-col items-center justify-center rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center">
             <div className="mb-3 flex h-20 w-20 items-center justify-center">
               <div className="relative h-16 w-12 rounded bg-purple-100 shadow-sm rotate-[-10deg]"></div>
-              <div className="absolute h-16 w-12 rounded bg-amber-200 shadow-md rotate-[5deg]"></div>
+              <div className="absolute h-16 w-12 rounded bg-[#C9E265] shadow-md rotate-[5deg]"></div>
             </div>
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Pages read
             </p>
-            <p className="mt-1 text-2xl font-extrabold text-amber-500">
+            <p className="mt-1 text-2xl font-extrabold text-[#322F7A]">
               {totalPagesReadThisYear.toLocaleString()}
             </p>
             <p className="text-xs font-medium text-gray-500">this year</p>
@@ -196,7 +196,7 @@ export default async function StatsPage() {
           <div className="mb-6 flex items-start justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Finished</p>
-              <h2 className="text-4xl font-extrabold text-amber-500 leading-none mt-1">{totalBooksFinished}</h2>
+              <h2 className="text-4xl font-extrabold text-[#322F7A] leading-none mt-1">{totalBooksFinished}</h2>
               <p className="mt-1 text-sm font-extrabold text-gray-900">books so far this year</p>
             </div>
           </div>
@@ -209,14 +209,14 @@ export default async function StatsPage() {
                 <div className="relative h-14 flex-1 rounded-full bg-gray-50 flex items-center">
                   {stat.count > 0 && (
                     <div 
-                      className={`h-full min-w-[4rem] rounded-r-3xl rounded-l-md bg-amber-200/60 border border-amber-200/50 flex items-center pl-2 pr-4 overflow-hidden relative`}
+                      className={`h-full min-w-[4rem] rounded-r-3xl rounded-l-md bg-[#EDEBF7] border border-[#322F7A]/15 flex items-center pl-2 pr-4 overflow-hidden relative`}
                       style={{ width: stat.width }}
                     >
                       <div className="flex">
                         {stat.books.map((book, bIdx) => (
                           <div 
                             key={bIdx} 
-                            className={`h-10 w-7 shrink-0 rounded-sm border border-white/40 shadow-sm overflow-hidden bg-amber-400 ${bIdx > 0 ? '-ml-3' : ''}`}
+                            className={`h-10 w-7 shrink-0 rounded-sm border border-white/40 shadow-sm overflow-hidden bg-[#322F7A] ${bIdx > 0 ? '-ml-3' : ''}`}
                             style={{ zIndex: stat.books.length - bIdx }}
                           >
                             {book.coverUrl && (
@@ -239,12 +239,12 @@ export default async function StatsPage() {
 
           {/* Reader Insight */}
           {totalBooksFinished > 0 && (
-            <div className="mt-6 rounded-3xl bg-amber-50 p-5 border border-amber-100">
+            <div className="mt-6 rounded-3xl bg-[#EDEBF7]/60 p-5 border border-[#322F7A]/15">
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-extrabold text-amber-700">Reader insight</h3>
+                <h3 className="font-extrabold text-[#322F7A]">Reader insight</h3>
               </div>
-              <p className="text-sm font-medium text-amber-900/80">
-                You are currently averaging <span className="font-extrabold text-amber-900">{Math.round(totalBooksFinished / (currentMonthIndex + 1))} books</span> per month. Keep it going!
+              <p className="text-sm font-medium text-[#322F7A]/80">
+                You are currently averaging <span className="font-extrabold text-[#1C1B1F]">{Math.round(totalBooksFinished / (currentMonthIndex + 1))} books</span> per month. Keep it going!
               </p>
             </div>
           )}
@@ -256,12 +256,12 @@ export default async function StatsPage() {
         <section className="mb-6 rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="mb-6">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Active reading days</p>
-            <h2 className="text-4xl font-extrabold text-amber-500 leading-none mt-1">{bestStreak}</h2>
+            <h2 className="text-4xl font-extrabold text-[#322F7A] leading-none mt-1">{bestStreak}</h2>
             <p className="mt-1 text-sm font-extrabold text-gray-900">longest streak this month</p>
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
-            <button className="px-5 py-2 rounded-full text-sm font-extrabold bg-amber-400 text-gray-900">
+            <button className="px-5 py-2 rounded-full text-sm font-extrabold bg-[#322F7A] text-white">
               {monthsNames[currentMonthIndex]}
             </button>
           </div>
@@ -275,11 +275,11 @@ export default async function StatsPage() {
                 <div 
                   key={idx} 
                   className={`aspect-square rounded-xl flex items-center justify-center shadow-sm transition-all
-                    ${read === true ? "bg-amber-400 text-gray-900 font-extrabold border border-amber-500/20" : 
+                    ${read === true ? "bg-[#322F7A] text-white font-extrabold border border-[#322F7A]/30" :
                       read === false ? "bg-gray-100 border border-gray-200/50" : "bg-transparent"}`}
                 >
                   {read !== null && (
-                    <span className={`text-[10px] ${read === true ? "text-amber-900/50" : "text-gray-400"}`}>
+                    <span className={`text-[10px] ${read === true ? "text-white/60" : "text-gray-400"}`}>
                       {(idx - firstDayOfMonth) + 1}
                     </span>
                   )}
@@ -291,7 +291,7 @@ export default async function StatsPage() {
           {/* Leyenda */}
           <div className="mt-6 flex justify-between px-2 text-xs font-bold text-gray-500">
             <div className="flex items-center gap-2">
-              <div className="h-3 w-4 rounded bg-amber-400"></div>
+              <div className="h-3 w-4 rounded bg-[#322F7A]"></div>
               <span>Active</span>
             </div>
             <div className="flex items-center gap-2">

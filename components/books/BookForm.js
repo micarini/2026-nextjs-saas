@@ -136,7 +136,7 @@ export default function BookForm({
                 ) : null}
 
                 {values.totalPages ? (
-                  <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700 border border-amber-100">
+                  <span className="rounded-full bg-[#EDEBF7] px-3 py-1 text-xs font-bold text-[#322F7A] border border-[#322F7A]/15">
                     {values.totalPages} pages
                   </span>
                 ) : null}
@@ -210,7 +210,7 @@ export default function BookForm({
                 defaultValue={values.title || ""}
                 required
                 disabled={loading}
-                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
                 placeholder="Book title"
               />
             </label>
@@ -225,7 +225,7 @@ export default function BookForm({
                 defaultValue={values.author || ""}
                 required
                 disabled={loading}
-                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
                 placeholder="Author name"
               />
             </label>
@@ -239,7 +239,7 @@ export default function BookForm({
                 name="genre"
                 defaultValue={safeGenreValue}
                 disabled={loading}
-                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 outline-none appearance-none focus:ring-2 focus:ring-amber-400 cursor-pointer transition-all shadow-inner"
+                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 outline-none appearance-none focus:ring-2 focus:ring-[#322F7A] cursor-pointer transition-all shadow-inner"
               >
                 {GENRES.map((genre) => (
                   <option key={genre.value} value={genre.value}>
@@ -261,7 +261,7 @@ export default function BookForm({
                   min="0"
                   defaultValue={values.totalPages || ""}
                   disabled={loading}
-                  className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+                  className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
                   placeholder="0"
                 />
               </label>
@@ -275,7 +275,7 @@ export default function BookForm({
                   name="isbn"
                   defaultValue={values.isbn || ""}
                   disabled={loading}
-                  className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+                  className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
                   placeholder="ISBN"
                 />
               </label>
@@ -290,7 +290,7 @@ export default function BookForm({
                 name="coverUrl"
                 defaultValue={values.coverUrl || ""}
                 disabled={loading}
-                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+                className="h-12 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
                 placeholder="https://..."
               />
             </label>
@@ -322,8 +322,8 @@ export default function BookForm({
             onClick={() => setStatus("to_read")}
             className={`rounded-3xl border p-5 text-left transition-all ${
               status === "to_read"
-                ? "border-amber-400 bg-amber-50 ring-2 ring-amber-200/50 shadow-sm"
-                : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
+                ? "border-[#322F7A] bg-[#EDEBF7] ring-2 ring-[#322F7A]/20 shadow-sm"
+                : "border-gray-100 bg-white hover:border-[#322F7A]/30 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
             <p className="text-sm font-extrabold text-gray-900">Want to read</p>
@@ -336,8 +336,8 @@ export default function BookForm({
             onClick={() => setStatus("reading")}
             className={`rounded-3xl border p-5 text-left transition-all ${
               status === "reading"
-                ? "border-amber-400 bg-amber-50 ring-2 ring-amber-200/50 shadow-sm"
-                : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
+                ? "border-[#322F7A] bg-[#EDEBF7] ring-2 ring-[#322F7A]/20 shadow-sm"
+                : "border-gray-100 bg-white hover:border-[#322F7A]/30 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
             <p className="text-sm font-extrabold text-gray-900">Reading</p>
@@ -350,8 +350,8 @@ export default function BookForm({
             onClick={() => setStatus("read")}
             className={`rounded-3xl border p-5 text-left transition-all ${
               status === "read"
-                ? "border-amber-400 bg-amber-50 ring-2 ring-amber-200/50 shadow-sm"
-                : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
+                ? "border-[#322F7A] bg-[#EDEBF7] ring-2 ring-[#322F7A]/20 shadow-sm"
+                : "border-gray-100 bg-white hover:border-[#322F7A]/30 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
             <p className="text-sm font-extrabold text-gray-900">Finished</p>
@@ -364,8 +364,8 @@ export default function BookForm({
             onClick={() => setStatus("dnf")}
             className={`rounded-3xl border p-5 text-left transition-all ${
               status === "dnf"
-                ? "border-amber-400 bg-amber-50 ring-2 ring-amber-200/50 shadow-sm"
-                : "border-gray-100 bg-white hover:border-amber-200 hover:bg-gray-50 hover:shadow-sm"
+                ? "border-[#322F7A] bg-[#EDEBF7] ring-2 ring-[#322F7A]/20 shadow-sm"
+                : "border-gray-100 bg-white hover:border-[#322F7A]/30 hover:bg-gray-50 hover:shadow-sm"
             }`}
           >
             <p className="text-sm font-extrabold text-gray-900">DNF</p>
@@ -394,7 +394,7 @@ export default function BookForm({
               type="date"
               defaultValue={toDateInputValue(values.targetDate)}
               disabled={loading}
-              className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+              className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
             />
           </label>
         </section>
@@ -423,7 +423,7 @@ export default function BookForm({
                 max={values.totalPages || undefined}
                 defaultValue={values.currentPage || ""}
                 disabled={loading}
-                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
                 placeholder="0"
               />
               {values.totalPages ? (
@@ -434,7 +434,7 @@ export default function BookForm({
                   </div>
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-gray-200/60 shadow-inner">
                     <div
-                      className="h-full rounded-full bg-amber-400"
+                      className="h-full rounded-full bg-[#322F7A]"
                       style={{ width: `${initialProgress}%` }}
                     />
                   </div>
@@ -450,7 +450,7 @@ export default function BookForm({
                 type="date"
                 defaultValue={toDateInputValue(values.startDate)}
                 disabled={loading}
-                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
               />
             </label>
           </div>
@@ -480,7 +480,7 @@ export default function BookForm({
                 type="date"
                 defaultValue={toDateInputValue(values.finishDate)}
                 disabled={loading}
-                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
               />
             </label>
             <div>
@@ -547,7 +547,7 @@ export default function BookForm({
                 max={values.totalPages || undefined}
                 defaultValue={values.currentPage || ""}
                 disabled={loading}
-                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
                 placeholder="0"
               />
             </label>
@@ -560,7 +560,7 @@ export default function BookForm({
                 type="date"
                 defaultValue={toDateInputValue(values.finishDate)}
                 disabled={loading}
-                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-amber-400 transition-all shadow-sm"
+                className="h-12 w-full bg-white border border-gray-100 rounded-2xl px-5 text-gray-900 outline-none focus:ring-2 focus:ring-[#322F7A] transition-all shadow-sm"
               />
             </label>
           </div>
@@ -573,7 +573,7 @@ export default function BookForm({
       <button
         type="submit"
         disabled={loading}
-        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-500 text-gray-900 text-base font-extrabold shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 mt-8"
+        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#322F7A] hover:bg-[#3d3993] text-white text-base font-extrabold shadow-[0_8px_20px_rgba(50,47,122,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 mt-8"
       >
         {loading ? (
           "Saving..."

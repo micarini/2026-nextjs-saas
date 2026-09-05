@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { searchBooksAction } from "@/app/dashboard/books/new/actions";
+import { recommendedOnly } from "@/lib/books/search";
 import SelectSearchResultForm from "@/components/books/SelectSearchResultForm";
 
 export default function HomeSearchBar() {
@@ -36,7 +37,7 @@ export default function HomeSearchBar() {
 
       searchBooksAction(trimmed)
         .then((found) => {
-          setResults(found.slice(0, 5));
+          setResults(recommendedOnly(found).slice(0, 5));
           setSearched(true);
           setOpen(true);
         })

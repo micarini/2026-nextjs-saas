@@ -55,7 +55,7 @@ export default function StatusPill({ currentStatus, action }) {
       <div
         className={`flex h-12 w-full overflow-hidden rounded-full transition-colors ${
           isDefault
-            ? "bg-amber-400 shadow-[0_8px_20px_rgba(251,191,36,0.3)]"
+            ? "bg-[#322F7A] shadow-[0_8px_20px_rgba(50,47,122,0.35)]"
             : "border border-[#e7e3da] bg-white"
         }`}
       >
@@ -63,7 +63,9 @@ export default function StatusPill({ currentStatus, action }) {
           type="button"
           onClick={() => setOpen((value) => !value)}
           disabled={isPending}
-          className="flex-1 text-center text-sm font-extrabold text-gray-900 disabled:opacity-60"
+          className={`flex-1 text-center text-sm font-extrabold disabled:opacity-60 ${
+            isDefault ? "text-white" : "text-gray-900"
+          }`}
         >
           {currentLabel}
         </button>
@@ -74,7 +76,7 @@ export default function StatusPill({ currentStatus, action }) {
           aria-label="Change status"
           disabled={isPending}
           className={`flex w-12 items-center justify-center border-l disabled:opacity-60 ${
-            isDefault ? "border-black/10" : "border-[#e7e3da]"
+            isDefault ? "border-white/20" : "border-[#e7e3da]"
           }`}
         >
           <svg
@@ -82,7 +84,7 @@ export default function StatusPill({ currentStatus, action }) {
             height="14"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#171717"
+            stroke={isDefault ? "#ffffff" : "#171717"}
             strokeWidth="2.5"
             className={`transition-transform ${open ? "rotate-180" : ""}`}
           >

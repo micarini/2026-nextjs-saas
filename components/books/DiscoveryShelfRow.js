@@ -7,7 +7,7 @@ export default function DiscoveryShelfRow({
   label,
   books = [],
   emptyMessage,
-  accentColor = "rgba(245, 158, 11, 0.65)",
+  accentColor = "rgba(50, 47, 122, 0.8)",
 }) {
   const scrollRef = useRef(null);
 

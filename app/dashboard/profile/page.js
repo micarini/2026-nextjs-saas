@@ -45,7 +45,7 @@ export default async function ProfilePage() {
           DECORATIVE BACKGROUND
       ====================================== */}
       <div className="absolute right-0 top-0 -z-10 h-80 w-80 bg-gradient-to-bl from-purple-200/40 via-pink-100/40 to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute bottom-40 left-0 -z-10 h-72 w-72 bg-gradient-to-tr from-amber-200/30 to-orange-100/20 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 left-0 -z-10 h-72 w-72 bg-gradient-to-tr from-[#322F7A]/15 to-[#EDEBF7]/40 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto w-full max-w-3xl px-6 pt-10">
         {/* =====================================
@@ -114,7 +114,7 @@ export default async function ProfilePage() {
             {username ? (
               <Link
                 href={`/u/${username}`}
-                className="mt-1 text-sm font-bold text-amber-500 transition-colors hover:text-amber-600 hover:underline"
+                className="mt-1 text-sm font-bold text-[#322F7A] transition-colors hover:text-[#3d3993] hover:underline"
               >
                 @{username}
               </Link>
@@ -192,7 +192,7 @@ export default async function ProfilePage() {
 
                 <Link
                   href={`/u/${username}`}
-                  className="mt-2 block text-sm font-bold text-gray-900 transition-colors hover:text-amber-500"
+                  className="mt-2 block text-sm font-bold text-gray-900 transition-colors hover:text-[#322F7A]"
                 >
                   /u/{username}
                 </Link>
@@ -253,19 +253,19 @@ export default async function ProfilePage() {
           <section className="mt-10">
             <Link
               href="/dashboard/users"
-              className="flex items-center justify-between rounded-[2rem] border border-amber-100 bg-amber-50 px-6 py-5 shadow-sm transition-all hover:bg-amber-100/50"
+              className="flex items-center justify-between rounded-[2rem] border border-[#322F7A]/15 bg-[#EDEBF7]/50 px-6 py-5 shadow-sm transition-all hover:bg-[#EDEBF7]"
             >
               <div>
-                <p className="text-sm font-extrabold text-amber-900">
+                <p className="text-sm font-extrabold text-[#322F7A]">
                   Admin dashboard
                 </p>
 
-                <p className="mt-1 text-xs font-medium text-amber-700/80">
+                <p className="mt-1 text-xs font-medium text-[#322F7A]/70">
                   Manage application users.
                 </p>
               </div>
 
-              <span className="text-xl font-bold text-amber-300">
+              <span className="text-xl font-bold text-[#322F7A]/50">
                 ›
               </span>
             </Link>

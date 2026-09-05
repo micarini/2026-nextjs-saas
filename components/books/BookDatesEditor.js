@@ -21,9 +21,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 103 }, (_, i) => CURRENT_YEAR + 2 - i);
 
 const FIELDS = [
-  { key: "startDate", label: "Started", accent: "#60a5fa" },
-  { key: "finishDate", label: "Finished", accent: "#34d399" },
-  { key: "targetDate", label: "Target", accent: "#fbbf24" },
+  { key: "startDate", label: "Started", accent: "#322F7A" },
+  { key: "finishDate", label: "Finished", accent: "#43B893" },
+  { key: "targetDate", label: "Target", accent: "#C9E265" },
 ];
 
 function toParts(value) {
@@ -189,7 +189,7 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
       <button
         type="button"
         onClick={openModal}
-        className="flex w-full items-center justify-between rounded-2xl border border-[#e7e3da] bg-white px-4 py-3 text-left transition hover:border-amber-300 hover:bg-amber-50/40"
+        className="flex w-full items-center justify-between rounded-2xl border border-[#e7e3da] bg-white px-4 py-3 text-left transition hover:border-[#322F7A]/40 hover:bg-[#EDEBF7]/40"
       >
         <span className="flex items-center gap-2 text-sm font-bold text-[#20180f]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a09c8f" strokeWidth="2">
@@ -258,7 +258,7 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
               type="button"
               onClick={handleSave}
               disabled={isPending}
-              className="mt-6 h-12 w-full rounded-2xl bg-amber-400 text-sm font-extrabold text-[#20180f] shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition hover:bg-amber-500 disabled:opacity-60"
+              className="mt-6 h-12 w-full rounded-2xl bg-[#322F7A] text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(50,47,122,0.3)] transition hover:bg-[#3d3993] disabled:opacity-60"
             >
               {isPending ? "Saving..." : "Save dates"}
             </button>

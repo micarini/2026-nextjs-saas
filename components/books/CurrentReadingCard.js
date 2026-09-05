@@ -17,7 +17,7 @@ export default function CurrentReadingCard({ book }) {
 
         <Link
           href="/dashboard/books/new"
-          className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-amber-400 text-base font-extrabold text-gray-900 shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] hover:bg-amber-500"
+          className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-[#322F7A] text-base font-extrabold text-white shadow-[0_8px_20px_rgba(50,47,122,0.3)] transition-all hover:scale-[1.02] hover:bg-[#3d3993]"
         >
           Find a book
         </Link>
@@ -39,7 +39,7 @@ export default function CurrentReadingCard({ book }) {
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       {/* Fondo sutil con gradiente (Opcional para que destaque como en tus referencias) */}
-      <div className="absolute right-0 top-0 -z-10 h-40 w-40 rounded-bl-full bg-gradient-to-bl from-amber-100/40 to-transparent blur-2xl" />
+      <div className="absolute right-0 top-0 -z-10 h-40 w-40 rounded-bl-full bg-gradient-to-bl from-[#EDEBF7]/70 to-transparent blur-2xl" />
 
       <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
         Continue Reading
@@ -82,7 +82,7 @@ export default function CurrentReadingCard({ book }) {
 
             <div className="h-2.5 overflow-hidden rounded-full bg-gray-200/60 shadow-inner">
               <div
-                className="h-full rounded-full bg-amber-400"
+                className="h-full rounded-full bg-[#322F7A]"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -92,7 +92,7 @@ export default function CurrentReadingCard({ book }) {
 
       <Link
         href={`/dashboard/books/${book.id}`}
-        className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-amber-400 text-base font-extrabold text-gray-900 shadow-[0_4px_14px_rgba(251,191,36,0.4)] transition-all hover:scale-[1.02] hover:bg-amber-500"
+        className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-[#322F7A] text-base font-extrabold text-white shadow-[0_4px_14px_rgba(50,47,122,0.4)] transition-all hover:scale-[1.02] hover:bg-[#3d3993]"
       >
         Update progress
       </Link>

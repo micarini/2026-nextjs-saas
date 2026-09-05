@@ -16,7 +16,7 @@ export default function ReadingGoalCard({
           </p>
 
           <h2 className="mt-3 text-3xl font-extrabold text-gray-900">
-            <span className="text-amber-500">{completedBooks}</span> of {goal}
+            <span className="text-[#322F7A]">{completedBooks}</span> of {goal}
           </h2>
 
           <p className="mt-1 text-sm font-medium text-gray-500">
@@ -28,9 +28,9 @@ export default function ReadingGoalCard({
           className="relative flex h-24 w-24 items-center justify-center rounded-full shadow-sm"
           style={{
             background: `conic-gradient(
-              #fbbf24 ${percentage * 3.6}deg,
+              #322F7A ${percentage * 3.6}deg,
               #f3f4f6 ${percentage * 3.6}deg
-            )`, // #fbbf24 = amber-400, #f3f4f6 = gray-100
+            )`, // #322F7A = Índigo, #f3f4f6 = gray-100
           }}
         >
           <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white shadow-inner">
@@ -44,7 +44,7 @@ export default function ReadingGoalCard({
       {/* Barra de progreso inferior */}
       <div className="mt-6 h-2.5 overflow-hidden rounded-full bg-gray-100 shadow-inner">
         <div
-          className="h-full rounded-full bg-amber-400"
+          className="h-full rounded-full bg-[#322F7A]"
           style={{ width: `${percentage}%` }}
         />
       </div>

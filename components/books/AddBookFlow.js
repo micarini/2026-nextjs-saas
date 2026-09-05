@@ -52,13 +52,13 @@ export default function AddBookFlow({ initialQuery = "" }) {
     <div className="grid gap-5">
       <form onSubmit={handleSearch} className="flex gap-3">
         <input
-          className="h-14 flex-1 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-amber-400 outline-none transition-all shadow-inner"
+          className="h-14 flex-1 w-full bg-gray-100/80 border-none rounded-2xl px-5 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#322F7A] outline-none transition-all shadow-inner"
           placeholder="Search by title, author, or ISBN"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
         <button
-          className="h-14 bg-amber-400 hover:bg-amber-500 text-white font-extrabold px-6 rounded-2xl shadow-[0_8px_20px_rgba(251,191,36,0.3)] transition-all disabled:opacity-60"
+          className="h-14 bg-[#322F7A] hover:bg-[#3d3993] text-white font-extrabold px-6 rounded-2xl shadow-[0_8px_20px_rgba(50,47,122,0.3)] transition-all disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >
@@ -77,7 +77,7 @@ export default function AddBookFlow({ initialQuery = "" }) {
       <button
         type="button"
         onClick={() => setMode("manual")}
-        className="text-sm font-bold text-amber-500 hover:text-amber-600 transition-colors mt-2 text-left"
+        className="text-sm font-bold text-[#322F7A] hover:text-[#3d3993] transition-colors mt-2 text-left"
       >
         Add manually instead
       </button>
