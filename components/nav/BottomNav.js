@@ -31,6 +31,15 @@ function ProfileIcon({ color }) {
   );
 }
 
+function FocusIcon({ color }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
 function deriveActive(pathname) {
   if (pathname.startsWith("/dashboard/stats")) {
     return "stats";
@@ -38,6 +47,10 @@ function deriveActive(pathname) {
 
   if (pathname.startsWith("/dashboard/profile")) {
     return "profile";
+  }
+
+  if (pathname.startsWith("/dashboard/read")) {
+    return "read";
   }
 
   return "home";
@@ -53,6 +66,9 @@ export default function BottomNav({ active }) {
     <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-[#eee3ce] bg-[#fffdf9] px-2 pb-6 pt-3">
       <Link href="/dashboard" aria-label="Home">
         <HomeIcon color={current === "home" ? activeColor : inactiveColor} />
+      </Link>
+      <Link href="/dashboard/read" aria-label="Focus mode">
+        <FocusIcon color={current === "read" ? activeColor : inactiveColor} />
       </Link>
       <Link href="/dashboard/stats" aria-label="Stats">
         <StatsIcon color={current === "stats" ? activeColor : inactiveColor} />

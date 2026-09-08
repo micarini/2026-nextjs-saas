@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  --font-mono: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
+  --font-sans: var(--font-instrument), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-jetbrains), "SFMono-Regular", Consolas, monospace;
+  --font-display: var(--font-bricolage), var(--font-instrument), Arial, sans-serif;
 }
 
 @layer base {
@@ -16,9 +17,16 @@
     overflow-x: hidden;
     background: #05070a;
     color: #e6edf3;
-    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Quire's type system: headings default to Bricolage Grotesque
+     everywhere, no per-component edits needed. Body text/UI already
+     inherits Instrument Sans from --font-sans above. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 
   button {

@@ -1,11 +1,13 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/firebase/session";
+import { getCurrentUserProfile } from "@/lib/users/users";
 import { listUserBooks } from "@/lib/books/books";
 
 import { getTrendingBooks } from "@/lib/discovery/trending";
 import { getNewReleases } from "@/lib/discovery/newReleases";
 import { getBooksBySubject } from "@/lib/discovery/subjects";
+import { tasteTagsFor } from "@/lib/books/tasteTags";
 
 import CurrentReadingCard from "@/components/books/CurrentReadingCard";
 import BookShelfRow from "@/components/books/BookShelfRow";
@@ -19,15 +21,6 @@ import HomeSearchBar from "@/components/books/HomeSearchBar";
 
 export const dynamic = "force-dynamic";
 
-const GENRE_SHELVES = [
-  { label: "Fantasy", subject: "fantasy", accentColor: "rgba(157, 111, 224, 0.8)" },
-  { label: "Romance", subject: "romance", accentColor: "rgba(232, 85, 143, 0.8)" },
-  { label: "Classics", subject: "classics", accentColor: "rgba(217, 138, 78, 0.8)" },
-  { label: "Fiction", subject: "fiction", accentColor: "rgba(67, 184, 147, 0.8)" },
-  { label: "Non-fiction", subject: "nonfiction", accentColor: "rgba(76, 111, 176, 0.8)" },
-  { label: "Young Adult", subject: "young_adult_fiction", accentColor: "rgba(232, 93, 76, 0.8)" },
-];
-
 export default async function DashboardPage() {
   // Obtener el usuario actual
   const user = await getCurrentUser();
@@ -37,12 +30,23 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  // Si todavía no completó el onboarding, mandarlo ahí primero
+  const profile = await getCurrentUserProfile(user);
+
+  if (!profile?.onboardingCompletedAt) {
+    redirect("/");
+  }
+
+  // Los shelves de género se arman con lo que eligió en el onboarding
+  // ("What do you reach for?") — si no eligió nada, cae a un set por defecto.
+  const genreTags = tasteTagsFor(profile.genres);
+
   // Cargar todos los datos en paralelo
   const [books, trending, newReleases, genreShelves] = await Promise.all([
     listUserBooks(user.uid),
     getTrendingBooks(16),
     getNewReleases(16),
-    Promise.all(GENRE_SHELVES.map((genre) => getBooksBySubject(genre.subject, 16))),
+    Promise.all(genreTags.map((tag) => getBooksBySubject(tag.subject, 16))),
   ]);
 
   // Libros que el usuario está leyendo actualmente
@@ -78,7 +82,7 @@ export default async function DashboardPage() {
 
           <ReadingGoalCard
             completedBooks={completedBooks.length}
-            goal={20}
+            goal={profile.yearlyGoal || 20}
           />
         </section>
 
@@ -152,15 +156,15 @@ export default async function DashboardPage() {
             />
           </div>
 
-          {/* Popular genres */}
+          {/* Géneros elegidos en el onboarding */}
 
-          {GENRE_SHELVES.map((genre, index) => (
-            <div key={genre.subject} className="mb-10 last:mb-0">
+          {genreTags.map((tag, index) => (
+            <div key={tag.subject} className="mb-10 last:mb-0">
               <DiscoveryShelfRow
-                label={genre.label}
+                label={tag.label}
                 books={genreShelves[index]}
-                emptyMessage={`Couldn't load ${genre.label.toLowerCase()} books right now.`}
-                accentColor={genre.accentColor}
+                emptyMessage={`Couldn't load ${tag.label.toLowerCase()} books right now.`}
+                accentColor={tag.accentColor}
               />
             </div>
           ))}
