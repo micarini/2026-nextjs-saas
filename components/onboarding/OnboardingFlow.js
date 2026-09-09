@@ -130,11 +130,11 @@ export default function OnboardingFlow({ startAuthenticated, finishAction, skipA
           onExitDone={() => setStep(2)}
         >
           <div className="mx-auto flex w-full max-w-md flex-col">
-            <div className="mb-5 flex items-end gap-1.5">
-              <span className="flex size-10 items-center justify-center rounded-xl border border-white/15 bg-[#26235F] font-[family-name:var(--font-bricolage)] text-[26px] font-bold leading-none shadow-lg shadow-black/20">
+            <div className="mb-5">
+              <span className="relative flex size-10 items-center justify-center rounded-xl bg-[#26235F] font-[family-name:var(--font-bricolage)] text-[26px] font-bold leading-none shadow-lg shadow-black/20">
                 Q
+                <span className="absolute bottom-1.5 right-1.5 size-1.5 rounded-full bg-[#C9E265]" />
               </span>
-              <span className="mb-1.5 size-1.5 rounded-full bg-[#C9E265]" />
             </div>
 
             <p className="mb-5 font-[family-name:var(--font-bricolage)] text-[26px] font-bold leading-[1.05] tracking-[-0.02em] text-wrap-balance">
