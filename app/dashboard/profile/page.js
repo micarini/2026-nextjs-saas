@@ -4,16 +4,151 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getCurrentUserProfile } from "@/lib/users/users";
 import { listUserBooks } from "@/lib/books/books";
-
-import { logout } from "@/app/dashboard/actions";
+import TopFourBooks from "@/components/users/TopFourBooks";
+import {
+  saveUsername,
+  saveTopFour,
+} from "./actions";
 
 import BottomNav from "@/components/nav/BottomNav";
-import UsernameForm from "@/components/users/UsernameForm";
-import ProfileStats from "@/components/users/ProfileStats";
-
-import { saveUsername } from "./actions";
 
 export const dynamic = "force-dynamic";
+
+/* =========================================
+   ICONS
+========================================= */
+
+function ShareIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.6 13.5 6.8 4" />
+      <path d="m15.4 6.5-6.8 4" />
+    </svg>
+  );
+}
+
+function CardIcon() {
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M7 9h6" />
+      <path d="M7 13h10" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+/* =========================================
+   BOOK CARD
+========================================= */
+
+function TopBook({ book, index }) {
+  if (!book) {
+    return (
+      <div className="aspect-[0.72] rounded-[18px] bg-[#d8d8d3]" />
+    );
+  }
+
+  return (
+    <Link
+      href={`/dashboard/books/${book.id}`}
+      className="group relative block aspect-[0.72] overflow-hidden rounded-[18px] bg-[#d7d7d2]"
+    >
+      {book.coverUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={book.coverUrl}
+          alt={book.title}
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <div className="flex h-full items-end bg-gradient-to-br from-[#637b70] to-[#32443e] p-3">
+          <span className="text-xs font-medium text-white">
+            {book.title}
+          </span>
+        </div>
+      )}
+
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-2 pt-10">
+        <p className="line-clamp-2 text-[10px] font-medium text-white">
+          {book.title}
+        </p>
+      </div>
+
+      <div className="absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/30 text-[10px] font-semibold text-white backdrop-blur-sm">
+        {index + 1}
+      </div>
+    </Link>
+  );
+}
+
+/* =========================================
+   ACHIEVEMENT CARD
+========================================= */
+
+function Achievement({ emoji, title, description, unlocked = true }) {
+  return (
+    <div
+      className={`min-w-[145px] flex-1 rounded-[22px] border p-4 text-center ${
+        unlocked
+          ? "border-[#dedcd5] bg-[#f7f7f4]"
+          : "border-[#e8e8e4] bg-[#f2f2ef] opacity-50"
+      }`}
+    >
+      <div className="text-3xl">{emoji}</div>
+
+      <p className="mt-3 text-sm font-semibold text-[#34343b]">
+        {title}
+      </p>
+
+      <p className="mt-1 text-xs text-[#85858c]">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+/* =========================================
+   MAIN PAGE
+========================================= */
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -27,72 +162,188 @@ export default async function ProfilePage() {
     listUserBooks(user.uid),
   ]);
 
-  const isAdmin = profile?.user_type === "admin";
+  /* =========================================
+     USER DATA
+  ========================================= */
 
   const displayName =
     user.displayName ||
+    profile?.displayName ||
     user.email?.split("@")[0] ||
     "Reader";
 
-  const firstName =
-    displayName.split(" ")[0] || "Reader";
+  const username =
+    profile?.username ||
+    displayName.toLowerCase().replace(/\s+/g, "");
 
-  const username = profile?.username || null;
+  const firstLetter = displayName.charAt(0).toUpperCase();
+
+  /* =========================================
+     BOOK DATA
+  ========================================= */
+
+  const readingBooks = books.filter(
+    (book) => book.status === "reading"
+  );
+
+  const finishedBooks = books.filter(
+    (book) => book.status === "finished"
+  );
+
+  const wantToReadBooks = books.filter(
+    (book) =>
+      book.status === "to_read" ||
+      book.status === "want_to_read"
+  );
+
+  /*
+    TOP FOUR:
+
+    Primero toma los libros mejor puntuados.
+    Si no hay suficientes, completa con los
+    demás libros del usuario.
+  */
+
+  const topFourIds = profile?.topFour || [];
+
+const topFour = topFourIds
+  .map((bookId) =>
+    books.find((book) => book.id === bookId)
+  )
+  .filter(Boolean);
+
+  /* =========================================
+     PAGES READ
+  ========================================= */
+
+  const pagesRead = books.reduce((total, book) => {
+    if (book.status === "finished") {
+      return total + (book.totalPages || 0);
+    }
+
+    return total + (book.currentPage || 0);
+  }, 0);
+
+  /* =========================================
+     READING STREAK
+
+     Como tu base actual no tiene todavía una
+     colección de actividad diaria, calculamos
+     una versión inicial basada en fechas.
+  ========================================= */
+
+  const booksWithDates = books.filter(
+    (book) => book.updatedAt || book.finishDate || book.startDate
+  );
+
+  const readingStreak =
+    booksWithDates.length > 0
+      ? Math.min(booksWithDates.length, 12)
+      : 0;
+
+  /* =========================================
+     READING GOAL
+
+     Por ahora la meta visual es de 12 libros.
+     Se puede conectar después a una meta que
+     configure cada usuario.
+  ========================================= */
+
+  const yearlyGoal = 12;
+
+  const goalProgress = Math.min(
+    100,
+    Math.round(
+      (finishedBooks.length / yearlyGoal) * 100
+    )
+  );
+
+  /* =========================================
+     PINNED QUOTE
+
+     Utilizamos una descripción de uno de los
+     libros si existe.
+  ========================================= */
+
+  const quoteBook =
+    finishedBooks.find((book) => book.description) ||
+    books.find((book) => book.description) ||
+    null;
+
+  const pinnedQuote = quoteBook?.description
+    ? `"${quoteBook.description
+        .split(".")[0]
+        .slice(0, 120)}"`
+    : `"A reader lives a thousand lives before he dies."`;
+
+  /* =========================================
+     ACHIEVEMENTS
+  ========================================= */
+
+  const shelfStarter = books.length >= 5;
+
+  const onStreak = readingStreak >= 7;
+
+  const starReader = books.filter(
+    (book) => book.rating === 5
+  ).length >= 5;
+
+  const nightOwl = books.some((book) => {
+    if (!book.updatedAt) return false;
+
+    const hour = new Date(book.updatedAt).getHours();
+
+    return hour >= 0 && hour <= 5;
+  });
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#FAFAFA] pb-28 text-gray-900">
+    <main className="min-h-screen bg-[#f4f3ee] pb-28 text-[#34343b]">
+
       {/* =====================================
-          DECORATIVE BACKGROUND
+          PROFILE HEADER
       ====================================== */}
-      <div className="absolute right-0 top-0 -z-10 h-80 w-80 bg-gradient-to-bl from-purple-200/40 via-pink-100/40 to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute bottom-40 left-0 -z-10 h-72 w-72 bg-gradient-to-tr from-[#322F7A]/15 to-[#EDEBF7]/40 blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 mx-auto w-full max-w-3xl px-6 pt-10">
-        {/* =====================================
-            HEADER
-        ====================================== */}
+      <section className="relative overflow-hidden bg-[#36366f] px-6 pb-9 pt-10">
 
-        <header className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
-              Your reading space
-            </p>
+        {/* Decorative gradients */}
 
-            <h1 className="mt-1 text-3xl font-extrabold text-gray-900">
-              Profile
-            </h1>
+        <div className="absolute -left-20 top-20 h-60 w-60 rounded-full bg-[#5557a0]/20 blur-3xl" />
+
+        <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#24255c]/40 blur-3xl" />
+
+
+        <div className="relative mx-auto max-w-xl">
+
+          {/* Top actions */}
+
+          <div className="flex justify-end gap-5">
+
+            <button
+              className="flex items-center gap-2 text-base text-white/60 transition hover:text-white"
+              type="button"
+            >
+              <ShareIcon />
+              <span>Share</span>
+            </button>
+
+
+            <button
+              className="flex items-center gap-2 text-base text-white/60 transition hover:text-white"
+              type="button"
+            >
+              <CardIcon />
+              <span>Card</span>
+            </button>
+
           </div>
 
-          <Link
-            href="/dashboard"
-            aria-label="Back to home"
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-100 bg-white text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 12H5" />
-              <path d="M12 19l-7-7 7-7" />
-            </svg>
-          </Link>
-        </header>
 
-        {/* =====================================
-            PROFILE HEADER
-        ====================================== */}
+          {/* Avatar */}
 
-        <section className="mt-8 rounded-[2rem] border border-gray-50 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div className="flex flex-col items-center text-center">
-            {/* Avatar */}
+          <div className="mt-4 flex flex-col items-center text-center">
 
-            <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200 ring-4 ring-white shadow-md">
+            <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#d7ef6b] to-[#9fca3c] text-3xl font-medium text-[#303066] shadow-lg">
+
               {user.photoURL ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -101,204 +352,412 @@ export default async function ProfilePage() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-3xl font-extrabold text-gray-500">
-                  {firstName.charAt(0).toUpperCase()}
-                </div>
+                firstLetter
               )}
+
             </div>
 
-            <h2 className="mt-5 text-2xl font-extrabold text-gray-900">
-              {displayName}
-            </h2>
 
-            {username ? (
+            {/* Name */}
+
+            <h1 className="mt-4 text-[28px] font-semibold tracking-tight text-white">
+              {displayName}
+            </h1>
+
+
+            {/* Public URL */}
+
+            <p className="mt-1 font-mono text-xs tracking-[0.12em] text-white/50">
+              quire.app/{username}
+            </p>
+
+
+            {/* Buttons */}
+
+            <div className="mt-6 flex gap-3">
+
               <Link
                 href={`/u/${username}`}
-                className="mt-1 text-sm font-bold text-[#322F7A] transition-colors hover:text-[#3d3993] hover:underline"
+                className="rounded-full bg-[#f5f4f0] px-6 py-2.5 text-base font-medium text-[#39394a] shadow-sm transition hover:scale-[1.02]"
               >
-                @{username}
+                Public Shelf
               </Link>
-            ) : (
-              <p className="mt-1 text-sm font-medium text-gray-400">
-                Choose a username to create your public profile.
-              </p>
-            )}
 
-            {user.email ? (
-              <p className="mt-3 rounded-full bg-gray-50 px-4 py-1 text-xs font-bold text-gray-500 border border-gray-100">
-                {user.email}
-              </p>
-            ) : null}
+
+              <button
+                type="button"
+                className="rounded-full bg-white/10 px-6 py-2.5 text-base font-medium text-white/80 backdrop-blur-sm transition hover:bg-white/20"
+              >
+                Readers
+              </button>
+
+            </div>
+
           </div>
 
-          {/* Public profile */}
+        </div>
 
-          {username ? (
-            <Link
-              href={`/u/${username}`}
-              className="mt-8 flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 transition-all hover:border-gray-200 hover:bg-gray-100/80 shadow-sm"
-            >
+      </section>
+
+
+      {/* =====================================
+          CONTENT
+      ====================================== */}
+
+      <div className="mx-auto max-w-xl px-6">
+
+
+        {/* =====================================
+            MY TOP FOUR
+        ====================================== */}
+
+        <section className="mt-5 rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-5 shadow-sm">
+
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+            My Top Four
+          </p>
+
+
+          <div className="mt-5 grid grid-cols-2 gap-3">
+
+            {[0, 1, 2, 3].map((index) => (
+              <TopBook
+                key={topFour[index]?.id || index}
+                book={topFour[index]}
+                index={index}
+              />
+            ))}
+
+          </div>
+
+        </section>
+
+
+        {/* =====================================
+            PINNED QUOTE
+        ====================================== */}
+
+        <section className="mt-4 rounded-[28px] border border-[#c8c8d7] bg-[#e6e5f0] p-6 shadow-sm">
+
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#66667c]">
+            Pinned Quote
+          </p>
+
+
+          <blockquote className="mt-5 text-[25px] font-medium leading-[1.25] tracking-tight text-[#353653]">
+            {pinnedQuote}
+          </blockquote>
+
+
+          <p className="mt-4 text-sm text-[#69697d]">
+            — {quoteBook?.title || "Anonymous reader"}
+          </p>
+
+        </section>
+
+
+        {/* =====================================
+            WHAT VISITORS SEE
+        ====================================== */}
+
+        <section className="mt-4 overflow-hidden rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] shadow-sm">
+
+          <div className="p-6 pb-3">
+
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+              What Visitors See
+            </p>
+
+          </div>
+
+
+          <div className="px-6 pb-4">
+
+
+            {/* Currently reading */}
+
+            <div className="flex items-center justify-between py-3">
+
               <div>
-                <p className="text-sm font-extrabold text-gray-900">
-                  Public profile
+                <p className="text-lg font-medium">
+                  Currently reading
                 </p>
 
-                <p className="mt-1 text-xs font-medium text-gray-500">
-                  See how other people see your profile.
+                <p className="mt-1 text-sm text-[#85858c]">
+                  {readingBooks.length} book
+                  {readingBooks.length !== 1 ? "s" : ""}
                 </p>
               </div>
 
-              <span className="text-xl font-bold text-gray-300">
-                ›
+
+              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
+                Shown
               </span>
-            </Link>
-          ) : null}
-        </section>
 
-        {/* =====================================
-            READING STATS
-        ====================================== */}
+            </div>
 
-        <section className="mt-8">
-          <ProfileStats books={books} />
-        </section>
 
-        {/* =====================================
-            PROFILE SETTINGS
-        ====================================== */}
+            {/* Books finished */}
 
-        <section className="mt-10">
-          <div className="mb-4 ml-1">
-            <h2 className="text-xl font-extrabold text-gray-900">
-              My profile
-            </h2>
+            <div className="flex items-center justify-between py-3">
 
-            <p className="mt-1 text-sm font-medium text-gray-500">
-              Manage how people find you.
-            </p>
+              <div>
+                <p className="text-lg font-medium">
+                  Books finished
+                </p>
+
+                <p className="mt-1 text-sm text-[#85858c]">
+                  {finishedBooks.length} completed
+                </p>
+              </div>
+
+
+              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
+                Shown
+              </span>
+
+            </div>
+
+
+            {/* Pages read */}
+
+            <div className="flex items-center justify-between py-3">
+
+              <div>
+                <p className="text-lg font-medium">
+                  Pages read
+                </p>
+
+                <p className="mt-1 text-sm text-[#85858c]">
+                  {pagesRead.toLocaleString()} pages
+                </p>
+              </div>
+
+
+              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
+                Shown
+              </span>
+
+            </div>
+
+
+            {/* Reading streak */}
+
+            <div className="flex items-center justify-between py-3">
+
+              <div>
+                <p className="text-lg font-medium">
+                  Reading streak
+                </p>
+
+                <p className="mt-1 text-sm text-[#85858c]">
+                  {readingStreak} day
+                  {readingStreak !== 1 ? "s" : ""}
+                </p>
+              </div>
+
+
+              <span className="rounded-full bg-[#e1e1e8] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#777782]">
+                Hidden
+              </span>
+
+            </div>
+
+
+            {/* Goal progress */}
+
+            <div className="flex items-center justify-between py-3">
+
+              <div>
+                <p className="text-lg font-medium">
+                  Goal progress
+                </p>
+
+                <p className="mt-1 text-sm text-[#85858c]">
+                  {finishedBooks.length} of {yearlyGoal} books ·{" "}
+                  {goalProgress}%
+                </p>
+              </div>
+
+
+              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
+                Shown
+              </span>
+
+            </div>
+
+
+            {/* Progress bar */}
+
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#e3e3de]">
+
+              <div
+                className="h-full rounded-full bg-[#b6d94b]"
+                style={{
+                  width: `${goalProgress}%`,
+                }}
+              />
+
+            </div>
+
           </div>
 
-          <div className="rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <UsernameForm
-              action={saveUsername}
-              currentUsername={profile?.username}
+        </section>
+
+
+        {/* =====================================
+            ACHIEVEMENTS
+        ====================================== */}
+
+        <section className="mt-4 overflow-hidden rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-6 shadow-sm">
+
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+            Achievements
+          </p>
+
+
+          <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
+
+            <Achievement
+              emoji="📚"
+              title="Shelf starter"
+              description={
+                shelfStarter
+                  ? "First 5 books"
+                  : `${books.length}/5 books`
+              }
+              unlocked={shelfStarter}
             />
 
-            {username ? (
-              <div className="mt-6 border-t border-gray-100 pt-5">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  Public link
-                </p>
 
-                <Link
-                  href={`/u/${username}`}
-                  className="mt-2 block text-sm font-bold text-gray-900 transition-colors hover:text-[#322F7A]"
-                >
-                  /u/{username}
-                </Link>
-              </div>
-            ) : null}
+            <Achievement
+              emoji="🔥"
+              title="On a streak"
+              description={`${readingStreak} days`}
+              unlocked={onStreak}
+            />
+
+
+            <Achievement
+              emoji="⭐"
+              title="Star reader"
+              description="5 five-star books"
+              unlocked={starReader}
+            />
+
+
+            <Achievement
+              emoji="🌙"
+              title="Night owl"
+              description="Read past midnight"
+              unlocked={nightOwl}
+            />
+
           </div>
+
         </section>
 
+
         {/* =====================================
-            ACCOUNT
+            READING SUMMARY
         ====================================== */}
 
-        <section className="mt-10">
-          <div className="mb-4 ml-1">
-            <h2 className="text-xl font-extrabold text-gray-900">
-              Account
-            </h2>
+        <section className="mt-4 grid grid-cols-2 gap-4">
+
+          <div className="rounded-[25px] border border-[#deddd7] bg-white p-5">
+
+            <p className="text-sm text-[#85858c]">
+              Library
+            </p>
+
+            <p className="mt-2 text-3xl font-semibold">
+              {books.length}
+            </p>
+
+            <p className="mt-1 text-xs text-[#85858c]">
+              total books
+            </p>
+
           </div>
 
-          <div className="overflow-hidden rounded-[2rem] border border-gray-50 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            {/* Email */}
 
-            <div className="flex items-center justify-between gap-4 px-6 py-5">
-              <div>
-                <p className="text-sm font-extrabold text-gray-900">
-                  Email
-                </p>
+          <div className="rounded-[25px] border border-[#deddd7] bg-white p-5">
 
-                <p className="mt-1 text-xs font-medium text-gray-500">
-                  {user.email || "No email available"}
-                </p>
-              </div>
+            <p className="text-sm text-[#85858c]">
+              To read
+            </p>
 
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-500">
-                Protected
-              </span>
-            </div>
+            <p className="mt-2 text-3xl font-semibold">
+              {wantToReadBooks.length}
+            </p>
 
-            {/* Provider */}
+            <p className="mt-1 text-xs text-[#85858c]">
+              waiting for you
+            </p>
 
-            <div className="border-t border-gray-50 px-6 py-5 bg-gray-50/50">
-              <p className="text-sm font-extrabold text-gray-900">
-                Sign-in method
+          </div>
+
+        </section>
+
+
+        {/* =====================================
+            VIEW PUBLIC PROFILE
+        ====================================== */}
+
+        <section className="mt-4">
+
+          <Link
+            href={`/u/${username}`}
+            className="flex items-center justify-between rounded-[25px] bg-[#36366f] p-6 text-white transition hover:bg-[#41417f]"
+          >
+
+            <div>
+
+              <p className="text-lg font-medium">
+                View public shelf
               </p>
 
-              <p className="mt-1 text-xs font-bold capitalize text-gray-500">
-                {profile?.provider || "Email"}
+              <p className="mt-1 text-sm text-white/55">
+                See your profile as a visitor.
               </p>
+
             </div>
-          </div>
+
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+              <ArrowIcon />
+            </div>
+
+          </Link>
+
         </section>
 
-        {/* =====================================
-            ADMIN
-        ====================================== */}
 
-        {isAdmin ? (
-          <section className="mt-10">
-            <Link
-              href="/dashboard/users"
-              className="flex items-center justify-between rounded-[2rem] border border-[#322F7A]/15 bg-[#EDEBF7]/50 px-6 py-5 shadow-sm transition-all hover:bg-[#EDEBF7]"
-            >
-              <div>
-                <p className="text-sm font-extrabold text-[#322F7A]">
-                  Admin dashboard
-                </p>
+        <div className="h-10" />
 
-                <p className="mt-1 text-xs font-medium text-[#322F7A]/70">
-                  Manage application users.
-                </p>
-              </div>
-
-              <span className="text-xl font-bold text-[#322F7A]/50">
-                ›
-              </span>
-            </Link>
-          </section>
-        ) : null}
-
-        {/* =====================================
-            LOG OUT
-        ====================================== */}
-
-        <section className="mt-10">
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex h-14 w-full items-center justify-center rounded-full bg-red-50 text-base font-extrabold text-red-600 transition-all hover:bg-red-100 hover:scale-[1.02]"
-            >
-              Log out
-            </button>
-          </form>
-        </section>
-
-        {/* Small footer spacing */}
-
-        <p className="pb-6 pt-10 text-center text-xs font-bold text-gray-400">
-          Your reading journey, one page at a time.
-        </p>
       </div>
+
 
       {/* =====================================
           BOTTOM NAV
       ====================================== */}
 
       <BottomNav active="profile" />
+
     </main>
   );
+}
+
+export async function updateUserTopFour(uid, bookIds) {
+  const topFour = Array.isArray(bookIds)
+    ? [...new Set(bookIds.map(String))].slice(0, 4)
+    : [];
+
+  await getDb()
+    .collection(COLLECTION)
+    .doc(uid)
+    .update({
+      topFour,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 }
