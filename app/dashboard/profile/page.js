@@ -357,6 +357,65 @@ export default async function ProfilePage() {
 
       <div className="mx-auto max-w-xl px-6">
 
+{readingBooks.length > 0 && (
+  <section className="mt-5 rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-5 shadow-sm">
+    <div className="flex items-center justify-between">
+      <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+        Currently Reading
+      </p>
+
+      <span className="flex items-center gap-2 text-xs font-medium text-[#74747b]">
+        <span className="h-2 w-2 rounded-full bg-[#6b8f71]" />
+        Reading now
+      </span>
+    </div>
+
+    <div className="mt-5">
+      {readingBooks.slice(0, 1).map((book) => (
+        <Link
+          key={book.id}
+          href={`/dashboard/books/${book.id}/edit`}
+          className="group flex gap-4"
+        >
+          <div className="h-32 w-22 shrink-0 overflow-hidden rounded-xl bg-[#e4e2dc]">
+            {book.coverUrl ? (
+              <img
+                src={book.coverUrl}
+                alt={book.title}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-[#74747b]">
+                No cover
+              </div>
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col justify-center">
+            <p className="text-lg font-semibold leading-tight text-[#242426]">
+              {book.title}
+            </p>
+
+            <p className="mt-1 text-sm text-[#74747b]">
+              {book.author}
+            </p>
+
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs text-[#74747b]">
+                <span>Currently reading</span>
+                <span>→</span>
+              </div>
+
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#deddd7]">
+                <div className="h-full w-1/3 rounded-full bg-[#6b8f71]" />
+              </div>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
 
         {/* =====================================
             MY TOP FOUR
