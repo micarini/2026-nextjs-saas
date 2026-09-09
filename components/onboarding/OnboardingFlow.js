@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { getClientAuth, getGoogleProvider } from "@/lib/firebase/client";
 import { TASTE_TAGS } from "@/lib/books/tasteTags";
+import { useReducedMotion } from "@/lib/anim/useReducedMotion";
+import CoverWall from "@/components/onboarding/hero/CoverWall";
 
 const DEFAULT_GOAL = 12;
 
@@ -48,9 +50,20 @@ function StepDots({ step }) {
 export default function OnboardingFlow({ startAuthenticated, finishAction, skipAction }) {
   const [step, setStep] = useState(startAuthenticated ? 2 : 1);
   const [authError, setAuthError] = useState("");
+  const [exiting, setExiting] = useState(false);
   const [genres, setGenres] = useState(new Set());
   const [goal, setGoal] = useState(DEFAULT_GOAL);
   const [isPending, startTransition] = useTransition();
+  const reducedMotion = useReducedMotion();
+
+  // Dev-only: lets you preview the cover-wall exit without going through
+  // the Google popup — `window.dispatchEvent(new Event("quire:demo-exit"))`.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+    const trigger = () => setExiting(true);
+    window.addEventListener("quire:demo-exit", trigger);
+    return () => window.removeEventListener("quire:demo-exit", trigger);
+  }, []);
 
   async function handleGoogleSignIn() {
     setAuthError("");
@@ -69,7 +82,9 @@ export default function OnboardingFlow({ startAuthenticated, finishAction, skipA
         throw new Error("We couldn't create your session. Please try again.");
       }
 
-      setStep(2);
+      // Hand off to the cover-wall exit animation; it advances to step 2
+      // when it finishes (or immediately, under reduced motion).
+      setExiting(true);
     } catch (err) {
       setAuthError(err.message || "We couldn't sign you in with Google. Please try again.");
     }
@@ -99,45 +114,49 @@ export default function OnboardingFlow({ startAuthenticated, finishAction, skipA
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-[#322F7A] px-5 pb-10 pt-6 text-white">
-      <StepDots step={step} />
+    <main
+      className={`relative flex min-h-screen flex-col bg-[#322F7A] px-5 pb-10 pt-6 text-white ${
+        step === 1 ? "overflow-hidden" : ""
+      }`}
+    >
+      <div className="relative z-20">
+        <StepDots step={step} />
+      </div>
 
       {step === 1 ? (
-        <div className="flex flex-1 flex-col">
-          <div className="mt-16 flex items-center">
-            <span
-              className="font-[family-name:var(--font-bricolage)] text-2xl font-bold"
-            >
-              Q
-            </span>
-            <span className="ml-1 mt-3 size-1.5 rounded-full bg-[#C9E265]" />
-          </div>
+        <CoverWall
+          exiting={exiting}
+          reducedMotion={reducedMotion}
+          onExitDone={() => setStep(2)}
+        >
+          <div className="mx-auto flex w-full max-w-md flex-col">
+            <div className="mb-4 flex items-center">
+              <span className="font-[family-name:var(--font-bricolage)] text-xl font-bold">
+                Q
+              </span>
+              <span className="ml-1 mt-2 size-1.5 rounded-full bg-[#C9E265]" />
+            </div>
 
-          <h1 className="mt-16 font-[family-name:var(--font-bricolage)] text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-wrap-balance">
-            A gathering of everything you read.
-          </h1>
-
-          <p className="mt-6 font-[family-name:var(--font-instrument)] text-[14.5px] leading-[1.5] text-white/60">
-            Track books. Grow your reading. Watch a year turn into a shelf of stories.
-          </p>
-
-          <div className="flex-1" />
-
-          {authError ? (
-            <p className="mb-3 font-[family-name:var(--font-instrument)] text-sm text-red-200">
-              {authError}
+            <p className="mb-5 font-[family-name:var(--font-bricolage)] text-[26px] font-bold leading-[1.05] tracking-[-0.02em] text-wrap-balance">
+              Everything you read, gathered.
             </p>
-          ) : null}
 
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="flex h-14 w-full items-center justify-center gap-3 rounded-full bg-white font-[family-name:var(--font-instrument)] text-base font-semibold text-[#1C1B1F] transition hover:bg-white/90"
-          >
-            <GoogleIcon />
-            Continue with Google
-          </button>
-        </div>
+            {authError ? (
+              <p className="mb-3 font-[family-name:var(--font-instrument)] text-sm text-red-200">
+                {authError}
+              </p>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="flex h-14 w-full items-center justify-center gap-3 rounded-full bg-white font-[family-name:var(--font-instrument)] text-base font-semibold text-[#1C1B1F] transition hover:bg-white/90"
+            >
+              <GoogleIcon />
+              Continue with Google
+            </button>
+          </div>
+        </CoverWall>
       ) : null}
 
       {step === 2 ? (

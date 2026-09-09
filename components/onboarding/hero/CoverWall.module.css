@@ -1,0 +1,125 @@
+.wall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #322f7a;
+}
+
+/* The tilted plane every column lives on. Oversized so the rotation
+   never exposes an edge. */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 190%;
+  transform: translate(-50%, -50%) rotate(-16deg) scale(1.35);
+  display: flex;
+  justify-content: center;
+  gap: 3.4vw;
+  will-change: transform;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 3.4vw;
+  flex: 0 0 auto;
+}
+
+.book {
+  position: relative;
+  width: 17vw;
+  max-width: 92px;
+  aspect-ratio: 2 / 3;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.55);
+}
+
+.front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* A narrow strip centred on a hero book. The cover cross-fades to this
+   on exit so the book reads as a spine as it sweeps across. */
+.spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 30px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+  background: linear-gradient(90deg, #24215a, #403baa);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+.spineText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-jetbrains), monospace;
+}
+
+/* Darkens the wall toward the bottom so the caption and button stay
+   readable over the covers. */
+.veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(50, 47, 122, 0.1) 0%,
+    rgba(50, 47, 122, 0.35) 45%,
+    rgba(50, 47, 122, 0.82) 78%,
+    rgba(50, 47, 122, 0.96) 100%
+  );
+}
+
+.chrome {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 20px 40px;
+  pointer-events: none;
+}
+
+.chrome > * {
+  pointer-events: auto;
+}
+
+.dust {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 60vw;
+  height: 60vw;
+  margin: -30vw 0 0 -30vw;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(201, 226, 101, 0.5) 0%,
+    rgba(201, 226, 101, 0.12) 35%,
+    transparent 68%
+  );
+  opacity: 0;
+  pointer-events: none;
+}

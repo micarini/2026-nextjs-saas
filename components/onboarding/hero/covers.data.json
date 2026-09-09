@@ -1,0 +1,222 @@
+[
+  {
+    "src": "/onboarding/covers/01.jpg",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen"
+  },
+  {
+    "src": "/onboarding/covers/02.jpg",
+    "title": "Home Fire",
+    "author": "Kamila Shamsie"
+  },
+  {
+    "src": "/onboarding/covers/03.jpg",
+    "title": "The Tiger's Wife",
+    "author": "Tea Obreht"
+  },
+  {
+    "src": "/onboarding/covers/04.jpg",
+    "title": "Normal People",
+    "author": "Sally Rooney"
+  },
+  {
+    "src": "/onboarding/covers/05.jpg",
+    "title": "The Overstory",
+    "author": "Richard Powers"
+  },
+  {
+    "src": "/onboarding/covers/06.jpg",
+    "title": "Circe",
+    "author": "Madeline Miller"
+  },
+  {
+    "src": "/onboarding/covers/07.jpg",
+    "title": "The Song of Achilles",
+    "author": "Madeline Miller"
+  },
+  {
+    "src": "/onboarding/covers/08.jpg",
+    "title": "Klara and the Sun",
+    "author": "Kazuo Ishiguro"
+  },
+  {
+    "src": "/onboarding/covers/09.jpg",
+    "title": "Never Let Me Go",
+    "author": "Kazuo Ishiguro"
+  },
+  {
+    "src": "/onboarding/covers/10.jpg",
+    "title": "A Little Life",
+    "author": "Hanya Yanagihara"
+  },
+  {
+    "src": "/onboarding/covers/11.jpg",
+    "title": "The Secret History",
+    "author": "Donna Tartt"
+  },
+  {
+    "src": "/onboarding/covers/12.jpg",
+    "title": "The Goldfinch",
+    "author": "Donna Tartt"
+  },
+  {
+    "src": "/onboarding/covers/13.jpg",
+    "title": "Beloved",
+    "author": "Toni Morrison"
+  },
+  {
+    "src": "/onboarding/covers/14.jpg",
+    "title": "The Namesake",
+    "author": "Jhumpa Lahiri"
+  },
+  {
+    "src": "/onboarding/covers/15.jpg",
+    "title": "Interpreter of Maladies",
+    "author": "Jhumpa Lahiri"
+  },
+  {
+    "src": "/onboarding/covers/16.jpg",
+    "title": "The Road",
+    "author": "Cormac McCarthy"
+  },
+  {
+    "src": "/onboarding/covers/17.jpg",
+    "title": "Station Eleven",
+    "author": "Emily St. John Mandel"
+  },
+  {
+    "src": "/onboarding/covers/18.jpg",
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin"
+  },
+  {
+    "src": "/onboarding/covers/19.jpg",
+    "title": "A Wizard of Earthsea",
+    "author": "Ursula K. Le Guin"
+  },
+  {
+    "src": "/onboarding/covers/20.jpg",
+    "title": "The Handmaid's Tale",
+    "author": "Margaret Atwood"
+  },
+  {
+    "src": "/onboarding/covers/21.jpg",
+    "title": "Oryx and Crake",
+    "author": "Margaret Atwood"
+  },
+  {
+    "src": "/onboarding/covers/22.jpg",
+    "title": "Cloud Atlas",
+    "author": "David Mitchell"
+  },
+  {
+    "src": "/onboarding/covers/23.jpg",
+    "title": "Norwegian Wood",
+    "author": "Haruki Murakami"
+  },
+  {
+    "src": "/onboarding/covers/24.jpg",
+    "title": "Pachinko",
+    "author": "Min Jin Lee"
+  },
+  {
+    "src": "/onboarding/covers/25.jpg",
+    "title": "Half of a Yellow Sun",
+    "author": "Chimamanda Ngozi Adichie"
+  },
+  {
+    "src": "/onboarding/covers/26.jpg",
+    "title": "Americanah",
+    "author": "Chimamanda Ngozi Adichie"
+  },
+  {
+    "src": "/onboarding/covers/27.jpg",
+    "title": "The Poisonwood Bible",
+    "author": "Barbara Kingsolver"
+  },
+  {
+    "src": "/onboarding/covers/28.jpg",
+    "title": "Life of Pi",
+    "author": "Yann Martel"
+  },
+  {
+    "src": "/onboarding/covers/29.jpg",
+    "title": "The Night Circus",
+    "author": "Erin Morgenstern"
+  },
+  {
+    "src": "/onboarding/covers/30.jpg",
+    "title": "Piranesi",
+    "author": "Susanna Clarke"
+  },
+  {
+    "src": "/onboarding/covers/31.jpg",
+    "title": "Wuthering Heights",
+    "author": "Emily Bronte"
+  },
+  {
+    "src": "/onboarding/covers/32.jpg",
+    "title": "Jane Eyre",
+    "author": "Charlotte Bronte"
+  },
+  {
+    "src": "/onboarding/covers/33.jpg",
+    "title": "Mrs Dalloway",
+    "author": "Virginia Woolf"
+  },
+  {
+    "src": "/onboarding/covers/34.jpg",
+    "title": "The Bell Jar",
+    "author": "Sylvia Plath"
+  },
+  {
+    "src": "/onboarding/covers/35.jpg",
+    "title": "Middlesex",
+    "author": "Jeffrey Eugenides"
+  },
+  {
+    "src": "/onboarding/covers/36.jpg",
+    "title": "The Corrections",
+    "author": "Jonathan Franzen"
+  },
+  {
+    "src": "/onboarding/covers/37.jpg",
+    "title": "White Teeth",
+    "author": "Zadie Smith"
+  },
+  {
+    "src": "/onboarding/covers/38.jpg",
+    "title": "On Beauty",
+    "author": "Zadie Smith"
+  },
+  {
+    "src": "/onboarding/covers/39.jpg",
+    "title": "Atonement",
+    "author": "Ian McEwan"
+  },
+  {
+    "src": "/onboarding/covers/40.jpg",
+    "title": "The Remains of the Day",
+    "author": "Kazuo Ishiguro"
+  },
+  {
+    "src": "/onboarding/covers/41.jpg",
+    "title": "Lincoln in the Bardo",
+    "author": "George Saunders"
+  },
+  {
+    "src": "/onboarding/covers/42.jpg",
+    "title": "The Underground Railroad",
+    "author": "Colson Whitehead"
+  },
+  {
+    "src": "/onboarding/covers/43.jpg",
+    "title": "Homegoing",
+    "author": "Yaa Gyasi"
+  },
+  {
+    "src": "/onboarding/covers/44.jpg",
+    "title": "Exit West",
+    "author": "Mohsin Hamid"
+  }
+]
