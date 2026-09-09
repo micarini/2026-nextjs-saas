@@ -131,11 +131,11 @@ export default function OnboardingFlow({ startAuthenticated, finishAction, skipA
         >
           <div className="mx-auto flex w-full max-w-md flex-col">
             <div className="mb-5">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-[#26235F] shadow-lg shadow-black/20">
-                <span className="font-[family-name:var(--font-bricolage)] text-[24px] font-bold leading-none">
+              <span className="relative flex size-12 items-center justify-center rounded-xl bg-[#26235F] pr-[3px] shadow-lg shadow-black/20">
+                <span className="translate-y-px font-[family-name:var(--font-bricolage)] text-[24px] font-bold leading-none">
                   Q
                 </span>
-                <span className="mb-1 ml-1.5 size-1.5 shrink-0 self-end rounded-full bg-[#C9E265]" />
+                <span className="absolute bottom-2 right-2 size-2 rounded-full bg-[#C9E265]" />
               </span>
             </div>
 
