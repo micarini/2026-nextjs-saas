@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/firebase/session";
 import { getCurrentUserProfile } from "@/lib/users/users";
 import { listUserBooks } from "@/lib/books/books";
 import TopFourBooks from "@/components/users/TopFourBooks";
+import { logout } from "@/app/dashboard/actions";
 import {
   saveUsername,
   saveTopFour,
@@ -73,50 +74,6 @@ function ArrowIcon() {
       <path d="M5 12h14" />
       <path d="m13 6 6 6-6 6" />
     </svg>
-  );
-}
-
-/* =========================================
-   BOOK CARD
-========================================= */
-
-function TopBook({ book, index }) {
-  if (!book) {
-    return (
-      <div className="aspect-[0.72] rounded-[18px] bg-[#d8d8d3]" />
-    );
-  }
-
-  return (
-    <Link
-      href={`/dashboard/books/${book.id}`}
-      className="group relative block aspect-[0.72] overflow-hidden rounded-[18px] bg-[#d7d7d2]"
-    >
-      {book.coverUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={book.coverUrl}
-          alt={book.title}
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-        />
-      ) : (
-        <div className="flex h-full items-end bg-gradient-to-br from-[#637b70] to-[#32443e] p-3">
-          <span className="text-xs font-medium text-white">
-            {book.title}
-          </span>
-        </div>
-      )}
-
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-2 pt-10">
-        <p className="line-clamp-2 text-[10px] font-medium text-white">
-          {book.title}
-        </p>
-      </div>
-
-      <div className="absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/30 text-[10px] font-semibold text-white backdrop-blur-sm">
-        {index + 1}
-      </div>
-    </Link>
   );
 }
 
@@ -205,12 +162,6 @@ export default async function ProfilePage() {
   */
 
   const topFourIds = profile?.topFour || [];
-
-const topFour = topFourIds
-  .map((bookId) =>
-    books.find((book) => book.id === bookId)
-  )
-  .filter(Boolean);
 
   /* =========================================
      PAGES READ
@@ -412,25 +363,16 @@ const topFour = topFourIds
         ====================================== */}
 
         <section className="mt-5 rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-5 shadow-sm">
+  <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+    My Top Four
+  </p>
 
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
-            My Top Four
-          </p>
-
-
-          <div className="mt-5 grid grid-cols-2 gap-3">
-
-            {[0, 1, 2, 3].map((index) => (
-              <TopBook
-                key={topFour[index]?.id || index}
-                book={topFour[index]}
-                index={index}
-              />
-            ))}
-
-          </div>
-
-        </section>
+  <TopFourBooks
+    books={books}
+    initialTopFour={topFourIds}
+    action={saveTopFour}
+  />
+</section>
 
 
         {/* =====================================
@@ -731,7 +673,16 @@ const topFour = topFourIds
           </Link>
 
         </section>
-
+<section className="mt-6">
+  <form action={logout}>
+    <button
+      type="submit"
+      className="flex h-14 w-full items-center justify-center rounded-full bg-[#eee6e4] text-base font-semibold text-[#a34d45] transition hover:bg-[#e6d8d5]"
+    >
+      Log out
+    </button>
+  </form>
+</section>
 
         <div className="h-10" />
 
@@ -746,18 +697,4 @@ const topFour = topFourIds
 
     </main>
   );
-}
-
-export async function updateUserTopFour(uid, bookIds) {
-  const topFour = Array.isArray(bookIds)
-    ? [...new Set(bookIds.map(String))].slice(0, 4)
-    : [];
-
-  await getDb()
-    .collection(COLLECTION)
-    .doc(uid)
-    .update({
-      topFour,
-      updatedAt: FieldValue.serverTimestamp(),
-    });
 }
