@@ -3,10 +3,13 @@ import { redirect } from "next/navigation";
 
 import BottomNav from "@/components/nav/BottomNav";
 import LibraryShelf from "@/components/books/LibraryShelf";
+import AllBooksLibrary from "@/components/books/AllBooksLibrary";
+
 import { listUserBooks } from "@/lib/books/books";
 import { getCurrentUser } from "@/lib/firebase/session";
 
 export const dynamic = "force-dynamic";
+
 
 function prettyGenre(value) {
   if (!value) return "Other";
@@ -15,6 +18,7 @@ function prettyGenre(value) {
     .replace(/[_-]+/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
+
 
 function makeGenreShelves(books) {
   const groups = books.reduce((acc, book) => {
@@ -37,7 +41,15 @@ function makeGenreShelves(books) {
     }));
 }
 
-export default async function LibraryPage() {
+
+export default async function LibraryPage({ searchParams }) {
+  const params = await searchParams;
+
+  const view =
+    params?.view === "all"
+      ? "all"
+      : "categories";
+
   const user = await getCurrentUser();
 
   if (!user) {
@@ -45,6 +57,11 @@ export default async function LibraryPage() {
   }
 
   const books = await listUserBooks(user.uid);
+
+
+  /* -----------------------------
+     CATEGORIES
+  ----------------------------- */
 
   const reading = books.filter(
     (book) => book.status === "reading"
@@ -59,12 +76,14 @@ export default async function LibraryPage() {
   const finished = books.filter(
     (book) =>
       book.status === "read" ||
-      book.status === "finished"
+      book.status === "finished" ||
+      book.status === "completed"
   );
 
   const fiveStars = books.filter(
-    (book) => book.rating === 5
+    (book) => Number(book.rating) === 5
   );
+
 
   const recent = [...books]
     .sort(
@@ -74,6 +93,7 @@ export default async function LibraryPage() {
     )
     .slice(0, 12);
 
+
   const shelves = [
     {
       key: "reading",
@@ -81,18 +101,21 @@ export default async function LibraryPage() {
       meta: "Books in progress",
       books: reading,
     },
+
     {
       key: "to-read",
       label: "Want to read",
       meta: "Your reading queue",
       books: toRead,
     },
+
     {
       key: "five-stars",
       label: "Five stars",
       meta: "Your favourites",
       books: fiveStars,
     },
+
     {
       key: "finished",
       label: "Finished",
@@ -110,17 +133,41 @@ export default async function LibraryPage() {
     },
   ];
 
+
+  /*
+    ALL
+
+    En esta vista uso solamente libros terminados/leídos,
+    porque pediste que sea la biblioteca completa
+    de tus libros leídos.
+
+    Si más adelante querés mostrar ABSOLUTAMENTE TODOS
+    (incluyendo Want to read y Currently reading),
+    cambiá:
+
+    const allLibraryBooks = finished;
+
+    por:
+
+    const allLibraryBooks = books;
+  */
+
+  const allLibraryBooks = finished;
+
+
   return (
     <main className="min-h-screen bg-[#f4f3ee] pb-28 text-[#34343b]">
 
       {/* HERO */}
-      <header className="relative overflow-hidden bg-[#36366f] px-5 pb-8 pt-9 text-white">
+
+      <header className="relative overflow-hidden bg-[#36366f] px-5 pb-7 pt-9 text-white">
 
         <div className="absolute -left-16 top-8 h-48 w-48 rounded-full bg-[#7778ba]/20 blur-3xl" />
 
         <div className="absolute -right-12 -top-12 h-56 w-56 rounded-full bg-[#222353]/50 blur-3xl" />
 
-        <div className="relative mx-auto max-w-5xl">
+
+        <div className="relative mx-auto max-w-6xl">
 
           <div className="flex items-start justify-between gap-4">
 
@@ -130,17 +177,19 @@ export default async function LibraryPage() {
                 My Bookshelf
               </p>
 
+
               <h1 className="mt-2 text-[36px] font-semibold leading-none tracking-[-0.03em] sm:text-[44px]">
-                Shelve it your way.
+                My Library.
               </h1>
 
+
               <p className="mt-3 max-w-xl text-sm leading-6 text-white/60">
-                Your library arranged like a real shelf —
-                by reading status, rating and the genres
-                you collect most.
+                Organize your books by category or see your
+                entire collection together on one bookshelf.
               </p>
 
             </div>
+
 
             <Link
               href="/dashboard/books/new"
@@ -152,14 +201,16 @@ export default async function LibraryPage() {
 
           </div>
 
+
           {/* STATS */}
+
           <div className="mt-7 grid grid-cols-4 overflow-hidden rounded-[20px] border border-white/10 bg-white/[0.06] backdrop-blur-sm">
 
             {[
               [books.length, "Total"],
               [reading.length, "Reading"],
               [toRead.length, "To read"],
-              [fiveStars.length, "5 stars"],
+              [finished.length, "Finished"],
             ].map(([value, label], index) => (
 
               <div
@@ -175,6 +226,7 @@ export default async function LibraryPage() {
                   {value}
                 </p>
 
+
                 <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-white/45 sm:text-[9px]">
                   {label}
                 </p>
@@ -189,8 +241,60 @@ export default async function LibraryPage() {
 
       </header>
 
-      {/* SHELVES */}
-      <div className="mx-auto max-w-5xl px-5 py-6">
+
+      {/* VIEW SWITCHER */}
+
+      <section className="mx-auto max-w-6xl px-5 pt-5">
+
+        <div className="inline-flex rounded-full bg-[#e7e6e1] p-1">
+
+          <Link
+            href="/dashboard/library?view=categories"
+            className={`
+              rounded-full
+              px-5
+              py-2.5
+              text-sm
+              font-medium
+              transition
+              ${
+                view === "categories"
+                  ? "bg-[#36366f] text-white shadow-sm"
+                  : "text-[#76736c] hover:text-[#34343b]"
+              }
+            `}
+          >
+            Categories
+          </Link>
+
+
+          <Link
+            href="/dashboard/library?view=all"
+            className={`
+              rounded-full
+              px-5
+              py-2.5
+              text-sm
+              font-medium
+              transition
+              ${
+                view === "all"
+                  ? "bg-[#36366f] text-white shadow-sm"
+                  : "text-[#76736c] hover:text-[#34343b]"
+              }
+            `}
+          >
+            All
+          </Link>
+
+        </div>
+
+      </section>
+
+
+      {/* CONTENT */}
+
+      <div className="mx-auto max-w-6xl px-5 py-5">
 
         {books.length === 0 ? (
 
@@ -200,15 +304,17 @@ export default async function LibraryPage() {
               Empty library
             </p>
 
+
             <h2 className="mt-3 text-2xl font-semibold text-[#34343b]">
               Your shelves are waiting.
             </h2>
 
+
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#858178]">
-              Add your first book and this page will
-              automatically organize it into the right
-              shelves.
+              Add your first book and start building your
+              personal library.
             </p>
+
 
             <Link
               href="/dashboard/books/new"
@@ -219,7 +325,11 @@ export default async function LibraryPage() {
 
           </section>
 
-        ) : (
+        ) : view === "categories" ? (
+
+          /* -----------------------------
+             CATEGORIES VIEW
+          ----------------------------- */
 
           <div className="grid gap-4 md:grid-cols-2">
 
@@ -236,9 +346,20 @@ export default async function LibraryPage() {
 
           </div>
 
+        ) : (
+
+          /* -----------------------------
+             ALL VIEW
+          ----------------------------- */
+
+          <AllBooksLibrary
+            books={allLibraryBooks}
+          />
+
         )}
 
       </div>
+
 
       <BottomNav active="library" />
 
