@@ -10,17 +10,49 @@ import {
 
 const QUICK_QUESTIONS = [
   {
+    label: "Popular books",
+    query:
+      "Recommend me popular books",
+    style:
+      "bg-[#333337] text-white",
+  },
+
+  {
     label: "Fantasy",
     query:
-      "Recommend me an immersive fantasy book",
+      "Recommend me fantasy books",
     style:
       "bg-[#C9E265] text-[#24271c]",
   },
 
   {
-    label: "Popular books",
+    label: "Romance",
     query:
-      "Recommend me popular books worth reading",
+      "Recommend me romance books",
+    style:
+      "bg-[#7B4560] text-white",
+  },
+
+  {
+    label: "Mystery",
+    query:
+      "Recommend me mystery books",
+    style:
+      "bg-[#F2EFE7] text-[#242426]",
+  },
+
+  {
+    label: "Thriller",
+    query:
+      "Recommend me thriller books",
+    style:
+      "bg-[#322F7A] text-white",
+  },
+
+  {
+    label: "Sci-Fi",
+    query:
+      "Recommend me science fiction books",
     style:
       "bg-[#333337] text-white",
   },
@@ -28,15 +60,15 @@ const QUICK_QUESTIONS = [
   {
     label: "Mysticism",
     query:
-      "Books with elements of mysticism",
+      "Recommend books with elements of mysticism",
     style:
       "bg-[#7B4560] text-white",
   },
 
   {
-    label: "Something emotional",
+    label: "Emotional",
     query:
-      "Recommend me an emotional and moving book",
+      "Recommend me an emotional book",
     style:
       "bg-[#F2EFE7] text-[#242426]",
   },
@@ -44,7 +76,7 @@ const QUICK_QUESTIONS = [
   {
     label: "Short reads",
     query:
-      "Recommend me a short book",
+      "Recommend me short reads",
     style:
       "bg-[#322F7A] text-white",
   },
@@ -52,9 +84,9 @@ const QUICK_QUESTIONS = [
   {
     label: "Surprise me",
     query:
-      "Surprise me with a great book",
+      "Surprise me with a book",
     style:
-      "bg-[#333337] text-white",
+      "bg-[#C9E265] text-[#24271c]",
   },
 ];
 
