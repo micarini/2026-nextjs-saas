@@ -1,141 +1,18 @@
-import Link from "next/link";
+"use client";
 
-const spineWidths = [
-  30,
-  34,
-  27,
-  38,
-  31,
-  35,
-  29,
-  40,
-  32,
-  36,
-];
+import { useState } from "react";
 
-const spineHeights = [
-  92,
-  102,
-  86,
-  108,
-  96,
-  104,
-  89,
-  112,
-  98,
-  106,
-];
+import BookSpine from "@/components/books/BookSpine";
 
-function BookSpine({ book, index }) {
-  const width =
-    spineWidths[index % spineWidths.length];
-
-  const height =
-    spineHeights[index % spineHeights.length];
-
-  return (
-    <Link
-      href={`/dashboard/books/${book.id}`}
-      title={`${book.title}${
-        book.author ? ` — ${book.author}` : ""
-      }`}
-      aria-label={`Open ${book.title}`}
-      className="
-        group
-        relative
-        shrink-0
-        transition-transform
-        duration-200
-        hover:-translate-y-1
-        focus-visible:-translate-y-1
-        focus-visible:outline-none
-      "
-      style={{
-        width,
-        height,
-      }}
-    >
-
-      <div
-        className="
-          absolute
-          inset-0
-          overflow-hidden
-          rounded-[5px_5px_2px_2px]
-          border
-          border-black/10
-          bg-[#d8d6cf]
-          shadow-[2px_3px_6px_rgba(37,35,51,0.16)]
-        "
-      >
-
-        {book.coverUrl ? (
-
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={book.coverUrl}
-              alt=""
-              loading="lazy"
-              className="
-                absolute
-                inset-0
-                h-full
-                w-full
-                object-cover
-                transition
-                duration-200
-                group-hover:scale-105
-              "
-            />
-          </>
-
-        ) : (
-
-          <div className="absolute inset-0 bg-gradient-to-b from-[#4b4a83] to-[#31325f]" />
-
-        )}
-
-        {/* SOMBRA PARA DAR EFECTO DE LOMO */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-white/10" />
-
-        {/* TITULO VERTICAL */}
-        <div className="absolute inset-y-2 left-1 flex items-center">
-
-          <span
-            className="
-              max-h-full
-              overflow-hidden
-              text-[8px]
-              font-semibold
-              uppercase
-              tracking-[0.08em]
-              text-white
-              drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]
-            "
-            style={{
-              writingMode: "vertical-rl",
-              transform: "rotate(180deg)",
-            }}
-          >
-            {book.title}
-          </span>
-
-        </div>
-
-      </div>
-
-    </Link>
-  );
-}
 
 function EmptyShelf() {
   return (
-    <div className="flex h-[112px] items-end justify-center pb-5 text-center text-xs text-[#8a877f]">
+    <div className="flex h-[120px] items-end justify-center pb-5 text-xs text-[#8a877f]">
       No books on this shelf yet.
     </div>
   );
 }
+
 
 export default function LibraryShelf({
   label,
@@ -143,8 +20,22 @@ export default function LibraryShelf({
   meta,
   maxBooks = 12,
 }) {
+  const [openBookId, setOpenBookId] =
+    useState(null);
 
-  const visibleBooks = books.slice(0, maxBooks);
+
+  const visibleBooks =
+    books.slice(0, maxBooks);
+
+
+  function handleBookToggle(bookId) {
+    setOpenBookId((current) =>
+      current === bookId
+        ? null
+        : bookId
+    );
+  }
+
 
   return (
     <section
@@ -158,7 +49,8 @@ export default function LibraryShelf({
       "
     >
 
-      {/* SHELF HEADER */}
+      {/* HEADER */}
+
       <div className="flex items-center justify-between gap-4 px-5 pb-2 pt-4">
 
         <div className="min-w-0">
@@ -167,21 +59,24 @@ export default function LibraryShelf({
             {label}
           </p>
 
-          {meta ? (
+          {meta && (
             <p className="mt-1 text-xs text-[#9a9790]">
               {meta}
             </p>
-          ) : null}
+          )}
 
         </div>
 
-        <span className="shrink-0 rounded-full bg-[#e7e6e1] px-2.5 py-1 font-mono text-[10px] text-[#6f6e75]">
+
+        <span className="rounded-full bg-[#e7e6e1] px-2.5 py-1 font-mono text-[10px] text-[#6f6e75]">
           {books.length}
         </span>
 
       </div>
 
+
       {/* BOOKS */}
+
       <div className="relative px-4 pt-2">
 
         {visibleBooks.length ? (
@@ -189,10 +84,11 @@ export default function LibraryShelf({
           <div
             className="
               flex
-              min-h-[124px]
+              min-h-[132px]
               items-end
               gap-[3px]
               overflow-x-auto
+              overflow-y-hidden
               px-1
               pb-3
               pt-3
@@ -200,15 +96,23 @@ export default function LibraryShelf({
             "
           >
 
-            {visibleBooks.map((book, index) => (
-
-              <BookSpine
-                key={book.id}
-                book={book}
-                index={index}
-              />
-
-            ))}
+            {visibleBooks.map(
+              (book, index) => (
+                <BookSpine
+                  key={book.id}
+                  book={book}
+                  index={index}
+                  size="small"
+                  isOpen={
+                    openBookId ===
+                    book.id
+                  }
+                  onToggle={
+                    handleBookToggle
+                  }
+                />
+              )
+            )}
 
           </div>
 
@@ -218,7 +122,9 @@ export default function LibraryShelf({
 
         )}
 
-        {/* MADERA / ESTANTE */}
+
+        {/* ESTANTE */}
+
         <div
           className="
             relative
@@ -232,6 +138,7 @@ export default function LibraryShelf({
           <div className="absolute inset-x-3 top-[2px] h-[2px] rounded-full bg-white/45" />
 
         </div>
+
 
         <div className="h-5" />
 
