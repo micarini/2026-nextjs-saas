@@ -243,54 +243,110 @@ export default async function LibraryPage({ searchParams }) {
 
 
       {/* VIEW SWITCHER */}
+{/* VIEW SWITCHER + BOOKBOT */}
 
-      <section className="mx-auto max-w-6xl px-5 pt-5">
+<section className="mx-auto max-w-6xl px-5 pt-5">
 
-        <div className="inline-flex rounded-full bg-[#e7e6e1] p-1">
+  <div className="flex items-center justify-between gap-3">
 
-          <Link
-            href="/dashboard/library?view=categories"
-            className={`
-              rounded-full
-              px-5
-              py-2.5
-              text-sm
-              font-medium
-              transition
-              ${
-                view === "categories"
-                  ? "bg-[#36366f] text-white shadow-sm"
-                  : "text-[#76736c] hover:text-[#34343b]"
-              }
-            `}
-          >
-            Categories
-          </Link>
+    {/* CATEGORIES / ALL */}
+
+    <div className="inline-flex rounded-full bg-[#e7e6e1] p-1">
+
+      <Link
+        href="/dashboard/library?view=categories"
+        className={`
+          rounded-full
+          px-5
+          py-2.5
+          text-sm
+          font-medium
+          transition
+
+          ${
+            view === "categories"
+              ? "bg-[#36366f] text-white shadow-sm"
+              : "text-[#76736c] hover:text-[#34343b]"
+          }
+        `}
+      >
+        Categories
+      </Link>
 
 
-          <Link
-            href="/dashboard/library?view=all"
-            className={`
-              rounded-full
-              px-5
-              py-2.5
-              text-sm
-              font-medium
-              transition
-              ${
-                view === "all"
-                  ? "bg-[#36366f] text-white shadow-sm"
-                  : "text-[#76736c] hover:text-[#34343b]"
-              }
-            `}
-          >
-            All
-          </Link>
+      <Link
+        href="/dashboard/library?view=all"
+        className={`
+          rounded-full
+          px-5
+          py-2.5
+          text-sm
+          font-medium
+          transition
 
-        </div>
+          ${
+            view === "all"
+              ? "bg-[#36366f] text-white shadow-sm"
+              : "text-[#76736c] hover:text-[#34343b]"
+          }
+        `}
+      >
+        All
+      </Link>
 
-      </section>
+    </div>
 
+
+    {/* BOOKBOT */}
+
+    <Link
+      href="/dashboard/recommendations"
+      className="
+        group
+        flex
+        h-10
+        items-center
+        gap-2
+        rounded-full
+        bg-[#C9E265]
+        px-4
+        text-[12px]
+        font-semibold
+        text-[#322F7A]
+        shadow-sm
+        transition
+        hover:-translate-y-0.5
+        hover:shadow-md
+        active:scale-[0.98]
+      "
+    >
+
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 2.8c.7 5.1 3.1 7.5 8.2 8.2-5.1.7-7.5 3.1-8.2 8.2-.7-5.1-3.1-7.5-8.2-8.2 5.1-.7 7.5-3.1 8.2-8.2Z" />
+      </svg>
+
+      <span className="hidden sm:inline">
+        Recommendations
+      </span>
+
+      <span className="sm:hidden">
+        Ask
+      </span>
+
+    </Link>
+
+  </div>
+
+</section>
 
       {/* CONTENT */}
 
