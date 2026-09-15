@@ -66,17 +66,11 @@ export default async function RecommendationsPage() {
   const favoriteGenres =
     getFavoriteGenres(books);
 
-  const existingTitles =
-    books
-      .map((book) => book.title)
-      .filter(Boolean);
-
   return (
     <main className="min-h-[100dvh] bg-[#171719] pb-28 text-white">
 
       <BookRecommendationBot
         favoriteGenres={favoriteGenres}
-        existingTitles={existingTitles}
       />
 
       <BottomNav />

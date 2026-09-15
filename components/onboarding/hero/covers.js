@@ -8,15 +8,12 @@ import data from "./covers.data.json";
 // Titles that read well on a thin vertical spine.
 const HERO_TITLES = new Set(["Circe", "The Road", "Piranesi"]);
 
-export const COVERS = data.map((c, i) => ({
-  id: i,
+export const COVERS = data.map((c) => ({
   src: c.src,
   title: c.title,
   author: c.author,
   hero: HERO_TITLES.has(c.title),
 }));
-
-export const HERO_COVERS = COVERS.filter((c) => c.hero);
 
 // Deal covers round-robin into `columnCount` columns, repeating the deck
 // if there aren't enough uniques to fill every column to `perColumn`.

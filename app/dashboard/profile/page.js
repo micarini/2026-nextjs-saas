@@ -6,10 +6,7 @@ import { getCurrentUserProfile } from "@/lib/users/users";
 import { listUserBooks } from "@/lib/books/books";
 import TopFourBooks from "@/components/users/TopFourBooks";
 import { logout } from "@/app/dashboard/actions";
-import {
-  saveUsername,
-  saveTopFour,
-} from "./actions";
+import { saveTopFour } from "./actions";
 
 import BottomNav from "@/components/nav/BottomNav";
 
@@ -432,6 +429,21 @@ export default async function ProfilePage() {
 
         </section>
 
+
+        <Link
+          href="/dashboard/import"
+          className="mt-4 flex items-center justify-between rounded-[25px] border border-[#deddd7] bg-white p-5 transition hover:bg-[#fbfbf9]"
+        >
+          <div>
+            <p className="text-sm font-semibold">
+              Import from Goodreads
+            </p>
+            <p className="mt-1 text-xs text-[#85858c]">
+              Shelves, ratings and reviews from your CSV export
+            </p>
+          </div>
+          <span className="text-lg text-[#85858c]">→</span>
+        </Link>
 
         <section className="mt-6">
   <form action={logout}>

@@ -170,7 +170,6 @@ function BookCard({
 
 export default function BookRecommendationBot({
   favoriteGenres = [],
-  existingTitles = [],
 }) {
   const [message, setMessage] =
     useState("");
@@ -200,6 +199,27 @@ export default function BookRecommendationBot({
 
 
     setMessage("");
+
+    /*
+      Últimos turnos de la charla, así el bot
+      entiende pedidos como "algo más corto".
+    */
+
+    const history =
+      conversation
+        .slice(-8)
+        .map((item) => ({
+          role:
+            item.role,
+
+          text:
+            item.text,
+
+          books:
+            (item.books || []).map(
+              (book) => book.title
+            ),
+        }));
 
     setConversation(
       (current) => [
@@ -240,9 +260,7 @@ export default function BookRecommendationBot({
                 message:
                   cleanQuestion,
 
-                favoriteGenres,
-
-                existingTitles,
+                history,
               }),
           }
         );

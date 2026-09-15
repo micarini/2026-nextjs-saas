@@ -1,3 +1,9 @@
+import { isGeminiConfigured } from "@/lib/ai/gemini";
+import { pickBooks, planSearch } from "@/lib/ai/bookbot";
+import { getBookIdentity, listUserBooks } from "@/lib/books/books";
+import { getCurrentUser } from "@/lib/firebase/session";
+import { buildTasteProfile, formatTasteProfile } from "@/lib/recommendations/tasteProfile";
+
 /* =========================================================
    HELPERS
 ========================================================= */
@@ -114,8 +120,13 @@ function detectIntent(
   ) {
     return {
       type: "emotional",
-      query:
-        "emotional moving contemporary fiction family love grief",
+      // Kept short on purpose — Open Library's search treats a long,
+      // descriptive `q` almost like an AND of every word and returns 0
+      // results for phrases this specific. Google Books tolerates long
+      // queries fine, but Open Library is the fallback whenever Google
+      // Books is unavailable (e.g. its daily quota is exhausted), so the
+      // query has to work on both.
+      query: "emotional grief family fiction",
     };
   }
 
@@ -133,8 +144,9 @@ function detectIntent(
   ) {
     return {
       type: "mysticism",
-      query:
-        "mysticism spirituality magical realism supernatural fiction",
+      // Same reasoning as the emotional intent above — short enough to
+      // still return results from Open Library, not just Google Books.
+      query: "mysticism spirituality fiction",
     };
   }
 
@@ -309,7 +321,8 @@ function detectIntent(
 ========================================================= */
 
 async function searchGoogleBooks(
-  query
+  query,
+  maxResults = 40
 ) {
   const url = new URL(
     "https://www.googleapis.com/books/v1/volumes"
@@ -322,8 +335,15 @@ async function searchGoogleBooks(
 
   url.searchParams.set(
     "maxResults",
-    "40"
+    String(maxResults)
   );
+
+  if (process.env.GOOGLE_BOOKS_API_KEY) {
+    url.searchParams.set(
+      "key",
+      process.env.GOOGLE_BOOKS_API_KEY
+    );
+  }
 
   url.searchParams.set(
     "printType",
@@ -436,7 +456,8 @@ async function searchGoogleBooks(
 ========================================================= */
 
 async function searchOpenLibrary(
-  query
+  query,
+  limit = 40
 ) {
   const url = new URL(
     "https://openlibrary.org/search.json"
@@ -449,7 +470,7 @@ async function searchOpenLibrary(
 
   url.searchParams.set(
     "limit",
-    "40"
+    String(limit)
   );
 
   const response =
@@ -795,6 +816,261 @@ function buildReply(
 
 
 /* =========================================================
+   BIBLIOTECA DEL USUARIO
+
+   Ya no confiamos en lo que manda el cliente: leemos la
+   biblioteca en el servidor con la sesión, así la IA ve
+   los libros leídos y sus puntajes reales.
+========================================================= */
+
+function excludeLibrary(
+  books,
+  libraryKeys
+) {
+  return books.filter(
+    (book) =>
+      !libraryKeys.has(
+        getBookIdentity(book)
+      )
+  );
+}
+
+
+function sanitizeHistory(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .slice(-8)
+    .map((turn) => ({
+      role:
+        turn?.role === "assistant"
+          ? "assistant"
+          : "user",
+
+      text:
+        String(turn?.text || "")
+          .trim()
+          .slice(0, 600),
+
+      books:
+        Array.isArray(turn?.books)
+          ? turn.books
+              .slice(0, 7)
+              .map((title) =>
+                String(title).slice(0, 120)
+              )
+          : [],
+    }))
+    .filter((turn) => turn.text);
+}
+
+
+/* =========================================================
+   GEMINI
+
+   1. planSearch: Gemini lee el pedido + historial + gustos
+      y propone títulos concretos y búsquedas cortas.
+   2. Buscamos esos títulos en Google Books / Open Library
+      (solo libros reales, con portada y autor).
+   3. pickBooks: Gemini elige entre esos candidatos reales
+      y redacta la respuesta.
+
+   Si algo falla (sin key, cuota agotada, respuesta rara),
+   el caller cae al camino de reglas de siempre.
+========================================================= */
+
+function titlesMatch(
+  foundTitle,
+  wantedTitle
+) {
+  const found =
+    normalizeTitle(foundTitle);
+
+  const wanted =
+    normalizeTitle(wantedTitle);
+
+  if (!found || !wanted) {
+    return false;
+  }
+
+  return (
+    found === wanted ||
+    found.startsWith(wanted) ||
+    wanted.startsWith(found)
+  );
+}
+
+
+async function findSuggestedBook({
+  title,
+  author,
+}) {
+  const safeTitle =
+    title.replace(/"/g, "");
+
+  const safeAuthor =
+    author.replace(/"/g, "");
+
+  const query =
+    safeAuthor
+      ? `intitle:"${safeTitle}" inauthor:"${safeAuthor}"`
+      : `intitle:"${safeTitle}"`;
+
+  let results =
+    await searchGoogleBooks(
+      query,
+      5
+    );
+
+  let matches =
+    results.filter((book) =>
+      titlesMatch(
+        book.title,
+        title
+      )
+    );
+
+  if (!matches.length) {
+    results =
+      await searchOpenLibrary(
+        `${safeTitle} ${safeAuthor}`.trim(),
+        5
+      );
+
+    matches =
+      results.filter((book) =>
+        titlesMatch(
+          book.title,
+          title
+        )
+      );
+  }
+
+  if (!matches.length) {
+    return null;
+  }
+
+  return {
+    ...(matches.find(
+      (book) => book.coverUrl
+    ) || matches[0]),
+
+    suggested: true,
+  };
+}
+
+
+async function recommendWithAI({
+  message,
+  history,
+  profileText,
+  intent,
+  existingTitles,
+  libraryKeys,
+}) {
+  const plan =
+    await planSearch({
+      message,
+      history,
+      profileText,
+    });
+
+  const queries =
+    plan.queries.length
+      ? plan.queries
+      : [intent.query];
+
+  const [
+    suggested,
+    queried,
+  ] = await Promise.all([
+    Promise.all(
+      plan.suggestions.map(
+        findSuggestedBook
+      )
+    ),
+
+    Promise.all(
+      queries.map((query) =>
+        searchGoogleBooks(
+          query,
+          15
+        )
+      )
+    ),
+  ]);
+
+  /*
+    Los títulos que pensó la IA van primero,
+    así ganan en el dedupe y en el orden.
+  */
+
+  let candidates =
+    excludeLibrary(
+      cleanResults(
+        [
+          ...suggested.filter(Boolean),
+          ...queried.flat(),
+        ],
+        existingTitles
+      ),
+      libraryKeys
+    );
+
+  if (plan.maxPages) {
+    const shortOnes =
+      candidates.filter(
+        (book) =>
+          !book.pageCount ||
+          book.pageCount <=
+            plan.maxPages * 1.15
+      );
+
+    if (shortOnes.length >= 3) {
+      candidates = shortOnes;
+    }
+  }
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  const pick =
+    await pickBooks({
+      message,
+      history,
+      profileText,
+      candidates,
+    });
+
+  const books =
+    pick.indexes
+      .map((index) => candidates[index])
+      .filter(Boolean);
+
+  if (!books.length) {
+    return null;
+  }
+
+  return {
+    reply:
+      pick.reply ||
+      "Here are a few books I think you'll like.",
+
+    books,
+
+    intent:
+      intent.type,
+
+    source:
+      "gemini",
+  };
+}
+
+
+/* =========================================================
    API
 ========================================================= */
 
@@ -802,13 +1078,37 @@ export async function POST(
   request
 ) {
   try {
+    const user =
+      await getCurrentUser();
+
+    if (!user) {
+      return Response.json(
+        {
+          error:
+            "unauthorized",
+
+          reply:
+            "Sign in to get personal recommendations.",
+
+          books: [],
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
     const body =
-      await request.json();
+      await request
+        .json()
+        .catch(() => ({}));
 
     const message =
       String(
         body?.message || ""
-      ).trim();
+      )
+        .trim()
+        .slice(0, 1000);
 
     if (!message) {
       return Response.json({
@@ -818,24 +1118,44 @@ export async function POST(
       });
     }
 
-    const favoriteGenres =
-      Array.isArray(
-        body.favoriteGenres
-      )
-        ? body.favoriteGenres
-        : [];
-
-    const existingTitles =
-      Array.isArray(
-        body.existingTitles
-      )
-        ? body.existingTitles
-        : [];
+    const history =
+      sanitizeHistory(
+        body?.history
+      );
 
 
     /*
-      Detectamos qué quiere el usuario.
+      Biblioteca y gustos del usuario.
     */
+
+    const library =
+      await listUserBooks(
+        user.uid
+      );
+
+    const profile =
+      buildTasteProfile(
+        library
+      );
+
+    const favoriteGenres =
+      profile.favoriteGenres;
+
+    const existingTitles =
+      library
+        .map((book) => book.title)
+        .filter(Boolean);
+
+    const libraryKeys =
+      new Set(
+        library
+          .map(
+            (book) =>
+              book.bookKey ||
+              getBookIdentity(book)
+          )
+          .filter(Boolean)
+      );
 
     const intent =
       detectIntent(
@@ -845,19 +1165,46 @@ export async function POST(
 
 
     /*
-      GOOGLE BOOKS
+      CAMINO IA
+    */
+
+    if (isGeminiConfigured()) {
+      try {
+        const aiResult =
+          await recommendWithAI({
+            message,
+            history,
+            profileText:
+              formatTasteProfile(
+                profile
+              ),
+            intent,
+            existingTitles,
+            libraryKeys,
+          });
+
+        if (aiResult) {
+          return Response.json(
+            aiResult
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Gemini recommendation failed, falling back to rules:",
+          error.message
+        );
+      }
+    }
+
+
+    /*
+      CAMINO DE REGLAS (fallback)
     */
 
     let books =
       await searchGoogleBooks(
         intent.query
       );
-
-
-    /*
-      Si tenemos pocos resultados,
-      agregamos Open Library.
-    */
 
     if (
       books.length < 10
@@ -873,49 +1220,36 @@ export async function POST(
       ];
     }
 
-
-    /*
-      Limpiar.
-    */
-
     books =
-      cleanResults(
-        books,
-        existingTitles
+      excludeLibrary(
+        cleanResults(
+          books,
+          existingTitles
+        ),
+        libraryKeys
       );
 
-
-    /*
-      Aplicar lógica de cada tipo
-      de recomendación.
-    */
-
-    books =
+    const finalBooks =
       rankForIntent(
         books,
         intent
-      );
-
-
-    /*
-      Mostrar 7.
-    */
-
-    books =
-      books.slice(0, 7);
-
+      ).slice(0, 7);
 
     return Response.json({
       reply:
         buildReply(
           intent,
-          books
+          finalBooks
         ),
 
-      books,
+      books:
+        finalBooks,
 
       intent:
         intent.type,
+
+      source:
+        "rules",
     });
 
   } catch (error) {

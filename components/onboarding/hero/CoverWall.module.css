@@ -19,20 +19,20 @@
   /* Cover size stays close to its phone size at every width — wide
      screens get more columns (see useColumnCount) rather than bigger,
      softer-looking covers. */
-  gap: clamp(8px, 1vw + 5px, 16px);
+  gap: clamp(11px, 1.6vw + 5px, 16px);
   will-change: transform;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1vw + 5px, 16px);
+  gap: clamp(11px, 1.6vw + 5px, 16px);
   flex: 0 0 auto;
 }
 
 .book {
   position: relative;
-  width: clamp(58px, 2.6vw + 46px, 96px);
+  width: clamp(72px, 4vw + 58px, 96px);
   aspect-ratio: 2 / 3;
 }
 
