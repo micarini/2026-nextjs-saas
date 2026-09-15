@@ -90,14 +90,14 @@ export default function Navbar({ profile, user }) {
           ) : (
             <>
               <Link
-                href="/login"
+                href="/"
                 className="rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-700"
               >
                 Log in
               </Link>
 
               <Link
-                href="/login"
+                href="/"
                 className="rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-200 transition hover:-translate-y-0.5 hover:shadow-xl"
               >
                 Get started
@@ -180,7 +180,7 @@ export default function Navbar({ profile, user }) {
             ) : (
               <>
                 <Link
-                  href="/login"
+                  href="/"
                   onClick={closeMenu}
                   className="mt-2 rounded-xl border border-zinc-200 px-4 py-3 text-center text-sm font-semibold text-zinc-700"
                 >
@@ -188,7 +188,7 @@ export default function Navbar({ profile, user }) {
                 </Link>
 
                 <Link
-                  href="/login"
+                  href="/"
                   onClick={closeMenu}
                   className="rounded-xl bg-gradient-to-r from-violet-600 to-pink-500 px-4 py-3 text-center text-sm font-bold text-white"
                 >

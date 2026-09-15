@@ -13,7 +13,7 @@ export default async function EditUserPage({ params }) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
-    redirect("/login");
+    redirect("/");
   }
 
   const currentProfile = await getCurrentUserProfile(currentUser);

@@ -16,68 +16,6 @@ import BottomNav from "@/components/nav/BottomNav";
 export const dynamic = "force-dynamic";
 
 /* =========================================
-   ICONS
-========================================= */
-
-function ShareIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <path d="m8.6 13.5 6.8 4" />
-      <path d="m15.4 6.5-6.8 4" />
-    </svg>
-  );
-}
-
-function CardIcon() {
-  return (
-    <svg
-      width="19"
-      height="19"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="M7 9h6" />
-      <path d="M7 13h10" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="m13 6 6 6-6 6" />
-    </svg>
-  );
-}
-
-/* =========================================
    ACHIEVEMENT CARD
 ========================================= */
 
@@ -111,7 +49,7 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const [profile, books] = await Promise.all([
@@ -164,18 +102,6 @@ export default async function ProfilePage() {
   const topFourIds = profile?.topFour || [];
 
   /* =========================================
-     PAGES READ
-  ========================================= */
-
-  const pagesRead = books.reduce((total, book) => {
-    if (book.status === "finished") {
-      return total + (book.totalPages || 0);
-    }
-
-    return total + (book.currentPage || 0);
-  }, 0);
-
-  /* =========================================
      READING STREAK
 
      Como tu base actual no tiene todavía una
@@ -191,23 +117,6 @@ export default async function ProfilePage() {
     booksWithDates.length > 0
       ? Math.min(booksWithDates.length, 12)
       : 0;
-
-  /* =========================================
-     READING GOAL
-
-     Por ahora la meta visual es de 12 libros.
-     Se puede conectar después a una meta que
-     configure cada usuario.
-  ========================================= */
-
-  const yearlyGoal = 12;
-
-  const goalProgress = Math.min(
-    100,
-    Math.round(
-      (finishedBooks.length / yearlyGoal) * 100
-    )
-  );
 
   /* =========================================
      PINNED QUOTE
@@ -263,37 +172,14 @@ export default async function ProfilePage() {
         <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-[#24255c]/40 blur-3xl" />
 
 
-        <div className="relative mx-auto max-w-xl">
+        <div className="relative mx-auto max-w-6xl">
 
-          {/* Top actions */}
+          {/* Avatar + identity — stacked/centered on mobile, a single
+              row (avatar left, everything else right) from lg: up. */}
 
-          <div className="flex justify-end gap-5">
+          <div className="mt-4 flex flex-col items-center text-center lg:mt-0 lg:flex-row lg:items-center lg:gap-7 lg:text-left">
 
-            <button
-              className="flex items-center gap-2 text-base text-white/60 transition hover:text-white"
-              type="button"
-            >
-              <ShareIcon />
-              <span>Share</span>
-            </button>
-
-
-            <button
-              className="flex items-center gap-2 text-base text-white/60 transition hover:text-white"
-              type="button"
-            >
-              <CardIcon />
-              <span>Card</span>
-            </button>
-
-          </div>
-
-
-          {/* Avatar */}
-
-          <div className="mt-4 flex flex-col items-center text-center">
-
-            <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#d7ef6b] to-[#9fca3c] text-3xl font-medium text-[#303066] shadow-lg">
+            <div className="flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#d7ef6b] to-[#9fca3c] text-3xl font-medium text-[#303066] shadow-lg lg:h-27 lg:w-27">
 
               {user.photoURL ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -309,38 +195,34 @@ export default async function ProfilePage() {
             </div>
 
 
-            {/* Name */}
+            <div>
 
-            <h1 className="mt-4 text-[28px] font-semibold tracking-tight text-white">
-              {displayName}
-            </h1>
+              {/* Name */}
 
-
-            {/* Public URL */}
-
-            <p className="mt-1 font-mono text-xs tracking-[0.12em] text-white/50">
-              quire.app/{username}
-            </p>
+              <h1 className="mt-4 text-[28px] font-semibold tracking-tight text-white lg:mt-0 lg:text-[32px]">
+                {displayName}
+              </h1>
 
 
-            {/* Buttons */}
+              {/* Public URL */}
 
-            <div className="mt-6 flex gap-3">
-
-              <Link
-                href={`/u/${username}`}
-                className="rounded-full bg-[#f5f4f0] px-6 py-2.5 text-base font-medium text-[#39394a] shadow-sm transition hover:scale-[1.02]"
-              >
-                Public Shelf
-              </Link>
+              <p className="mt-1 font-mono text-xs tracking-[0.12em] text-white/50">
+                quire.app/{username}
+              </p>
 
 
-              <button
-                type="button"
-                className="rounded-full bg-white/10 px-6 py-2.5 text-base font-medium text-white/80 backdrop-blur-sm transition hover:bg-white/20"
-              >
-                Readers
-              </button>
+              {/* Buttons */}
+
+              <div className="mt-6 flex gap-3 lg:mt-5">
+
+                <Link
+                  href={`/u/${username}`}
+                  className="rounded-full bg-[#f5f4f0] px-6 py-2.5 text-base font-medium text-[#39394a] shadow-sm transition hover:scale-[1.02]"
+                >
+                  Public Shelf
+                </Link>
+
+              </div>
 
             </div>
 
@@ -355,20 +237,17 @@ export default async function ProfilePage() {
           CONTENT
       ====================================== */}
 
-      <div className="mx-auto max-w-xl px-6">
+      <div className="mx-auto max-w-6xl px-6">
+
+{/* Currently Reading + My Top Four: two book-showcase cards, side by
+    side from lg: up instead of stacked full-width. */}
+<div className="mt-5 grid gap-8 lg:grid-cols-2 lg:items-start">
 
 {readingBooks.length > 0 && (
-  <section className="mt-5 rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-5 shadow-sm">
-    <div className="flex items-center justify-between">
-      <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
-        Currently Reading
-      </p>
-
-      <span className="flex items-center gap-2 text-xs font-medium text-[#74747b]">
-        <span className="h-2 w-2 rounded-full bg-[#6b8f71]" />
-        Reading now
-      </span>
-    </div>
+  <section>
+    <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
+      Currently Reading
+    </p>
 
     <div className="mt-5">
       {readingBooks.slice(0, 1).map((book) => (
@@ -421,7 +300,7 @@ export default async function ProfilePage() {
             MY TOP FOUR
         ====================================== */}
 
-        <section className="mt-5 rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] p-5 shadow-sm">
+        <section>
   <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
     My Top Four
   </p>
@@ -432,6 +311,8 @@ export default async function ProfilePage() {
     action={saveTopFour}
   />
 </section>
+
+</div>
 
 
         {/* =====================================
@@ -458,155 +339,6 @@ export default async function ProfilePage() {
 
 
         {/* =====================================
-            WHAT VISITORS SEE
-        ====================================== */}
-
-        <section className="mt-4 overflow-hidden rounded-[28px] border border-[#deddd7] bg-[#f7f7f5] shadow-sm">
-
-          <div className="p-6 pb-3">
-
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#74747b]">
-              What Visitors See
-            </p>
-
-          </div>
-
-
-          <div className="px-6 pb-4">
-
-
-            {/* Currently reading */}
-
-            <div className="flex items-center justify-between py-3">
-
-              <div>
-                <p className="text-lg font-medium">
-                  Currently reading
-                </p>
-
-                <p className="mt-1 text-sm text-[#85858c]">
-                  {readingBooks.length} book
-                  {readingBooks.length !== 1 ? "s" : ""}
-                </p>
-              </div>
-
-
-              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
-                Shown
-              </span>
-
-            </div>
-
-
-            {/* Books finished */}
-
-            <div className="flex items-center justify-between py-3">
-
-              <div>
-                <p className="text-lg font-medium">
-                  Books finished
-                </p>
-
-                <p className="mt-1 text-sm text-[#85858c]">
-                  {finishedBooks.length} completed
-                </p>
-              </div>
-
-
-              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
-                Shown
-              </span>
-
-            </div>
-
-
-            {/* Pages read */}
-
-            <div className="flex items-center justify-between py-3">
-
-              <div>
-                <p className="text-lg font-medium">
-                  Pages read
-                </p>
-
-                <p className="mt-1 text-sm text-[#85858c]">
-                  {pagesRead.toLocaleString()} pages
-                </p>
-              </div>
-
-
-              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
-                Shown
-              </span>
-
-            </div>
-
-
-            {/* Reading streak */}
-
-            <div className="flex items-center justify-between py-3">
-
-              <div>
-                <p className="text-lg font-medium">
-                  Reading streak
-                </p>
-
-                <p className="mt-1 text-sm text-[#85858c]">
-                  {readingStreak} day
-                  {readingStreak !== 1 ? "s" : ""}
-                </p>
-              </div>
-
-
-              <span className="rounded-full bg-[#e1e1e8] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#777782]">
-                Hidden
-              </span>
-
-            </div>
-
-
-            {/* Goal progress */}
-
-            <div className="flex items-center justify-between py-3">
-
-              <div>
-                <p className="text-lg font-medium">
-                  Goal progress
-                </p>
-
-                <p className="mt-1 text-sm text-[#85858c]">
-                  {finishedBooks.length} of {yearlyGoal} books ·{" "}
-                  {goalProgress}%
-                </p>
-              </div>
-
-
-              <span className="rounded-full bg-[#c8e75b] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#45501f]">
-                Shown
-              </span>
-
-            </div>
-
-
-            {/* Progress bar */}
-
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#e3e3de]">
-
-              <div
-                className="h-full rounded-full bg-[#b6d94b]"
-                style={{
-                  width: `${goalProgress}%`,
-                }}
-              />
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* =====================================
             ACHIEVEMENTS
         ====================================== */}
 
@@ -617,7 +349,7 @@ export default async function ProfilePage() {
           </p>
 
 
-          <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
+          <div className="mt-5 flex gap-3 overflow-x-auto pb-2 lg:flex-wrap lg:overflow-visible">
 
             <Achievement
               emoji="📚"
@@ -663,7 +395,7 @@ export default async function ProfilePage() {
             READING SUMMARY
         ====================================== */}
 
-        <section className="mt-4 grid grid-cols-2 gap-4">
+        <section className="mt-4 grid grid-cols-2 gap-4 lg:max-w-md">
 
           <div className="rounded-[25px] border border-[#deddd7] bg-white p-5">
 
@@ -701,38 +433,7 @@ export default async function ProfilePage() {
         </section>
 
 
-        {/* =====================================
-            VIEW PUBLIC PROFILE
-        ====================================== */}
-
-        <section className="mt-4">
-
-          <Link
-            href={`/u/${username}`}
-            className="flex items-center justify-between rounded-[25px] bg-[#36366f] p-6 text-white transition hover:bg-[#41417f]"
-          >
-
-            <div>
-
-              <p className="text-lg font-medium">
-                View public shelf
-              </p>
-
-              <p className="mt-1 text-sm text-white/55">
-                See your profile as a visitor.
-              </p>
-
-            </div>
-
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-              <ArrowIcon />
-            </div>
-
-          </Link>
-
-        </section>
-<section className="mt-6">
+        <section className="mt-6">
   <form action={logout}>
     <button
       type="submit"

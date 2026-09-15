@@ -25,9 +25,9 @@ export default async function DashboardPage() {
   // Obtener el usuario actual
   const user = await getCurrentUser();
 
-  // Si no hay usuario, redirigir al login
+  // Si no hay usuario, redirigir a la pantalla de inicio de sesión
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Si todavía no completó el onboarding, mandarlo ahí primero

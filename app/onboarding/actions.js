@@ -15,11 +15,27 @@ function parseGoal(value) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
+// Called right after a successful sign-in, before the cover-wall exit
+// animation plays. Lets OnboardingFlow tell returning users (who already
+// finished onboarding once) apart from brand-new accounts, so returning
+// users skip straight to the dashboard instead of repeating the
+// genres/goal steps.
+export async function checkOnboardingStatus() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return { completed: false };
+  }
+
+  const profile = await getCurrentUserProfile(user);
+  return { completed: Boolean(profile?.onboardingCompletedAt) };
+}
+
 export async function finishOnboarding(formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Make sure the Firestore doc exists before .update()-ing it — a brand
@@ -39,7 +55,7 @@ export async function skipGoal(formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await getCurrentUserProfile(user);

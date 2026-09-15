@@ -38,7 +38,7 @@ export default function Footer() {
             </Link>
 
             <Link
-              href="/login"
+              href="/"
               className="rounded-xl px-4 py-2 text-sm font-medium text-zinc-500 transition hover:bg-violet-50 hover:text-violet-700"
             >
               Log in

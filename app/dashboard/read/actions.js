@@ -21,7 +21,7 @@ export async function beginSession(bookId) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const book = await getUserBook(user.uid, bookId);
@@ -37,7 +37,7 @@ export async function finishSession(bookId, sessionId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const endPage = parseOptionalInt(formData.get("endPage"));
@@ -59,7 +59,7 @@ export async function setBookSpotifyUrl(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const spotifyUrl = String(formData.get("spotifyUrl") || "").trim();

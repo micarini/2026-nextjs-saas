@@ -57,7 +57,7 @@ export default async function RecommendationsPage() {
     await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const books =

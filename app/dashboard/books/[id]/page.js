@@ -26,7 +26,7 @@ export default async function BookDetailPage({ params }) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const { id } = await params;

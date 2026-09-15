@@ -153,7 +153,7 @@ export default async function StatsPage() {
     await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
 

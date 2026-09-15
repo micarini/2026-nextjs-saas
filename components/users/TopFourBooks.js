@@ -89,11 +89,11 @@ export default function TopFourBooks({
 
   return (
     <>
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
 
         {/* LIBROS SELECCIONADOS */}
 
-        {selectedBooks.map((book, index) => (
+        {selectedBooks.map((book) => (
           <div
             key={book.id}
             className="group relative aspect-[0.72]"
@@ -123,12 +123,6 @@ export default function TopFourBooks({
                 </p>
               </div>
             </Link>
-
-            {/* NÚMERO */}
-
-            <div className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-xs font-semibold text-white backdrop-blur-sm">
-              {index + 1}
-            </div>
 
             {/* ELIMINAR */}
 
@@ -170,12 +164,6 @@ export default function TopFourBooks({
         ))}
 
       </div>
-
-      {/* TEXTO */}
-
-      <p className="mt-4 text-center text-xs text-[#85858c]">
-        {selectedBooks.length}/4 favorite books selected
-      </p>
 
       {/* MODAL */}
 

@@ -53,7 +53,7 @@ export default async function LibraryPage({ searchParams }) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const books = await listUserBooks(user.uid);

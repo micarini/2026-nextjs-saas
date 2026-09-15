@@ -18,15 +18,13 @@ export const COVERS = data.map((c, i) => ({
 
 export const HERO_COVERS = COVERS.filter((c) => c.hero);
 
-export const COLUMN_COUNT = 5;
-
-// Deal covers round-robin into columns, repeating the deck if there
-// aren't enough to fill every column to `perColumn`.
-export function columns(perColumn = 8) {
-  const cols = Array.from({ length: COLUMN_COUNT }, () => []);
+// Deal covers round-robin into `columnCount` columns, repeating the deck
+// if there aren't enough uniques to fill every column to `perColumn`.
+export function columns(columnCount, perColumn = 8) {
+  const cols = Array.from({ length: columnCount }, () => []);
   let d = 0;
   for (let row = 0; row < perColumn; row += 1) {
-    for (let col = 0; col < COLUMN_COUNT; col += 1) {
+    for (let col = 0; col < columnCount; col += 1) {
       cols[col].push(COVERS[d % COVERS.length]);
       d += 1;
     }

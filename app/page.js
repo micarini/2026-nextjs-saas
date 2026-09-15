@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getCurrentUserProfile } from "@/lib/users/users";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
-import { finishOnboarding, skipGoal } from "@/app/onboarding/actions";
+import { finishOnboarding, skipGoal, checkOnboardingStatus } from "@/app/onboarding/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,7 @@ export default async function Home() {
       startAuthenticated={Boolean(user)}
       finishAction={finishOnboarding}
       skipAction={skipGoal}
+      checkOnboardingStatusAction={checkOnboardingStatus}
     />
   );
 }

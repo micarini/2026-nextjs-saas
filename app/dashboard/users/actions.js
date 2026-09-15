@@ -15,7 +15,7 @@ async function requireAdmin() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const profile = await getCurrentUserProfile(user);

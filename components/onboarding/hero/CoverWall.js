@@ -2,7 +2,8 @@
 
 import { useMemo, useRef } from "react";
 import { gsap, useGSAP } from "@/lib/anim/gsap";
-import { columns, COLUMN_COUNT } from "./covers";
+import { columns } from "./covers";
+import { useColumnCount } from "./useColumnCount";
 import { createExitTimeline } from "./exitTimeline";
 import styles from "./CoverWall.module.css";
 
@@ -19,10 +20,13 @@ export default function CoverWall({
   const idleTweens = useRef([]);
   const finished = useRef(false);
 
-  const cols = useMemo(() => columns(PER_COLUMN), []);
+  const columnCount = useColumnCount();
+  const cols = useMemo(() => columns(columnCount, PER_COLUMN), [columnCount]);
 
   // Idle drift: alternating columns scroll opposite ways, the middle
-  // ones faster than the edges.
+  // ones faster than the edges. Rebuilds when columnCount changes (e.g.
+  // the window crosses a breakpoint) since the column elements themselves
+  // are re-rendered then.
   useGSAP(
     () => {
       if (reducedMotion) return;
@@ -31,7 +35,7 @@ export default function CoverWall({
       );
       idleTweens.current = colEls.map((el, i) => {
         const up = i % 2 === 0;
-        const fromEdge = Math.abs(i - (COLUMN_COUNT - 1) / 2);
+        const fromEdge = Math.abs(i - (colEls.length - 1) / 2);
         const duration = 15 + fromEdge * 7;
         gsap.set(el, { yPercent: up ? 0 : -50 });
         return gsap.to(el, {
@@ -42,7 +46,7 @@ export default function CoverWall({
         });
       });
     },
-    { scope: root, dependencies: [reducedMotion] }
+    { scope: root, dependencies: [reducedMotion, columnCount] }
   );
 
   // Exit: fired when `exiting` flips true (after auth succeeds).

@@ -95,7 +95,7 @@ export async function createBook(formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const bookId = await createUserBook(user.uid, parseBookForm(formData));
@@ -108,7 +108,7 @@ export async function updateBook(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await updateUserBook(user.uid, bookId, parseBookForm(formData));
@@ -122,7 +122,7 @@ export async function changeBookStatus(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const status = String(formData.get("status") || "");
@@ -141,7 +141,7 @@ export async function changeBookRating(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const rating = parseOptionalInt(formData.get("rating"));
@@ -154,7 +154,7 @@ export async function changeBookProgress(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const currentPage = parseOptionalInt(formData.get("currentPage"));
@@ -167,7 +167,7 @@ export async function changeBookDates(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await updateUserBookDates(user.uid, bookId, {
@@ -182,7 +182,7 @@ export async function deleteBook(bookId) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await deleteUserBook(user.uid, bookId);
@@ -196,7 +196,7 @@ export async function addNote(bookId, formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const text = String(formData.get("text") || "").trim();
@@ -216,7 +216,7 @@ export async function deleteNote(bookId, noteId) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await deleteBookNote(user.uid, bookId, noteId);

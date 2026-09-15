@@ -11,7 +11,7 @@ export default async function WrappedPage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const books = await listUserBooks(user.uid);

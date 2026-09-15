@@ -44,6 +44,17 @@ export const metadata = {
   description: "Next.js server-side boilerplate with Firebase Auth",
 };
 
+// `resizes-content` makes the layout viewport (and dvh units) actually
+// shrink when the on-screen keyboard opens, instead of letting the
+// keyboard sit on top of fixed/bottom-anchored content — needed for the
+// onboarding sign-in form, which pins its inputs near the bottom of the
+// screen.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html

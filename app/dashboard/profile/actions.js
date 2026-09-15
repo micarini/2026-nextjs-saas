@@ -13,7 +13,7 @@ export async function saveUsername(formData) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await setUsername(
@@ -28,7 +28,7 @@ export async function saveTopFour(bookIds) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   await updateUserTopFour(user.uid, bookIds);

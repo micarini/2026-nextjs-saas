@@ -14,7 +14,7 @@ export default async function FocusModePage({ searchParams }) {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const { book: bookId } = await searchParams;
