@@ -1,34 +1,10 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { getCurrentUser } from "@/lib/firebase/session";
-import AddBookFlow from "@/components/books/AddBookFlow";
-import BottomNav from "@/components/nav/BottomNav";
+import {
+  redirect,
+} from "next/navigation";
 
-export const dynamic = "force-dynamic";
 
-export default async function NewBookPage({ searchParams }) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/");
-  }
-
-  const { q } = await searchParams;
-
-  return (
-    <main className="min-h-screen bg-[#f6f1e7] pb-24 text-[#20180f]" style={{ colorScheme: "light" }}>
-      <div className="px-5 pt-8">
-        <Link href="/dashboard" className="text-sm text-[#a89a7f]">
-          ← Back to library
-        </Link>
-        <h1 className="mt-3 text-3xl font-bold">Add a book</h1>
-      </div>
-
-      <div className="px-5 py-6">
-        <AddBookFlow initialQuery={q || ""} />
-      </div>
-
-      <BottomNav active="home" />
-    </main>
+export default function NewBookPage() {
+  redirect(
+    "/dashboard"
   );
 }
