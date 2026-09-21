@@ -43,6 +43,19 @@ export async function finishSession(bookId, sessionId, formData) {
   const endPage = parseOptionalInt(formData.get("endPage"));
   const secondsElapsed = parseOptionalInt(formData.get("secondsElapsed")) || 0;
   const mood = String(formData.get("mood") || "") || null;
+  const book = await getUserBook(user.uid, bookId);
+
+  if (!book) {
+    throw new Error("Book not found.");
+  }
+
+  if (endPage !== null && endPage < 0) {
+    throw new Error("The current page cannot be negative.");
+  }
+
+  if (endPage !== null && book.totalPages && endPage > book.totalPages) {
+    throw new Error(`The current page cannot be greater than ${book.totalPages}.`);
+  }
 
   await endSession(user.uid, bookId, sessionId, { endPage, mood, secondsElapsed });
 
@@ -53,6 +66,7 @@ export async function finishSession(bookId, sessionId, formData) {
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/books/${bookId}`);
   revalidatePath("/dashboard/read");
+  revalidatePath("/dashboard/stats");
 }
 
 export async function setBookSpotifyUrl(bookId, formData) {

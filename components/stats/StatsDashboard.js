@@ -7,6 +7,7 @@ import StatsWall from "@/components/stats/StatsWall";
 
 export default function StatsDashboard({
   stats,
+  updateReadingDayAction,
 }) {
   const [view, setView] =
     useState("wall");
@@ -72,7 +73,7 @@ export default function StatsDashboard({
 
       <div>
         {view === "wall" ? (
-          <StatsWall stats={stats} />
+          <StatsWall stats={stats} updateReadingDayAction={updateReadingDayAction} />
         ) : (
           <StatsCards stats={stats} />
         )}

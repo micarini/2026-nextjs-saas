@@ -4,9 +4,8 @@ import { getCurrentUser } from "@/lib/firebase/session";
 import { getUserBook } from "@/lib/books/books";
 import { listBookNotes } from "@/lib/books/notes";
 import { genreLabel } from "@/lib/books/genres";
-import StatusPill from "@/components/books/StatusPill";
+import BookCompletionFlow from "@/components/books/BookCompletionFlow";
 import PersonalRatingStars from "@/components/books/PersonalRatingStars";
-import CurrentPageEditor from "@/components/books/CurrentPageEditor";
 import BookDatesEditor from "@/components/books/BookDatesEditor";
 import NotesList from "@/components/books/NotesList";
 import BottomNav from "@/components/nav/BottomNav";
@@ -93,7 +92,13 @@ export default async function BookDetailPage({ params }) {
         </div>
 
         <div className="mt-4">
-          <StatusPill currentStatus={book.status} action={changeBookStatus.bind(null, book.id)} />
+          <BookCompletionFlow
+            book={book}
+            statusAction={changeBookStatus.bind(null, book.id)}
+            progressAction={changeBookProgress.bind(null, book.id)}
+            dateAction={changeBookDates.bind(null, book.id)}
+            ratingAction={changeBookRating.bind(null, book.id)}
+          />
         </div>
 
         <PersonalRatingStars
@@ -113,12 +118,6 @@ export default async function BookDetailPage({ params }) {
             </p>
           </div>
         </div>
-
-        <CurrentPageEditor
-          currentPage={book.currentPage}
-          totalPages={book.totalPages}
-          action={changeBookProgress.bind(null, book.id)}
-        />
 
         <BookDatesEditor
           startDate={book.startDate}

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { STATUSES } from "@/lib/books/statuses";
 
-export default function StatusPill({ currentStatus, action }) {
+export default function StatusPill({ currentStatus, action, onCompleted }) {
+  const router = useRouter();
   const [status, setStatus] = useState(currentStatus);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
@@ -43,6 +45,10 @@ export default function StatusPill({ currentStatus, action }) {
         const formData = new FormData();
         formData.set("status", next);
         await action(formData);
+        if (next === "read") {
+          onCompleted?.();
+        }
+        router.refresh();
       } catch (err) {
         setError(err.message || "Could not update the status.");
         setStatus(previous);

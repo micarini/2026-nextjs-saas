@@ -2,9 +2,11 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/firebase/session";
 import { listUserBooks } from "@/lib/books/books";
+import { getUserReadingDays } from "@/lib/users/users";
 
 import BottomNav from "@/components/nav/BottomNav";
 import StatsDashboard from "@/components/stats/StatsDashboard";
+import { changeReadingDay } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +79,18 @@ function getBookPages(book) {
   }
 
   return 0;
+}
+
+function getBookPagesRead(book) {
+  if (["read", "finished", "completed"].includes(String(book.status).toLowerCase())) {
+    return getBookPages(book);
+  }
+
+  const currentPage = parseInt(book.currentPage, 10);
+
+  return !Number.isNaN(currentPage) && currentPage > 0
+    ? currentPage
+    : 0;
 }
 
 
@@ -161,8 +175,10 @@ export default async function StatsPage() {
      DATOS
   ======================================================= */
 
-  const books =
-    await listUserBooks(user.uid);
+  const [books, savedReadingDays] = await Promise.all([
+    listUserBooks(user.uid),
+    getUserReadingDays(user.uid),
+  ]);
 
   const now =
     new Date();
@@ -248,11 +264,11 @@ export default async function StatsPage() {
   ======================================================= */
 
   const totalPagesReadThisYear =
-    finishedBooksThisYear.reduce(
+    books.reduce(
       (total, book) => {
         return (
           total +
-          getBookPages(book)
+          getBookPagesRead(book)
         );
       },
       0
@@ -533,110 +549,9 @@ export default async function StatsPage() {
      y finishDate cuentan como días activos.
   ======================================================= */
 
-  const activityDaysSet =
-    new Set();
-
-
-  books.forEach((book) => {
-    const startDate =
-      toDate(book.startDate);
-
-    if (!startDate) {
-      return;
-    }
-
-
-    let endDate =
-      toDate(book.finishDate) ||
-      now;
-
-
-    /*
-      No permitir fechas posteriores
-      al día actual.
-    */
-
-    if (endDate > now) {
-      endDate = now;
-    }
-
-
-    /*
-      Intersección del período del libro
-      con el año actual.
-    */
-
-    const startOfYear =
-      new Date(
-        currentYear,
-        0,
-        1
-      );
-
-    const endOfYear =
-      new Date(
-        currentYear,
-        11,
-        31,
-        23,
-        59,
-        59
-      );
-
-
-    const rangeStart =
-      startDate < startOfYear
-        ? startOfYear
-        : startDate;
-
-
-    const rangeEnd =
-      endDate > endOfYear
-        ? endOfYear
-        : endDate;
-
-
-    if (
-      rangeStart >
-      rangeEnd
-    ) {
-      return;
-    }
-
-
-    const cursor =
-      new Date(
-        rangeStart.getFullYear(),
-        rangeStart.getMonth(),
-        rangeStart.getDate()
-      );
-
-
-    const finalDay =
-      new Date(
-        rangeEnd.getFullYear(),
-        rangeEnd.getMonth(),
-        rangeEnd.getDate()
-      );
-
-
-    while (
-      cursor <= finalDay
-    ) {
-      activityDaysSet.add(
-        formatDateKey(cursor)
-      );
-
-      cursor.setDate(
-        cursor.getDate() + 1
-      );
-    }
-  });
-
-
-  const activityDays = [
-    ...activityDaysSet,
-  ].sort();
+  const activityDays = savedReadingDays
+    .filter((entry) => entry.date.startsWith(`${currentYear}-`))
+    .sort((a, b) => a.date.localeCompare(b.date));
 
 
   const readingDayCount =
@@ -760,6 +675,7 @@ export default async function StatsPage() {
 
       <StatsDashboard
         stats={stats}
+        updateReadingDayAction={changeReadingDay}
       />
 
       <BottomNav

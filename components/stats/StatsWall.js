@@ -37,6 +37,7 @@ function SectionCard({
 
 export default function StatsWall({
   stats,
+  updateReadingDayAction,
 }) {
   const remaining =
     Math.max(
@@ -135,6 +136,7 @@ export default function StatsWall({
           activityDays={
             stats.activityDays
           }
+          updateReadingDayAction={updateReadingDayAction}
         />
 
         <p className="mt-4 text-[11px] text-[#98949b]">

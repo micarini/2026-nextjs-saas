@@ -28,6 +28,10 @@ import {
   STATUSES,
 } from "@/lib/books/statuses";
 
+import {
+  getBookMetadata,
+} from "@/lib/books/bookMetadata";
+import { updateUserReadingDaysRange } from "@/lib/users/users";
 
 /* =========================================================
    PARSERS
@@ -279,13 +283,53 @@ export async function createBook(
   }
 
 
-  const bookId =
-    await createUserBook(
-      user.uid,
-      parseBookForm(
-        formData
-      )
-    );
+  const parsed =
+  parseBookForm(
+    formData
+  );
+
+
+let metadata = {
+  totalPages:
+    parsed.totalPages,
+
+  isbn:
+    parsed.isbn,
+};
+
+
+if (!parsed.totalPages) {
+  metadata =
+    await getBookMetadata({
+      title:
+        parsed.title,
+
+      author:
+        parsed.author,
+
+      isbn:
+        parsed.isbn,
+    });
+}
+
+
+const bookId =
+  await createUserBook(
+    user.uid,
+    {
+      ...parsed,
+
+      totalPages:
+        parsed.totalPages ??
+        metadata.totalPages ??
+        null,
+
+      isbn:
+        parsed.isbn ||
+        metadata.isbn ||
+        "",
+    }
+  );
 
 
   revalidatePath("/");
@@ -402,6 +446,9 @@ export async function changeBookStatus(
   revalidatePath(
     `/dashboard/books/${bookId}`
   );
+
+  revalidatePath("/dashboard/stats");
+
 }
 
 
@@ -583,6 +630,29 @@ function resolveDiscoveryGenre(
    NO ADD BOOK PAGE
    NO SEARCH
 ========================================================= */
+function getTotalPagesFromBook(book) {
+  const candidates = [
+    book?.totalPages,
+    book?.pageCount,
+    book?.pages,
+    book?.numberOfPages,
+    book?.number_of_pages,
+    book?.number_of_pages_median,
+  ];
+
+  for (const candidate of candidates) {
+    const value = Number(candidate);
+
+    if (
+      Number.isFinite(value) &&
+      value > 0
+    ) {
+      return Math.round(value);
+    }
+  }
+
+  return null;
+}
 
 export async function setDiscoveryBookStatus({
   book,
@@ -638,6 +708,30 @@ export async function setDiscoveryBookStatus({
       "Unknown author"
     ).trim();
 
+const existingTotalPages =
+  getTotalPagesFromBook(
+    book
+  );
+
+
+const metadata =
+  existingTotalPages
+    ? {
+        totalPages:
+          existingTotalPages,
+
+        isbn:
+          book?.isbn || "",
+
+        openLibraryId:
+          book?.openLibraryId || "",
+      }
+    : await getBookMetadata({
+        title,
+        author,
+        isbn:
+          book?.isbn || "",
+      });
 
   let bookId =
     existingBookId ||
@@ -751,23 +845,20 @@ export async function setDiscoveryBookStatus({
            */
 
           isbn:
-            String(
-              book?.isbn ||
-              ""
-            ),
-
+  String(
+    book?.isbn ||
+    metadata.isbn ||
+    ""
+  ),
 
           /*
            * Pages
            */
 
-          totalPages:
-            Number(
-              book?.totalPages ??
-              book?.pageCount
-            ) || null,
-
-
+        totalPages:
+  existingTotalPages ??
+  metadata.totalPages ??
+  null,
           currentPage:
             0,
 
@@ -814,12 +905,13 @@ export async function setDiscoveryBookStatus({
             ),
 
 
-          openLibraryId:
-            String(
-              book?.openLibraryId ||
-              book?.openLibraryKey ||
-              ""
-            ),
+         openLibraryId:
+  String(
+    book?.openLibraryId ||
+    book?.openLibraryKey ||
+    metadata.openLibraryId ||
+    ""
+  ),
         }
       );
   }
@@ -922,6 +1014,8 @@ export async function changeBookRating(
   revalidatePath(
     `/dashboard/books/${bookId}`
   );
+
+  revalidatePath("/dashboard/stats");
 }
 
 
@@ -960,6 +1054,9 @@ export async function changeBookProgress(
   revalidatePath(
     `/dashboard/books/${bookId}`
   );
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/stats");
 }
 
 
@@ -978,7 +1075,6 @@ export async function changeBookDates(
   if (!user) {
     redirect("/");
   }
-
 
   await updateUserBookDates(
     user.uid,
@@ -1007,10 +1103,22 @@ export async function changeBookDates(
     }
   );
 
+  const startDate = parseDateInput(formData.get("startDate"));
+  const finishDate = parseDateInput(formData.get("finishDate"));
+
+  if (startDate && finishDate) {
+    await updateUserReadingDaysRange(
+      user.uid,
+      startDate.toISOString().slice(0, 10),
+      finishDate.toISOString().slice(0, 10)
+    );
+  }
 
   revalidatePath(
     `/dashboard/books/${bookId}`
   );
+
+  revalidatePath("/dashboard/stats");
 }
 
 
