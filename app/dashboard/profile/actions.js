@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/firebase/session";
 import {
   setUsername,
   updateUserTopFour,
+  updatePinnedQuoteBook,
 } from "@/lib/users/users";
 
 export async function saveUsername(formData) {
@@ -32,6 +33,18 @@ export async function saveTopFour(bookIds) {
   }
 
   await updateUserTopFour(user.uid, bookIds);
+
+  revalidatePath("/dashboard/profile");
+}
+
+export async function savePinnedQuoteBook(bookId, quoteText) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
+  await updatePinnedQuoteBook(user.uid, bookId, quoteText);
 
   revalidatePath("/dashboard/profile");
 }

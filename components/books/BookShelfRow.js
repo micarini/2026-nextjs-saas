@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import RatingStars from "@/components/books/RatingStars";
 import StatusBadge from "@/components/books/StatusBadge";
 
 
@@ -37,49 +36,51 @@ export default function BookShelfRow({
   return (
     <section className="mb-8">
 
-      <div className="mb-3 flex items-center justify-between gap-3">
+      {label ? (
+        <div className="mb-3 flex items-center justify-between gap-3">
 
-        {titleHref ? (
-          <Link
-            href={titleHref}
-            className="
-              group
-              inline-flex
-              items-center
-              gap-1
-              text-[15px]
-              font-semibold
-              text-[#20180f]
-            "
-          >
-            {label}
-
-            <span
+          {titleHref ? (
+            <Link
+              href={titleHref}
               className="
-                translate-x-0
-                text-[#a89a7f]
-                transition
-                group-hover:translate-x-1
+                group
+                inline-flex
+                items-center
+                gap-1
+                text-[15px]
+                font-semibold
+                text-[#20180f]
               "
             >
-              <ArrowIcon />
-            </span>
-          </Link>
-        ) : (
-          <h2 className="text-[15px] font-semibold text-[#20180f]">
-            {label}
-          </h2>
-        )}
+              {label}
+
+              <span
+                className="
+                  translate-x-0
+                  text-[#a89a7f]
+                  transition
+                  group-hover:translate-x-1
+                "
+              >
+                <ArrowIcon />
+              </span>
+            </Link>
+          ) : (
+            <h2 className="text-[15px] font-semibold text-[#20180f]">
+              {label}
+            </h2>
+          )}
 
 
-        <span className="shrink-0 text-[11px] text-[#a89a7f]">
-          {books.length} book
-          {books.length === 1
-            ? ""
-            : "s"}
-        </span>
+          <span className="shrink-0 text-[11px] text-[#a89a7f]">
+            {books.length} book
+            {books.length === 1
+              ? ""
+              : "s"}
+          </span>
 
-      </div>
+        </div>
+      ) : null}
 
 
       <div className="flex gap-3 overflow-x-auto pb-2">
@@ -144,13 +145,6 @@ export default function BookShelfRow({
               <p className="text-[11px] text-[#a89a7f]">
                 {book.author}
               </p>
-
-
-              <RatingStars
-                rating={
-                  book.rating
-                }
-              />
 
             </Link>
           )

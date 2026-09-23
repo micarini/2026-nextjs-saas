@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { STATUSES } from "@/lib/books/statuses";
 
-export default function StatusPill({ currentStatus, action, onCompleted }) {
+export default function StatusPill({ currentStatus, action, removeAction, onCompleted }) {
   const router = useRouter();
   const [status, setStatus] = useState(currentStatus);
   const [open, setOpen] = useState(false);
@@ -13,10 +13,6 @@ export default function StatusPill({ currentStatus, action, onCompleted }) {
   const containerRef = useRef(null);
 
   const currentLabel = STATUSES.find((entry) => entry.value === status)?.label || STATUSES[0].label;
-  // "Want to read" is the default/unstarted state, so it keeps the accent
-  // color as a call to action. Any other status means the user already
-  // made an active choice, so the pill turns neutral/white.
-  const isDefault = status === "to_read";
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -56,22 +52,36 @@ export default function StatusPill({ currentStatus, action, onCompleted }) {
     });
   }
 
+  function remove() {
+    setOpen(false);
+
+    if (!removeAction) {
+      return;
+    }
+
+    setError("");
+
+    startTransition(async () => {
+      try {
+        await removeAction();
+        router.push("/dashboard/library");
+      } catch (err) {
+        setError(err.message || "Could not remove this book.");
+      }
+    });
+  }
+
   return (
     <div ref={containerRef} className="relative">
-      <div
-        className={`flex h-12 w-full overflow-hidden rounded-full transition-colors ${
-          isDefault
-            ? "bg-[#322F7A] shadow-[0_8px_20px_rgba(50,47,122,0.35)]"
-            : "border border-[#e7e3da] bg-white"
-        }`}
-      >
+      {/* Every status reads the same neutral way — being "Want to read" is
+          not a more provisional choice than the others, so it doesn't get
+          a different color treatment. */}
+      <div className="flex h-12 w-full overflow-hidden rounded-full border border-[#e7e3da] bg-white transition-colors">
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
           disabled={isPending}
-          className={`flex-1 text-center text-sm font-extrabold disabled:opacity-60 ${
-            isDefault ? "text-white" : "text-gray-900"
-          }`}
+          className="flex-1 text-center text-sm font-extrabold text-gray-900 disabled:opacity-60"
         >
           {currentLabel}
         </button>
@@ -81,16 +91,14 @@ export default function StatusPill({ currentStatus, action, onCompleted }) {
           onClick={() => setOpen((value) => !value)}
           aria-label="Change status"
           disabled={isPending}
-          className={`flex w-12 items-center justify-center border-l disabled:opacity-60 ${
-            isDefault ? "border-white/20" : "border-[#e7e3da]"
-          }`}
+          className="flex w-12 items-center justify-center border-l border-[#e7e3da] disabled:opacity-60"
         >
           <svg
             width="14"
             height="14"
             viewBox="0 0 24 24"
             fill="none"
-            stroke={isDefault ? "#ffffff" : "#171717"}
+            stroke="#171717"
             strokeWidth="2.5"
             className={`transition-transform ${open ? "rotate-180" : ""}`}
           >
@@ -114,6 +122,19 @@ export default function StatusPill({ currentStatus, action, onCompleted }) {
               {entry.value === status ? <span>✓</span> : null}
             </button>
           ))}
+
+          {removeAction ? (
+            <>
+              <div className="border-t border-[#e7e3da]" />
+              <button
+                type="button"
+                onClick={remove}
+                className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+              >
+                Remove from library
+              </button>
+            </>
+          ) : null}
         </div>
       ) : null}
 

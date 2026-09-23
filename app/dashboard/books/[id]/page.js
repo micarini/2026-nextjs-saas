@@ -39,8 +39,12 @@ export default async function BookDetailPage({ params }) {
 
   return (
     <main className="min-h-screen bg-[#F8F8FA] pb-28 text-[#2c3025]">
+      {/* Mobile: cover panel and info card stack, unchanged. Desktop: they
+          sit side by side in a wider, centered column instead of a phone-
+          width card floating in the middle of the screen. */}
+      <div className="lg:mx-auto lg:flex lg:max-w-5xl lg:items-start lg:gap-10 lg:px-6 lg:pt-10">
       {/* Cover panel */}
-      <div className="relative bg-gradient-to-b from-[#eae7fb] to-[#F8F8FA] px-5 pb-10 pt-6">
+      <div className="relative bg-gradient-to-b from-[#eae7fb] to-[#F8F8FA] px-5 pb-10 pt-6 lg:w-72 lg:shrink-0 lg:rounded-[28px] lg:pb-14">
         <div className="flex items-center">
           <Link
             href="/dashboard"
@@ -53,7 +57,7 @@ export default async function BookDetailPage({ params }) {
           </Link>
         </div>
 
-        <div className="mx-auto mt-8 w-40">
+        <div className="mx-auto mt-8 w-40 lg:mt-10 lg:w-56">
           <div className="aspect-[0.68] overflow-hidden rounded-xl bg-[#e9e5da] shadow-[0_20px_40px_rgba(0,0,0,0.15)]">
             {book.coverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -64,7 +68,7 @@ export default async function BookDetailPage({ params }) {
       </div>
 
       {/* Info card */}
-      <div className="mx-auto -mt-6 max-w-md rounded-t-3xl bg-white px-6 pb-6 pt-8 shadow-[0_-10px_30px_rgba(0,0,0,0.04)]">
+      <div className="mx-auto -mt-6 max-w-md rounded-t-3xl bg-white px-6 pb-6 pt-8 shadow-[0_-10px_30px_rgba(0,0,0,0.04)] lg:mx-0 lg:mt-0 lg:max-w-xl lg:flex-1 lg:rounded-[28px] lg:pt-10 lg:shadow-[0_20px_50px_rgba(44,48,37,0.06)]">
         <h1 className="text-center text-2xl font-bold text-[#20180f]">{book.title}</h1>
         <p className="mt-1 text-center text-sm text-[#77766d]">by {book.author}</p>
 
@@ -98,6 +102,7 @@ export default async function BookDetailPage({ params }) {
             progressAction={changeBookProgress.bind(null, book.id)}
             dateAction={changeBookDates.bind(null, book.id)}
             ratingAction={changeBookRating.bind(null, book.id)}
+            removeAction={deleteBook.bind(null, book.id)}
           />
         </div>
 
@@ -147,6 +152,7 @@ export default async function BookDetailPage({ params }) {
             Delete book
           </button>
         </form>
+      </div>
       </div>
 
       <BottomNav active="home" />

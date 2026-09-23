@@ -6,7 +6,8 @@ import { getCurrentUserProfile } from "@/lib/users/users";
 import { listUserBooks } from "@/lib/books/books";
 import TopFourBooks from "@/components/users/TopFourBooks";
 import { logout } from "@/app/dashboard/actions";
-import { saveTopFour } from "./actions";
+import { saveTopFour, savePinnedQuoteBook } from "./actions";
+import PinnedQuotePicker from "@/components/profile/PinnedQuotePicker";
 
 import BottomNav from "@/components/nav/BottomNav";
 
@@ -118,20 +119,31 @@ export default async function ProfilePage() {
   /* =========================================
      PINNED QUOTE
 
-     Utilizamos una descripción de uno de los
-     libros si existe.
+     El usuario puede elegir de qué libro sale
+     (profile.pinnedQuoteBookId); si no eligió
+     ninguno, o el que eligió ya no tiene
+     descripción, volvemos a la selección
+     automática de antes.
   ========================================= */
 
+  const pinnedBook = profile?.pinnedQuoteBookId
+    ? books.find(
+        (book) => book.id === profile.pinnedQuoteBookId && book.description
+      )
+    : null;
+
   const quoteBook =
+    pinnedBook ||
     finishedBooks.find((book) => book.description) ||
     books.find((book) => book.description) ||
     null;
 
-  const pinnedQuote = quoteBook?.description
-    ? `"${quoteBook.description
-        .split(".")[0]
-        .slice(0, 120)}"`
-    : `"A reader lives a thousand lives before he dies."`;
+  const pinnedQuote =
+    pinnedBook && profile?.pinnedQuoteText
+      ? `"${profile.pinnedQuoteText}"`
+      : quoteBook?.description
+        ? `"${quoteBook.description.split(".")[0].slice(0, 120)}"`
+        : `"A reader lives a thousand lives before he dies."`;
 
   /* =========================================
      ACHIEVEMENTS
@@ -318,9 +330,17 @@ export default async function ProfilePage() {
 
         <section className="mt-4 rounded-[28px] border border-[#c8c8d7] bg-[#e6e5f0] p-6 shadow-sm">
 
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#66667c]">
-            Pinned Quote
-          </p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#66667c]">
+              Pinned Quote
+            </p>
+
+            <PinnedQuotePicker
+              books={books}
+              currentBookId={quoteBook?.id}
+              action={savePinnedQuoteBook}
+            />
+          </div>
 
 
           <blockquote className="mt-5 text-[25px] font-medium leading-[1.25] tracking-tight text-[#353653]">

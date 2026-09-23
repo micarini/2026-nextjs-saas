@@ -154,6 +154,7 @@ export default function BookCompletionFlow({
   progressAction,
   dateAction,
   ratingAction,
+  removeAction,
 }) {
   const [promptOpen, setPromptOpen] = useState(false);
 
@@ -162,6 +163,7 @@ export default function BookCompletionFlow({
       <StatusPill
         currentStatus={book.status}
         action={statusAction}
+        removeAction={removeAction}
         onCompleted={() => setPromptOpen(true)}
       />
       <CurrentPageEditor
