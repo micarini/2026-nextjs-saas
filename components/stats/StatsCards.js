@@ -2,6 +2,7 @@ import GenreStats from "@/components/stats/GenreStats";
 import GoalRing from "@/components/stats/GoalRing";
 import MonthlyBars from "@/components/stats/MonthlyBars";
 import RatingStats from "@/components/stats/RatingStats";
+import YearBooks from "@/components/stats/YearBooks";
 
 function MetricCard({
   eyebrow,
@@ -168,6 +169,8 @@ export default function StatsCards({
         </div>
 
       </section>
+
+      <YearBooks books={stats.yearBooks} year={stats.year} />
 
       {/* GENRES */}
 

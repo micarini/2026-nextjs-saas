@@ -128,6 +128,7 @@ export default async function BookDetailPage({ params }) {
           startDate={book.startDate}
           finishDate={book.finishDate}
           targetDate={book.targetDate}
+          readingLogs={book.readingLogs}
           action={changeBookDates.bind(null, book.id)}
         />
 

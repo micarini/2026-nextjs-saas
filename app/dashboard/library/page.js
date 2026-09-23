@@ -7,6 +7,7 @@ import AllBooksLibrary from "@/components/books/AllBooksLibrary";
 
 import { listUserBooks } from "@/lib/books/books";
 import { getCurrentUser } from "@/lib/firebase/session";
+import { GENRES } from "@/lib/books/genres";
 
 export const dynamic = "force-dynamic";
 
@@ -19,20 +20,63 @@ function prettyGenre(value) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function canonicalGenre(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+  const match = GENRES.find(
+    (genre) =>
+      normalized === genre.value.replace(/[_-]+/g, " ") ||
+      normalized === genre.label.toLowerCase()
+  );
+
+  return match?.value || normalized.replace(/\s+/g, "_");
+}
+
+function getBookGenres(book) {
+  const fallback = [
+    ...(Array.isArray(book.genres) ? book.genres : []),
+    ...(Array.isArray(book.categories) ? book.categories : []),
+    ...(Array.isArray(book.shelves) ? book.shelves : []),
+  ].filter(Boolean);
+  const primary = Array.isArray(book.genre)
+    ? book.genre
+    : typeof book.genre === "string"
+      ? book.genre.split(",")
+      : [];
+  const meaningfulFallback = fallback.filter(
+    (value) => String(value).trim().toLowerCase() !== "fantasy"
+  );
+
+  if (
+    primary.length === 1 &&
+    String(primary[0]).trim().toLowerCase() === "fantasy" &&
+    meaningfulFallback.length
+  ) {
+    return meaningfulFallback.map(canonicalGenre);
+  }
+
+  return primary.length
+    ? primary.map(canonicalGenre)
+    : fallback.length
+      ? fallback.map(canonicalGenre)
+      : ["other"];
+}
 
 function makeGenreShelves(books) {
-  const groups = books.reduce((acc, book) => {
-    const genre = book.genre || "other";
+  const groups = {};
 
-    acc[genre] = acc[genre] || [];
-    acc[genre].push(book);
-
-    return acc;
-  }, {});
+  books.forEach((book) => {
+    getBookGenres(book).forEach((genre) => {
+      groups[genre] = groups[genre] || [];
+      groups[genre].push(book);
+    });
+  });
 
   return Object.entries(groups)
     .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 4)
     .map(([genre, genreBooks]) => ({
       key: `genre-${genre}`,
       label: prettyGenre(genre),

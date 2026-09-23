@@ -6,6 +6,7 @@ import GoalRing from "@/components/stats/GoalRing";
 import MonthlyBars from "@/components/stats/MonthlyBars";
 import RatingStats from "@/components/stats/RatingStats";
 import ReadingHeatmap from "@/components/stats/ReadingHeatmap";
+import YearBooks from "@/components/stats/YearBooks";
 
 function SectionCard({
   eyebrow,
@@ -126,6 +127,8 @@ export default function StatsWall({
         </div>
 
       </SectionCard>
+
+      <YearBooks books={stats.yearBooks} year={stats.year} />
 
       {/* READING DAYS */}
 

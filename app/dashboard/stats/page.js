@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { listUserBooks } from "@/lib/books/books";
 import { getUserReadingDays } from "@/lib/users/users";
+import { GENRES } from "@/lib/books/genres";
 
 import BottomNav from "@/components/nav/BottomNav";
 import StatsDashboard from "@/components/stats/StatsDashboard";
@@ -109,34 +110,65 @@ function normalizeGenre(value) {
     );
 }
 
+function canonicalGenre(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+
+  const match = GENRES.find((genre) => {
+    const genreValue = genre.value.replace(/[_-]+/g, " ");
+    const genreLabel = genre.label.toLowerCase();
+
+    return normalized === genreValue || normalized === genreLabel;
+  });
+
+  return match?.label || normalizeGenre(value);
+}
 
 function getBookGenres(book) {
-  if (
-    Array.isArray(book.genres) &&
-    book.genres.length
-  ) {
-    return book.genres
-      .map(normalizeGenre)
-      .filter(Boolean);
+  const primary = Array.isArray(book.genre)
+    ? book.genre
+    : typeof book.genre === "string"
+      ? book.genre.split(",")
+      : [];
+  const fallback = Array.isArray(book.genres) ? book.genres : [];
+  const metadata = [
+    ...fallback,
+    ...(Array.isArray(book.categories) ? book.categories : []),
+    ...(Array.isArray(book.shelves) ? book.shelves : []),
+  ];
+  const primaryValues = primary.filter((value) => String(value || "").trim());
+
+  if (primaryValues.length) {
+    const primaryIsDefault =
+      primaryValues.length === 1 &&
+      String(primaryValues[0]).trim().toLowerCase() === "fantasy";
+    const meaningfulFallback = fallback.filter(
+      (value) => String(value || "").trim().toLowerCase() !== "fantasy"
+    );
+
+    if (primaryIsDefault) {
+      if (meaningfulFallback.length) {
+        return meaningfulFallback.map(canonicalGenre).filter(Boolean);
+      }
+
+      const meaningfulMetadata = metadata.filter(
+        (value) => String(value || "").trim().toLowerCase() !== "fantasy"
+      );
+
+      return meaningfulMetadata.length
+        ? meaningfulMetadata.map(canonicalGenre).filter(Boolean)
+        : ["Other"];
+    }
+
+    return primaryValues.map(canonicalGenre).filter(Boolean);
   }
 
-  if (Array.isArray(book.genre)) {
-    return book.genre
-      .map(normalizeGenre)
-      .filter(Boolean);
-  }
-
-  if (
-    typeof book.genre === "string" &&
-    book.genre.trim()
-  ) {
-    return book.genre
-      .split(",")
-      .map(normalizeGenre)
-      .filter(Boolean);
-  }
-
-  return ["Other"];
+  return fallback.length
+    ? fallback.map(canonicalGenre).filter(Boolean)
+    : ["Other"];
 }
 
 
@@ -327,6 +359,7 @@ export default async function StatsPage() {
         monthIndex: index,
         books: 0,
         pages: 0,
+        bookItems: [],
       })
     );
 
@@ -357,6 +390,14 @@ export default async function StatsPage() {
       monthly[
         monthIndex
       ].books += 1;
+
+      monthly[monthIndex].bookItems.push({
+        id: book.id,
+        title: book.title || "Untitled",
+        author: book.author || "",
+        coverUrl: book.coverUrl || "",
+        pages: getBookPages(book),
+      });
 
       monthly[
         monthIndex
@@ -663,6 +704,14 @@ export default async function StatsPage() {
     fiveStarReads,
 
     fiveStarTitles,
+
+    yearBooks: finishedBooksThisYear.map((book) => ({
+      id: book.id,
+      title: book.title || "Untitled",
+      author: book.author || "",
+      coverUrl: book.coverUrl || "",
+      pages: getBookPages(book),
+    })),
   };
 
 

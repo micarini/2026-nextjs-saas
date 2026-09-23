@@ -1056,6 +1056,8 @@ export async function changeBookProgress(
   );
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/library");
+  revalidatePath("/dashboard/read");
   revalidatePath("/dashboard/stats");
 }
 
@@ -1074,6 +1076,16 @@ export async function changeBookDates(
 
   if (!user) {
     redirect("/");
+  }
+
+  let readingLogs;
+
+  try {
+    readingLogs = JSON.parse(
+      String(formData.get("readingLogs") || "[]")
+    );
+  } catch {
+    throw new Error("Invalid reading history.");
   }
 
   await updateUserBookDates(
@@ -1100,19 +1112,38 @@ export async function changeBookDates(
             "targetDate"
           )
         ),
+      readingLogs: Array.isArray(readingLogs)
+        ? readingLogs.map((entry) => ({
+            startDate: parseDateInput(entry.startDate),
+            finishDate: parseDateInput(entry.finishDate),
+            rating: entry.rating,
+          }))
+        : [],
     }
   );
 
   const startDate = parseDateInput(formData.get("startDate"));
   const finishDate = parseDateInput(formData.get("finishDate"));
 
-  if (startDate && finishDate) {
-    await updateUserReadingDaysRange(
-      user.uid,
-      startDate.toISOString().slice(0, 10),
-      finishDate.toISOString().slice(0, 10)
-    );
-  }
+  const ranges = [
+    ...(startDate && finishDate ? [{ startDate, finishDate }] : []),
+    ...readingLogs
+      .map((entry) => ({
+        startDate: parseDateInput(entry.startDate),
+        finishDate: parseDateInput(entry.finishDate),
+      }))
+      .filter((entry) => entry.startDate && entry.finishDate),
+  ];
+
+  await Promise.all(
+    ranges.map((range) =>
+      updateUserReadingDaysRange(
+        user.uid,
+        range.startDate.toISOString().slice(0, 10),
+        range.finishDate.toISOString().slice(0, 10)
+      )
+    )
+  );
 
   revalidatePath(
     `/dashboard/books/${bookId}`

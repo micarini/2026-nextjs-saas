@@ -13,7 +13,7 @@ export default function GenreStats({
     genres.slice(0, 5);
 
   const total =
-    visible.reduce(
+    genres.reduce(
       (
         sum,
         item

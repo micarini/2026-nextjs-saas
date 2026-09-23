@@ -37,6 +37,7 @@ export default function ReadingHeatmap({
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0].color);
+  const [mobileMonth, setMobileMonth] = useState(new Date().getMonth());
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
   const [localActivity, setLocalActivity] = useState(() => {
@@ -156,8 +157,42 @@ export default function ReadingHeatmap({
 
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        {MONTHS.map((month, monthIndex) => {
+      <div className="flex items-center justify-between sm:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileMonth((value) => Math.max(0, value - 1))}
+          disabled={mobileMonth === 0}
+          aria-label="Previous month"
+          className="rounded-full border border-[#dedbd2] px-3 py-1 text-sm text-[#36366f] disabled:opacity-30"
+        >
+          ←
+        </button>
+        <span className="text-sm font-semibold text-[#77767f]">
+          {MONTHS[mobileMonth]} · {mobileMonth + 1} / 12
+        </span>
+        <button
+          type="button"
+          onClick={() => setMobileMonth((value) => Math.min(11, value + 1))}
+          disabled={mobileMonth === 11}
+          aria-label="Next month"
+          className="rounded-full border border-[#dedbd2] px-3 py-1 text-sm text-[#36366f] disabled:opacity-30"
+        >
+          →
+        </button>
+      </div>
+
+      <div className="sm:hidden">
+        {renderMonth(mobileMonth)}
+      </div>
+
+      <div className="hidden gap-5 sm:grid sm:grid-cols-2">
+        {MONTHS.map((month, monthIndex) => renderMonth(monthIndex))}
+      </div>
+    </div>
+  );
+
+  function renderMonth(monthIndex) {
+    const month = MONTHS[monthIndex];
           const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
           const firstDay = new Date(year, monthIndex, 1).getDay();
           const cells = Array.from({ length: firstDay + daysInMonth });
@@ -202,8 +237,5 @@ export default function ReadingHeatmap({
               </div>
             </div>
           );
-        })}
-      </div>
-    </div>
-  );
+  }
 }

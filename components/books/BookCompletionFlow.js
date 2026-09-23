@@ -22,6 +22,7 @@ function CompletionPrompt({
   startDate,
   finishDate,
   targetDate,
+  readingLogs = [],
   currentRating,
   dateAction,
   ratingAction,
@@ -66,6 +67,10 @@ function CompletionPrompt({
         dates.set("startDate", startedOn);
         dates.set("finishDate", date);
         dates.set("targetDate", targetDate ? String(targetDate).slice(0, 10) : "");
+        dates.set("readingLogs", JSON.stringify([
+          ...readingLogs,
+          { startDate: startedOn, finishDate: date, rating },
+        ]));
         await dateAction(dates);
 
         const ratingForm = new FormData();
@@ -177,6 +182,7 @@ export default function BookCompletionFlow({
         startDate={book.startDate}
         finishDate={book.finishDate}
         targetDate={book.targetDate}
+        readingLogs={book.readingLogs}
         currentRating={book.rating}
         dateAction={dateAction}
         ratingAction={ratingAction}

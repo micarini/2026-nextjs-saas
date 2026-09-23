@@ -262,7 +262,7 @@ export default async function ProfilePage() {
       {readingBooks.slice(0, 1).map((book) => (
         <Link
           key={book.id}
-          href={`/dashboard/books/${book.id}/edit`}
+          href={`/dashboard/books/${book.id}`}
           className="group flex gap-4"
         >
           <div className="h-32 w-22 shrink-0 overflow-hidden rounded-xl bg-[#e4e2dc]">

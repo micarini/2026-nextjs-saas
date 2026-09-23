@@ -129,7 +129,7 @@ function DateChooser({ field, value, onChange, disabled }) {
   );
 }
 
-export default function BookDatesEditor({ startDate, finishDate, targetDate, action }) {
+export default function BookDatesEditor({ startDate, finishDate, targetDate, readingLogs = [], action }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState({
     startDate: toParts(startDate),
@@ -137,6 +137,7 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
     targetDate: toParts(targetDate),
   });
   const [error, setError] = useState("");
+  const [logs, setLogs] = useState([]);
   const [isPending, startTransition] = useTransition();
   const modalRef = useRef(null);
 
@@ -161,6 +162,17 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
       finishDate: toParts(finishDate),
       targetDate: toParts(targetDate),
     });
+    setLogs(
+      readingLogs.length
+        ? readingLogs.map((entry) => ({
+            startDate: entry.startDate ? entry.startDate.slice(0, 10) : "",
+            finishDate: entry.finishDate ? entry.finishDate.slice(0, 10) : "",
+            rating: entry.rating || "",
+          }))
+        : startDate || finishDate
+          ? [{ startDate: startDate?.slice(0, 10) || "", finishDate: finishDate?.slice(0, 10) || "", rating: "" }]
+          : []
+    );
     setError("");
     setOpen(true);
   }
@@ -174,6 +186,7 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
         formData.set("startDate", toISO(values.startDate));
         formData.set("finishDate", toISO(values.finishDate));
         formData.set("targetDate", toISO(values.targetDate));
+        formData.set("readingLogs", JSON.stringify(logs));
         await action(formData);
         setOpen(false);
       } catch (err) {
@@ -250,6 +263,66 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, act
                   onChange={(next) => setValues((prev) => ({ ...prev, [field.key]: next }))}
                 />
               ))}
+            </div>
+
+            <div className="mt-6 border-t border-[#e7e3da] pt-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-extrabold text-[#20180f]">Reading history</h4>
+                  <p className="mt-1 text-xs text-[#77766d]">Add rereads with a rating for each reading.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLogs((current) => [...current, { startDate: "", finishDate: "", rating: "" }])}
+                  disabled={isPending}
+                  className="rounded-full border border-[#322F7A] px-3 py-1.5 text-xs font-semibold text-[#322F7A]"
+                >
+                  + Reread
+                </button>
+              </div>
+
+              <div className="mt-3 space-y-3">
+                {logs.map((log, index) => (
+                  <div key={index} className="rounded-xl border border-[#e7e3da] p-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#77766d]">Read {index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => setLogs((current) => current.filter((_, itemIndex) => itemIndex !== index))}
+                        disabled={isPending}
+                        className="text-xs font-semibold text-red-500"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={log.startDate}
+                        onChange={(event) => setLogs((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, startDate: event.target.value } : item))}
+                        disabled={isPending}
+                        className="h-10 rounded-lg border border-[#e7e3da] px-2 text-xs"
+                      />
+                      <input
+                        type="date"
+                        value={log.finishDate}
+                        onChange={(event) => setLogs((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, finishDate: event.target.value } : item))}
+                        disabled={isPending}
+                        className="h-10 rounded-lg border border-[#e7e3da] px-2 text-xs"
+                      />
+                    </div>
+                    <select
+                      value={log.rating}
+                      onChange={(event) => setLogs((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, rating: event.target.value } : item))}
+                      disabled={isPending}
+                      className="mt-2 h-10 w-full rounded-lg border border-[#e7e3da] px-2 text-xs"
+                    >
+                      <option value="">Rating (optional)</option>
+                      {[1, 2, 3, 4, 5].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {error ? <p className="mt-4 text-xs text-red-600">{error}</p> : null}

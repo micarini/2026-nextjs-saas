@@ -6,7 +6,7 @@ import StatusBadge from "@/components/books/StatusBadge";
 const defaultHrefFor = (
   book
 ) =>
-  `/dashboard/books/${book.id}/edit`;
+  `/dashboard/books/${book.id}`;
 
 
 function ArrowIcon() {
