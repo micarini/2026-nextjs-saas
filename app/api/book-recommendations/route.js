@@ -56,6 +56,38 @@ const GENRES = [
   "history",
 ];
 
+const GENRE_ALIASES = {
+  fantasy: ["fantasy", "fantasía", "fantasia"],
+  romance: ["romance", "romantic"],
+  mystery: ["mystery", "misterio", "detective"],
+  thriller: ["thriller", "suspense"],
+  horror: ["horror", "terror"],
+  "science fiction": ["science fiction", "sci-fi", "scifi", "ciencia ficción", "ciencia ficcion"],
+  "historical fiction": ["historical fiction", "historical", "histórica", "historica"],
+  "young adult": ["young adult", "ya"],
+  biography: ["biography", "biografía", "biografia"],
+  poetry: ["poetry", "poesía", "poesia"],
+  classics: ["classics", "classic", "clásicos", "clasicos"],
+  crime: ["crime", "crimen"],
+  psychology: ["psychology", "psicología", "psicologia"],
+  philosophy: ["philosophy", "filosofía", "filosofia"],
+  history: ["history", "historia"],
+};
+
+function detectRequestedGenre(text) {
+  const normalized = clean(text)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  return Object.entries(GENRE_ALIASES).find(([, aliases]) =>
+    aliases.some((alias) =>
+      normalized.includes(
+        alias.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      )
+    )
+  )?.[0] || "";
+}
+
 
 /* =========================================================
    DETECTAR INTENCIÓN
@@ -66,6 +98,7 @@ function detectIntent(
   favoriteGenres = []
 ) {
   const text = clean(message);
+  const requestedGenre = detectRequestedGenre(text);
 
   /*
     POPULAR
@@ -80,7 +113,8 @@ function detectIntent(
   ) {
     return {
       type: "popular",
-      query: "fiction",
+      query: requestedGenre || "fiction",
+      genre: requestedGenre || null,
     };
   }
 
@@ -99,7 +133,8 @@ function detectIntent(
   ) {
     return {
       type: "short",
-      query: "fiction",
+      query: requestedGenre || "fiction",
+      genre: requestedGenre || null,
     };
   }
 
@@ -200,7 +235,7 @@ function detectIntent(
     ) {
       return {
         type: "genre",
-        genre,
+        genre: requestedGenre || genre,
         query: genre,
       };
     }
@@ -322,16 +357,14 @@ function detectIntent(
 
 async function searchGoogleBooks(
   query,
-  maxResults = 40
+  maxResults = 40,
+  { genre = "" } = {}
 ) {
   const url = new URL(
     "https://www.googleapis.com/books/v1/volumes"
   );
 
-  url.searchParams.set(
-    "q",
-    query
-  );
+  url.searchParams.set("q", genre ? `subject:${genre}` : query);
 
   url.searchParams.set(
     "maxResults",
@@ -457,7 +490,8 @@ async function searchGoogleBooks(
 
 async function searchOpenLibrary(
   query,
-  limit = 40
+  limit = 40,
+  { genre = "" } = {}
 ) {
   const url = new URL(
     "https://openlibrary.org/search.json"
@@ -465,8 +499,12 @@ async function searchOpenLibrary(
 
   url.searchParams.set(
     "q",
-    query
+    genre ? `subject:${genre}` : query
   );
+
+  if (genre) {
+    url.searchParams.set("subject", genre);
+  }
 
   url.searchParams.set(
     "limit",
@@ -588,6 +626,30 @@ function cleanResults(
 
       if (!normalized) {
         return false;
+      }
+
+      function genreMatches(book, genre) {
+        if (!genre) {
+          return true;
+        }
+
+        const aliases = GENRE_ALIASES[genre] || [genre];
+        const metadata = (book.genres || [])
+          .map((value) => clean(value))
+          .join(" ");
+
+        return aliases.some((alias) => {
+          const normalizedAlias = clean(alias);
+          return metadata.includes(normalizedAlias);
+        });
+      }
+
+      function filterByIntent(books, intent) {
+        if (!intent.genre) {
+          return books;
+        }
+
+        return books.filter((book) => genreMatches(book, intent.genre));
       }
 
       if (
@@ -982,6 +1044,10 @@ async function recommendWithAI({
       ? plan.queries
       : [intent.query];
 
+  const catalogQueries = intent.genre
+    ? queries.map(() => `subject:${intent.genre}`)
+    : queries;
+
   const [
     suggested,
     queried,
@@ -993,10 +1059,11 @@ async function recommendWithAI({
     ),
 
     Promise.all(
-      queries.map((query) =>
+      catalogQueries.map((query) =>
         searchGoogleBooks(
           query,
-          15
+          15,
+          intent.genre ? { genre: intent.genre } : {}
         )
       )
     ),
@@ -1018,6 +1085,8 @@ async function recommendWithAI({
       ),
       libraryKeys
     );
+
+  candidates = filterByIntent(candidates, intent);
 
   if (plan.maxPages) {
     const shortOnes =
@@ -1203,7 +1272,9 @@ export async function POST(
 
     let books =
       await searchGoogleBooks(
-        intent.query
+        intent.query,
+        40,
+        intent.genre ? { genre: intent.genre } : {}
       );
 
     if (
@@ -1211,7 +1282,9 @@ export async function POST(
     ) {
       const extra =
         await searchOpenLibrary(
-          intent.query
+          intent.query,
+          40,
+          intent.genre ? { genre: intent.genre } : {}
         );
 
       books = [
@@ -1228,6 +1301,8 @@ export async function POST(
         ),
         libraryKeys
       );
+
+    books = filterByIntent(books, intent);
 
     const finalBooks =
       rankForIntent(

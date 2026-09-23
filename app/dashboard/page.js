@@ -27,6 +27,24 @@ import {
 export const dynamic =
   "force-dynamic";
 
+function FirestoreUnavailable() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#F8F8FA] px-6 text-center text-[#2c3025]">
+      <section className="max-w-md rounded-3xl bg-white p-8 shadow-sm">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#77766d]">
+          Dashboard temporarily unavailable
+        </p>
+        <h1 className="mt-3 text-2xl font-bold">
+          Your reading data is temporarily unavailable
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-[#77766d]">
+          The database has reached its current quota. No books were deleted.
+          Please wait for the quota to reset and reload this page.
+        </p>
+      </section>
+    </main>
+  );
+}
 
 export default async function DashboardPage() {
   const user =
@@ -38,10 +56,14 @@ export default async function DashboardPage() {
   }
 
 
-  const profile =
-    await getCurrentUserProfile(
-      user
-    );
+  let profile;
+
+  try {
+    profile = await getCurrentUserProfile(user);
+  } catch (error) {
+    console.error("Dashboard profile unavailable:", error);
+    return <FirestoreUnavailable />;
+  }
 
 
   if (
@@ -65,13 +87,10 @@ export default async function DashboardPage() {
    * Cargamos todos los datos
    * en paralelo.
    */
-  const [
-    books,
-    trending,
-    newReleases,
-    genreShelves,
-  ] =
-    await Promise.all([
+  let dashboardData;
+
+  try {
+    dashboardData = await Promise.all([
       listUserBooks(
         user.uid
       ),
@@ -94,6 +113,17 @@ export default async function DashboardPage() {
         )
       ),
     ]);
+  } catch (error) {
+    console.error("Dashboard data unavailable:", error);
+    return <FirestoreUnavailable />;
+  }
+
+  const [
+    books,
+    trending,
+    newReleases,
+    genreShelves,
+  ] = dashboardData;
 
 
   /*
