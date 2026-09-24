@@ -14,8 +14,7 @@ export default function StatusBadge({ status, currentPage, totalPages, className
         dark ? "bg-[#20180f] text-white" : "bg-white/90 text-[#6b5f4a]"
       } ${className}`}
     >
-      {label}
-      {progress !== null ? ` · ${progress}%` : ""}
+      {progress !== null ? `${progress}%` : label}
     </span>
   );
 }
