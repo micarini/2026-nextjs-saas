@@ -298,7 +298,10 @@ let metadata = {
 };
 
 
-if (!parsed.totalPages) {
+if (
+  !parsed.totalPages ||
+  parsed.averageRating === null
+) {
   metadata =
     await getBookMetadata({
       title:
@@ -328,6 +331,16 @@ const bookId =
         parsed.isbn ||
         metadata.isbn ||
         "",
+
+      averageRating:
+        parsed.averageRating ??
+        metadata.averageRating ??
+        null,
+
+      ratingsCount:
+        parsed.ratingsCount ??
+        metadata.ratingsCount ??
+        null,
     }
   );
 

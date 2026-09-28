@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getUserBook } from "@/lib/books/books";
+import { getBookMetadata } from "@/lib/books/bookMetadata";
 import { listBookNotes } from "@/lib/books/notes";
 import { genreLabel } from "@/lib/books/genres";
 import BookCompletionFlow from "@/components/books/BookCompletionFlow";
@@ -34,6 +35,16 @@ export default async function BookDetailPage({ params }) {
   if (!book) {
     notFound();
   }
+
+  const publicMetadata = book.averageRating
+    ? null
+    : await getBookMetadata({
+        title: book.title,
+        author: book.author,
+        isbn: book.isbn,
+      });
+  const averageRating = book.averageRating ?? publicMetadata?.averageRating;
+  const ratingsCount = book.ratingsCount ?? publicMetadata?.ratingsCount;
 
   const notes = await listBookNotes(user.uid, id);
 
@@ -73,21 +84,21 @@ export default async function BookDetailPage({ params }) {
         <p className="mt-1 text-center text-sm text-[#77766d]">by {book.author}</p>
 
         <div className="mt-4 flex justify-center">
-          {book.averageRating ? (
+          {averageRating ? (
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
                 <span
                   key={n}
                   className={`text-lg ${
-                    n <= Math.round(book.averageRating) ? "text-amber-400" : "text-[#e7e3da]"
+                    n <= Math.round(averageRating) ? "text-amber-400" : "text-[#e7e3da]"
                   }`}
                 >
                   ★
                 </span>
               ))}
               <span className="ml-1 text-sm font-medium text-[#77766d]">
-                {book.averageRating.toFixed(1)} / 5.0
-                {book.ratingsCount ? ` (${book.ratingsCount})` : ""}
+                {averageRating.toFixed(1)} / 5.0
+                {ratingsCount ? ` (${ratingsCount})` : ""}
               </span>
             </div>
           ) : (
