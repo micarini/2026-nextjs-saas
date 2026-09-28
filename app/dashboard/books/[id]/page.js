@@ -5,10 +5,12 @@ import { getUserBook } from "@/lib/books/books";
 import { getBookMetadata } from "@/lib/books/bookMetadata";
 import { listBookNotes } from "@/lib/books/notes";
 import { genreLabel } from "@/lib/books/genres";
+import { getRelatedBooks } from "@/lib/books/relatedBooks";
 import BookCompletionFlow from "@/components/books/BookCompletionFlow";
 import PersonalRatingStars from "@/components/books/PersonalRatingStars";
 import BookDatesEditor from "@/components/books/BookDatesEditor";
 import NotesList from "@/components/books/NotesList";
+import RelatedBooksSection from "@/components/books/RelatedBooksSection";
 import BottomNav from "@/components/nav/BottomNav";
 import {
   changeBookStatus,
@@ -47,6 +49,13 @@ export default async function BookDetailPage({ params }) {
   const ratingsCount = book.ratingsCount ?? publicMetadata?.ratingsCount;
 
   const notes = await listBookNotes(user.uid, id);
+  const relatedBooks = await getRelatedBooks({
+    title: book.title,
+    author: book.author,
+    genre: book.genre,
+    categories: book.categories,
+    shelves: book.shelves,
+  });
 
   return (
     <main className="min-h-screen bg-[#F8F8FA] pb-28 text-[#2c3025]">
@@ -155,6 +164,11 @@ export default async function BookDetailPage({ params }) {
             deleteNoteAction={deleteNote.bind(null, book.id)}
           />
         </div>
+
+        <RelatedBooksSection
+          sameAuthor={relatedBooks.sameAuthor}
+          similar={relatedBooks.similar}
+        />
 
         <form action={deleteBook.bind(null, book.id)} className="mt-8">
           <button
