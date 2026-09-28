@@ -82,9 +82,9 @@ function parseOptionalRating(value) {
     return null;
   }
 
-  return parsed >= 0.25 &&
+  return parsed >= 0.5 &&
     parsed <= 5 &&
-    Number.isInteger(parsed * 4)
+    Number.isInteger(parsed * 2)
     ? parsed
     : null;
 }
@@ -240,7 +240,7 @@ function parseBookForm(formData) {
       ).trim(),
 
     totalPages:
-      parseOptionalRating(
+      parseOptionalInt(
         formData.get(
           "totalPages"
         )

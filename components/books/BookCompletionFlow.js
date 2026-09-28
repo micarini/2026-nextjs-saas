@@ -56,8 +56,8 @@ function CompletionPrompt({
       return;
     }
 
-    if (rating < 0.25 || rating > 5 || Math.round(rating * 4) !== rating * 4) {
-      setError("Choose a rating between 0.25 and 5 stars.");
+    if (rating < 0.5 || rating > 5 || Math.round(rating * 2) !== rating * 2) {
+      setError("Choose a rating between 0.5 and 5 stars.");
       return;
     }
 

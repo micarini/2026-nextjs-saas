@@ -488,7 +488,7 @@ export default function BookForm({
               </span>
               <input type="hidden" name="rating" value={rating || ""} />
               <div className="flex gap-2 bg-white w-fit px-4 py-2 rounded-2xl border border-gray-100 shadow-sm">
-                <StarRatingInput value={rating} onChange={setRating} size="text-3xl" />
+                <StarRatingInput value={rating} onChange={setRating} />
               </div>
               {rating > 0 && (
                 <p className="mt-3 text-sm font-bold text-amber-500 ml-1">
