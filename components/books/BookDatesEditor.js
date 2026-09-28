@@ -318,7 +318,7 @@ export default function BookDatesEditor({ startDate, finishDate, targetDate, rea
                       className="mt-2 h-10 w-full rounded-lg border border-[#e7e3da] px-2 text-xs"
                     >
                       <option value="">Rating (optional)</option>
-                      {[1, 2, 3, 4, 5].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
+                      {Array.from({ length: 20 }, (_, index) => (index + 1) / 4).map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
                     </select>
                   </div>
                 ))}

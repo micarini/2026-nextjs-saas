@@ -75,6 +75,20 @@ function parseOptionalFloat(value) {
     : parsed;
 }
 
+function parseOptionalRating(value) {
+  const parsed = parseOptionalFloat(value);
+
+  if (parsed === null || parsed === 0) {
+    return null;
+  }
+
+  return parsed >= 0.25 &&
+    parsed <= 5 &&
+    Number.isInteger(parsed * 4)
+    ? parsed
+    : null;
+}
+
 
 function parseDateInput(value) {
   const trimmed =
@@ -207,11 +221,9 @@ function parseBookForm(formData) {
       ),
 
     rating:
-      ratingRaw
-        ? Number(
-            ratingRaw
-          )
-        : null,
+      parseOptionalRating(
+        ratingRaw
+      ),
 
     coverUrl:
       String(
@@ -228,7 +240,7 @@ function parseBookForm(formData) {
       ).trim(),
 
     totalPages:
-      parseOptionalInt(
+      parseOptionalRating(
         formData.get(
           "totalPages"
         )
@@ -1056,11 +1068,15 @@ export async function changeBookProgress(
       )
     );
 
+  const startedDate =
+    String(formData.get("startDate") || "").trim() || null;
 
-  await updateUserBookProgress(
+  const progress =
+    await updateUserBookProgress(
     user.uid,
     bookId,
-    currentPage
+    currentPage,
+    startedDate
   );
 
 
@@ -1072,6 +1088,8 @@ export async function changeBookProgress(
   revalidatePath("/dashboard/library");
   revalidatePath("/dashboard/read");
   revalidatePath("/dashboard/stats");
+
+  return progress;
 }
 
 
@@ -1129,7 +1147,7 @@ export async function changeBookDates(
         ? readingLogs.map((entry) => ({
             startDate: parseDateInput(entry.startDate),
             finishDate: parseDateInput(entry.finishDate),
-            rating: entry.rating,
+            rating: parseOptionalRating(entry.rating),
           }))
         : [],
     }

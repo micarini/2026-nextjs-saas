@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import CurrentPageEditor from "./CurrentPageEditor";
 import StatusPill from "./StatusPill";
+import StarRatingInput from "./StarRatingInput";
 
 function today() {
   const date = new Date();
@@ -55,8 +56,8 @@ function CompletionPrompt({
       return;
     }
 
-    if (rating < 1 || rating > 5) {
-      setError("Choose a rating from 1 to 5 stars.");
+    if (rating < 0.25 || rating > 5 || Math.round(rating * 4) !== rating * 4) {
+      setError("Choose a rating between 0.25 and 5 stars.");
       return;
     }
 
@@ -122,20 +123,7 @@ function CompletionPrompt({
 
         <div className="mt-5">
           <p className="text-sm font-bold text-[#20180f]">Your rating</p>
-          <div className="mt-2 flex gap-2">
-            {[1, 2, 3, 4, 5].map((value) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setRating(value)}
-                disabled={isPending}
-                aria-label={`${value} star${value === 1 ? "" : "s"}`}
-                className="text-3xl leading-none disabled:opacity-60"
-              >
-                <span className={value <= rating ? "text-amber-400" : "text-gray-300"}>★</span>
-              </button>
-            ))}
-          </div>
+          <StarRatingInput value={rating} onChange={setRating} disabled={isPending} />
         </div>
 
         {error ? <p className="mt-4 text-xs text-red-600">{error}</p> : null}
@@ -162,6 +150,7 @@ export default function BookCompletionFlow({
   removeAction,
 }) {
   const [promptOpen, setPromptOpen] = useState(false);
+  const [completionStartDate, setCompletionStartDate] = useState(book.startDate);
 
   return (
     <>
@@ -175,11 +164,14 @@ export default function BookCompletionFlow({
         currentPage={book.currentPage}
         totalPages={book.totalPages}
         action={progressAction}
-        onCompleted={() => setPromptOpen(true)}
+        onCompleted={(date) => {
+          setCompletionStartDate(date || book.startDate);
+          setPromptOpen(true);
+        }}
       />
       <CompletionPrompt
         open={promptOpen}
-        startDate={book.startDate}
+        startDate={completionStartDate || book.startDate}
         finishDate={book.finishDate}
         targetDate={book.targetDate}
         readingLogs={book.readingLogs}

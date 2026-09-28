@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { GENRES } from "@/lib/books/genres";
-
-const RATING_OPTIONS = [1, 2, 3, 4, 5];
+import StarRatingInput from "./StarRatingInput";
 
 function toDateInputValue(value) {
   return value ? value.slice(0, 10) : "";
@@ -489,25 +488,7 @@ export default function BookForm({
               </span>
               <input type="hidden" name="rating" value={rating || ""} />
               <div className="flex gap-2 bg-white w-fit px-4 py-2 rounded-2xl border border-gray-100 shadow-sm">
-                {RATING_OPTIONS.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setRating(value)}
-                    className="group outline-none"
-                    aria-label={`${value} stars`}
-                  >
-                    <span
-                      className={`text-3xl transition-colors drop-shadow-sm ${
-                        rating >= value
-                          ? "text-amber-400"
-                          : "text-gray-200 group-hover:text-amber-200"
-                      }`}
-                    >
-                      ★
-                    </span>
-                  </button>
-                ))}
+                <StarRatingInput value={rating} onChange={setRating} size="text-3xl" />
               </div>
               {rating > 0 && (
                 <p className="mt-3 text-sm font-bold text-amber-500 ml-1">

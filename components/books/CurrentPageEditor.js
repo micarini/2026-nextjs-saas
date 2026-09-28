@@ -29,13 +29,17 @@ export default function CurrentPageEditor({ currentPage, totalPages, action, onC
       try {
         const formData = new FormData();
         formData.set("currentPage", value);
-        await action(formData);
+        const progress = Number(value);
+        const now = new Date();
+        const startedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        formData.set("startDate", startedDate);
+        const result = await action(formData);
         setDirty(false);
         if (
-          Number(value) === Number(totalPages) &&
+          progress === Number(totalPages) &&
           Number(currentPage) !== Number(totalPages)
         ) {
-          onCompleted?.();
+          onCompleted?.(result?.startDate || startedDate);
         }
       } catch (err) {
         setError(err.message || "Could not save your progress.");
