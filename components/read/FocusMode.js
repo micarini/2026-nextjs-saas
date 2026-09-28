@@ -308,9 +308,7 @@ export default function FocusMode({
           </svg>
         </Link>
 
-        <p className="flex-1 text-center font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-white/50">
-          Focus mode
-        </p>
+        <div className="flex-1" />
 
         <div className="size-9" />
       </div>
