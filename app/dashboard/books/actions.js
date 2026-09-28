@@ -126,7 +126,7 @@ function parseBookForm(formData) {
     );
 
 
-  const status =
+  let status =
     String(
       formData.get("status") ||
       "to_read"
@@ -138,6 +138,8 @@ function parseBookForm(formData) {
       formData.get("rating") ||
       ""
     ).trim();
+
+  const parsedRating = parseOptionalRating(ratingRaw);
 
 
   const published =
@@ -189,6 +191,10 @@ function parseBookForm(formData) {
     );
   }
 
+  if (parsedRating !== null) {
+    status = "read";
+  }
+
 
   return {
     title,
@@ -221,9 +227,7 @@ function parseBookForm(formData) {
       ),
 
     rating:
-      parseOptionalRating(
-        ratingRaw
-      ),
+      parsedRating,
 
     coverUrl:
       String(
@@ -1022,7 +1026,7 @@ export async function changeBookRating(
 
 
   const rating =
-    parseOptionalInt(
+    parseOptionalRating(
       formData.get(
         "rating"
       )
