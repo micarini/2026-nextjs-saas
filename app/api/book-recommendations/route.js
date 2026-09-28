@@ -454,7 +454,11 @@ async function searchGoogleBooks(
           info.description || "",
 
         genres:
-          info.categories || [],
+          info.categories?.length
+            ? info.categories
+            : genre
+              ? [genre]
+              : [],
 
         publishedDate:
           info.publishedDate || "",
@@ -504,6 +508,50 @@ async function searchOpenLibrary(
 
   if (genre) {
     url.searchParams.set("subject", genre);
+  }
+
+  async function searchOpenLibrarySubject(genre, limit = 40) {
+    const subject = encodeURIComponent(genre.replace(/\s+/g, "_"));
+    const response = await fetch(
+      `https://openlibrary.org/subjects/${subject}.json?limit=${limit}&sort=rating`,
+      {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const error = new Error(`Open Library subject request failed: ${response.status}`);
+      error.status = response.status;
+      error.provider = "Open Library";
+      throw error;
+    }
+
+    const data = await response.json();
+
+    return (Array.isArray(data.works) ? data.works : [])
+      .map((book) => ({
+        id: `open-${book.key || book.title}`,
+        source: "openlibrary",
+        title: book.title || "",
+        author: book.authors?.[0]?.name || "",
+        authors: book.authors?.map((author) => author.name) || [],
+        description: "",
+        genres: book.subject || [genre],
+        publishedDate: book.first_publish_year
+          ? String(book.first_publish_year)
+          : "",
+        pageCount: null,
+        rating: Number(book.ratings_average) || null,
+        ratingsCount: Number(book.ratings_count) || 0,
+        coverUrl: book.cover_id
+          ? `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`
+          : "",
+        infoLink: book.key
+          ? `https://openlibrary.org${book.key}`
+          : "",
+      }))
+      .filter((book) => book.title);
   }
 
   url.searchParams.set(
@@ -568,8 +616,11 @@ async function searchOpenLibrary(
 
         genres:
           book.subject
-            ?.slice(0, 6) ||
-          [],
+            ?.slice(0, 6)?.length
+            ? book.subject.slice(0, 6)
+            : genre
+              ? [genre]
+              : [],
 
         publishedDate:
           book.first_publish_year
@@ -628,30 +679,6 @@ function cleanResults(
         return false;
       }
 
-      function genreMatches(book, genre) {
-        if (!genre) {
-          return true;
-        }
-
-        const aliases = GENRE_ALIASES[genre] || [genre];
-        const metadata = (book.genres || [])
-          .map((value) => clean(value))
-          .join(" ");
-
-        return aliases.some((alias) => {
-          const normalizedAlias = clean(alias);
-          return metadata.includes(normalizedAlias);
-        });
-      }
-
-      function filterByIntent(books, intent) {
-        if (!intent.genre) {
-          return books;
-        }
-
-        return books.filter((book) => genreMatches(book, intent.genre));
-      }
-
       if (
         existing.has(normalized)
       ) {
@@ -669,6 +696,47 @@ function cleanResults(
       return true;
     }
   );
+}
+
+function normalizeGenreText(value) {
+  return clean(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function genreMatches(book, genre) {
+  if (!genre) {
+    return true;
+  }
+
+  const aliases = GENRE_ALIASES[genre] || [genre];
+  const metadata = (book.genres || [])
+    .map(normalizeGenreText)
+    .filter(Boolean);
+
+  return aliases.some((alias) => {
+    const normalizedAlias = normalizeGenreText(alias);
+
+    return metadata.some(
+      (value) =>
+        value === normalizedAlias ||
+        value.startsWith(`${normalizedAlias} `) ||
+        value.includes(` ${normalizedAlias} `) ||
+        value.endsWith(` ${normalizedAlias}`) ||
+        value.includes(`/${normalizedAlias}`)
+    );
+  });
+}
+
+function filterByIntent(books, intent) {
+  if (!intent.genre) {
+    return books;
+  }
+
+  return books.filter((book) => genreMatches(book, intent.genre));
 }
 
 
@@ -798,6 +866,15 @@ function rankForIntent(
     );
   }
 
+  if (intent.type === "genre") {
+    return books.sort(
+      (a, b) =>
+        ((b.ratingsCount || 0) * (b.rating || 1)) -
+          ((a.ratingsCount || 0) * (a.rating || 1)) ||
+        standardScore(b) - standardScore(a)
+    );
+  }
+
 
   /*
     SURPRISE
@@ -848,6 +925,12 @@ function buildReply(
 ) {
   if (!books.length) {
     return "I couldn't find enough matches. Try another genre or tell me what kind of story you're in the mood for.";
+  }
+
+  function nextDailyResetLabel() {
+    const reset = new Date();
+    reset.setUTCHours(24, 0, 0, 0);
+    return reset.toISOString();
   }
 
   switch (
@@ -1051,6 +1134,7 @@ async function recommendWithAI({
   const [
     suggested,
     queried,
+    genreQueried,
   ] = await Promise.all([
     Promise.all(
       plan.suggestions.map(
@@ -1067,6 +1151,10 @@ async function recommendWithAI({
         )
       )
     ),
+
+    intent.genre
+      ? searchOpenLibrarySubject(intent.genre, 40)
+      : Promise.resolve([]),
   ]);
 
   /*
@@ -1080,6 +1168,7 @@ async function recommendWithAI({
         [
           ...suggested.filter(Boolean),
           ...queried.flat(),
+          ...genreQueried,
         ],
         existingTitles
       ),
@@ -1237,6 +1326,8 @@ export async function POST(
       CAMINO IA
     */
 
+    let geminiUnavailable = false;
+
     if (isGeminiConfigured()) {
       try {
         const aiResult =
@@ -1258,6 +1349,7 @@ export async function POST(
           );
         }
       } catch (error) {
+        geminiUnavailable = true;
         console.error(
           "Gemini recommendation failed, falling back to rules:",
           error.message
@@ -1277,15 +1369,26 @@ export async function POST(
         intent.genre ? { genre: intent.genre } : {}
       );
 
-    if (
-      books.length < 10
-    ) {
-      const extra =
-        await searchOpenLibrary(
-          intent.query,
-          40,
-          intent.genre ? { genre: intent.genre } : {}
-        );
+    books = filterByIntent(books, intent);
+
+    if (books.length < 10) {
+      let extra = [];
+
+      try {
+        extra = intent.genre
+          ? await searchOpenLibrarySubject(intent.genre, 40)
+          : await searchOpenLibrary(intent.query, 40);
+      } catch (error) {
+        console.error("Open Library fallback failed:", error.message);
+
+        if (intent.genre) {
+          extra = await searchOpenLibrary(
+            intent.query,
+            40,
+            { genre: intent.genre }
+          );
+        }
+      }
 
       books = [
         ...books,
@@ -1310,6 +1413,21 @@ export async function POST(
         intent
       ).slice(0, 7);
 
+    if (!finalBooks.length) {
+      return Response.json({
+        reply: geminiUnavailable
+          ? "Gemini is temporarily unavailable because its quota may have been reached. The catalog fallback also did not return matches."
+          : "The book catalog is temporarily unavailable. Please try again later.",
+        books: [],
+        intent: intent.type,
+        source: "fallback",
+        quotaNotice: {
+          provider: geminiUnavailable ? "Gemini" : "book catalog",
+          resetAt: nextDailyResetLabel(),
+        },
+      });
+    }
+
     return Response.json({
       reply:
         buildReply(
@@ -1333,11 +1451,28 @@ export async function POST(
       error
     );
 
+    const status = Number(error?.status);
+    const quota = status === 429 ||
+      /quota|rate.?limit|resource.?exhausted|too many requests/i.test(
+        error?.message || ""
+      );
+    const provider = error?.provider ||
+      (status === 429 ? "recommendation provider" : "recommendation service");
+
     return Response.json({
       reply:
-        "I couldn't reach the book catalog right now. Try again in a moment.",
+        quota
+          ? `${provider} has reached its request quota. It should be available again after the next daily reset.`
+          : "I couldn't reach the book catalog right now. Try again in a moment.",
 
       books: [],
+
+      quotaNotice: quota
+        ? {
+            provider,
+            resetAt: nextDailyResetLabel(),
+          }
+        : null,
     });
   }
 }

@@ -303,6 +303,9 @@ export default function BookRecommendationBot({
 
             books:
               data.books || [],
+
+            quotaNotice:
+              data.quotaNotice || null,
           },
         ]
       );
@@ -326,7 +329,10 @@ export default function BookRecommendationBot({
               "assistant",
 
             text:
-              "I couldn't find recommendations right now. Try asking me in a different way.",
+              /quota|rate.?limit|resource.?exhausted/i.test(error.message || "")
+                ? "The recommendation service reached its daily quota. It should be available again after the next daily reset."
+                : error.message ||
+                  "I couldn't find recommendations right now. Try asking me in a different way.",
           },
         ]
       );
@@ -458,6 +464,17 @@ export default function BookRecommendationBot({
 
                 )
               )}
+
+              {conversation.some((item) => item.quotaNotice) ? (
+                <p className="mt-3 rounded-xl border border-[#C9E265]/30 bg-[#C9E265]/10 px-3 py-2 text-[11px] leading-4 text-[#C9E265]">
+                  The recommendation service reached its daily quota. Expected reset:
+                  {" "}
+                  {new Date(
+                    conversation.find((item) => item.quotaNotice)?.quotaNotice.resetAt
+                  ).toLocaleString()}
+                  .
+                </p>
+              ) : null}
 
             </div>
 
