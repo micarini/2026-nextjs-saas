@@ -88,6 +88,14 @@ function detectRequestedGenre(text) {
   )?.[0] || "";
 }
 
+function detectMaxPages(text) {
+  const match = text.match(
+    /(?:under|less than|fewer than|up to|max(?:imum)?(?: of)?|menos de|hasta|máximo(?: de)?)\s*(\d+)\s*(?:pages?|páginas?)/i
+  );
+
+  return match ? Number(match[1]) : null;
+}
+
 
 /* =========================================================
    DETECTAR INTENCIÓN
@@ -99,6 +107,7 @@ function detectIntent(
 ) {
   const text = clean(message);
   const requestedGenre = detectRequestedGenre(text);
+  const maxPages = detectMaxPages(text);
 
   /*
     POPULAR
@@ -129,12 +138,14 @@ function detectIntent(
     text.includes("corta") ||
     text.includes("quick read") ||
     text.includes("pocas paginas") ||
-    text.includes("pocas páginas")
+    text.includes("pocas páginas") ||
+    maxPages
   ) {
     return {
       type: "short",
       query: requestedGenre || "fiction",
       genre: requestedGenre || null,
+      maxPages,
     };
   }
 
@@ -237,6 +248,7 @@ function detectIntent(
         type: "genre",
         genre: requestedGenre || genre,
         query: genre,
+        maxPages,
       };
     }
   }
@@ -255,6 +267,7 @@ function detectIntent(
       type: "genre",
       genre: "Fantasy",
       query: "fantasy",
+      maxPages,
     };
   }
 
@@ -267,6 +280,7 @@ function detectIntent(
       type: "genre",
       genre: "Romance",
       query: "romance",
+      maxPages,
     };
   }
 
@@ -280,6 +294,7 @@ function detectIntent(
       type: "genre",
       genre: "Mystery",
       query: "mystery detective fiction",
+      maxPages,
     };
   }
 
@@ -292,6 +307,7 @@ function detectIntent(
       type: "genre",
       genre: "Thriller",
       query: "thriller suspense",
+      maxPages,
     };
   }
 
@@ -304,6 +320,7 @@ function detectIntent(
       type: "genre",
       genre: "Horror",
       query: "horror fiction",
+      maxPages,
     };
   }
 
@@ -319,6 +336,7 @@ function detectIntent(
       type: "genre",
       genre: "Science Fiction",
       query: "science fiction",
+      maxPages,
     };
   }
 
@@ -777,6 +795,27 @@ function standardScore(book) {
   return score;
 }
 
+function shuffleBooks(books) {
+  const shuffled = [...books];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [
+      shuffled[swapIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
+}
+
+function shuffleTopBooks(books, topCount = 20) {
+  const ranked = [...books];
+  const top = ranked.splice(0, topCount);
+
+  return [...shuffleBooks(top), ...ranked];
+}
+
 
 /* =========================================================
    APLICAR INTENCIÓN
@@ -800,8 +839,8 @@ function rankForIntent(
       books.filter(
         (book) =>
           book.pageCount &&
-          book.pageCount >= 60 &&
-          book.pageCount <= 250
+          book.pageCount >= 1 &&
+          book.pageCount <= (intent.maxPages || 250)
       );
 
     /*
@@ -811,7 +850,9 @@ function rankForIntent(
     */
 
     const pool =
-      shortBooks.length >= 3
+      intent.maxPages
+        ? shortBooks
+        : shortBooks.length >= 3
         ? shortBooks
         : books;
 
@@ -867,12 +908,17 @@ function rankForIntent(
   }
 
   if (intent.type === "genre") {
-    return books.sort(
+    const pool = intent.maxPages
+      ? books.filter((book) => book.pageCount && book.pageCount <= intent.maxPages)
+      : books;
+    const ranked = (intent.maxPages ? pool : pool.length >= 3 ? pool : books).sort(
       (a, b) =>
         ((b.ratingsCount || 0) * (b.rating || 1)) -
           ((a.ratingsCount || 0) * (a.rating || 1)) ||
         standardScore(b) - standardScore(a)
     );
+
+    return shuffleTopBooks(ranked);
   }
 
 
@@ -912,6 +958,34 @@ function rankForIntent(
       standardScore(b) -
       standardScore(a)
   );
+}
+
+function buildFollowUps(intent) {
+  const genre = intent.genre || "this genre";
+  const genreLabel = genre.charAt(0).toUpperCase() + genre.slice(1);
+
+  if (intent.type === "short" || intent.maxPages) {
+    return [
+      `Under ${intent.maxPages ? Math.max(40, intent.maxPages - 25) : 150} pages`,
+      `${genreLabel} with a darker mood`,
+      `More highly rated ${genre} books`,
+    ];
+  }
+
+  if (intent.type === "genre") {
+    return [
+      `${genreLabel} under 200 pages`,
+      `More popular ${genre} books`,
+      `${genreLabel} with a darker mood`,
+      `${genreLabel} for beginners`,
+    ];
+  }
+
+  return [
+    "Something shorter",
+    "More popular options",
+    "Surprise me with something different",
+  ];
 }
 
 
@@ -1177,19 +1251,23 @@ async function recommendWithAI({
 
   candidates = filterByIntent(candidates, intent);
 
-  if (plan.maxPages) {
+  const maxPages = intent.maxPages || plan.maxPages;
+
+  if (maxPages) {
     const shortOnes =
       candidates.filter(
         (book) =>
-          !book.pageCount ||
-          book.pageCount <=
-            plan.maxPages * 1.15
+          maxPages === intent.maxPages
+            ? book.pageCount && book.pageCount <= maxPages
+            : !book.pageCount || book.pageCount <= maxPages * 1.15
       );
 
     if (shortOnes.length >= 3) {
       candidates = shortOnes;
     }
   }
+
+  candidates = shuffleBooks(candidates);
 
   if (!candidates.length) {
     return null;
@@ -1224,6 +1302,9 @@ async function recommendWithAI({
 
     source:
       "gemini",
+
+    followUps:
+      buildFollowUps(intent),
   };
 }
 
@@ -1443,6 +1524,9 @@ export async function POST(
 
       source:
         "rules",
+
+      followUps:
+        buildFollowUps(intent),
     });
 
   } catch (error) {

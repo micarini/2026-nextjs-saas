@@ -306,6 +306,9 @@ export default function BookRecommendationBot({
 
             quotaNotice:
               data.quotaNotice || null,
+
+            followUps:
+              data.followUps || [],
           },
         ]
       );
@@ -592,6 +595,23 @@ export default function BookRecommendationBot({
                       </div>
 
                     )}
+
+                    {item.followUps?.length > 0 &&
+                      item.id === conversation[conversation.length - 1]?.id &&
+                      !loading && (
+                        <div className="mt-5 flex max-w-[560px] flex-wrap gap-2">
+                          {item.followUps.map((followUp) => (
+                            <button
+                              key={followUp}
+                              type="button"
+                              onClick={() => askBot(followUp)}
+                              className="rounded-full border border-[#C9E265]/45 bg-[#C9E265]/15 px-3 py-2 text-[11px] font-medium text-[#E6F4A4] shadow-[0_4px_14px_rgba(201,226,101,.08)] transition hover:border-[#C9E265] hover:bg-[#C9E265]/25 hover:text-white"
+                            >
+                              {followUp}
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
                   </div>
 
