@@ -49,6 +49,7 @@ export default function FocusMode({
   book,
   spotifyEmbedUrl,
   hasOwnSpotifyUrl,
+  spotifyConnected,
   beginSessionAction,
   finishSessionAction,
   setSpotifyUrlAction,
@@ -81,6 +82,9 @@ export default function FocusMode({
 
   const [spotifyDraft, setSpotifyDraft] = useState("");
   const [isSavingSpotify, startSpotifyTransition] = useTransition();
+  const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false);
+  const [playlistError, setPlaylistError] = useState("");
+  const [playlistUrl, setPlaylistUrl] = useState("");
 
   const canEditDuration = sessionId === null && endsAt === null;
 
@@ -280,6 +284,32 @@ export default function FocusMode({
     });
   }
 
+  async function handleCreatePlaylist() {
+    setPlaylistError("");
+    setIsCreatingPlaylist(true);
+
+    try {
+      const response = await fetch("/api/spotify/playlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: book.title,
+          author: book.author,
+          genre: book.genre || "reading",
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Could not create playlist.");
+      }
+      setPlaylistUrl(data.url);
+    } catch (error) {
+      setPlaylistError(error.message);
+    } finally {
+      setIsCreatingPlaylist(false);
+    }
+  }
+
   // Lima fills in as time is spent, starting from an empty ring — not the
   // other way around, so a fresh session reads as "nothing elapsed yet"
   // instead of a solid circle that looks like a static decoration.
@@ -443,6 +473,45 @@ export default function FocusMode({
             </button>
           </form>
         ) : null}
+
+        <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
+          <p className="text-xs font-semibold text-white/80">Personalized playlist</p>
+          <p className="mt-1 text-xs text-white/40">
+            {spotifyConnected
+              ? `Create a private playlist for this ${book.genre || "book"} book.`
+              : "Connect Spotify to create a private playlist by genre."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {!spotifyConnected ? (
+              <a
+                href="/api/spotify/connect"
+                className="rounded-lg bg-[#1DB954] px-3 py-2 text-xs font-bold text-black"
+              >
+                Connect Spotify
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleCreatePlaylist}
+                disabled={isCreatingPlaylist}
+                className="rounded-lg bg-[#1DB954] px-3 py-2 text-xs font-bold text-black disabled:opacity-50"
+              >
+                {isCreatingPlaylist ? "Creating..." : "Create playlist"}
+              </button>
+            )}
+            {playlistUrl ? (
+              <a
+                href={playlistUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold"
+              >
+                Open in Spotify
+              </a>
+            ) : null}
+          </div>
+          {playlistError ? <p className="mt-2 text-xs text-red-300">{playlistError}</p> : null}
+        </div>
 
         <p className="mt-4 text-center text-xs text-white/40">
           Dims after 30s idle — tap anywhere to wake it.

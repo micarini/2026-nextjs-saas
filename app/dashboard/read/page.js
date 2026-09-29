@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getUserBook, listUserBooks } from "@/lib/books/books";
 import { toSpotifyEmbedUrl, DEFAULT_FOCUS_PLAYLIST_URL } from "@/lib/spotify";
+import { hasSpotifyConnection } from "@/lib/spotify-api";
 import FocusMode from "@/components/read/FocusMode";
 import { beginSession, finishSession, setBookSpotifyUrl } from "./actions";
 import { addNote } from "../books/actions";
@@ -43,12 +44,14 @@ export default async function FocusModePage({ searchParams }) {
 
   const hasOwnSpotifyUrl = Boolean(toSpotifyEmbedUrl(book.spotifyUrl));
   const spotifyEmbedUrl = toSpotifyEmbedUrl(book.spotifyUrl) || toSpotifyEmbedUrl(DEFAULT_FOCUS_PLAYLIST_URL);
+  const spotifyConnected = await hasSpotifyConnection(user.uid);
 
   return (
     <FocusMode
       book={book}
       spotifyEmbedUrl={spotifyEmbedUrl}
       hasOwnSpotifyUrl={hasOwnSpotifyUrl}
+      spotifyConnected={spotifyConnected}
       beginSessionAction={beginSession.bind(null, book.id)}
       finishSessionAction={finishSession.bind(null, book.id)}
       setSpotifyUrlAction={setBookSpotifyUrl.bind(null, book.id)}
