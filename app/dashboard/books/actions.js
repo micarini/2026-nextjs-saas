@@ -195,6 +195,8 @@ function parseBookForm(formData) {
     status = "read";
   }
 
+  const totalPages = parseOptionalInt(formData.get("totalPages"));
+  const currentPage = parseOptionalInt(formData.get("currentPage"));
 
   return {
     title,
@@ -244,18 +246,12 @@ function parseBookForm(formData) {
       ).trim(),
 
     totalPages:
-      parseOptionalInt(
-        formData.get(
-          "totalPages"
-        )
-      ),
+      totalPages,
 
     currentPage:
-      parseOptionalInt(
-        formData.get(
-          "currentPage"
-        )
-      ),
+      status === "read" && totalPages
+        ? totalPages
+        : currentPage,
 
     startDate:
       parseDateInput(

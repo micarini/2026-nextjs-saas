@@ -245,6 +245,7 @@ export default async function BookDetailPage({ params, searchParams }) {
             dateAction={changeBookDates.bind(null, book.id)}
             ratingAction={changeBookRating.bind(null, book.id)}
             removeAction={deleteBook.bind(null, book.id)}
+            openCompletionPrompt={book.status === "read" && !book.finishDate}
           />
         </div>
 

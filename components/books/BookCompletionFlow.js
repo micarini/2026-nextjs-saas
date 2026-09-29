@@ -148,8 +148,9 @@ export default function BookCompletionFlow({
   dateAction,
   ratingAction,
   removeAction,
+  openCompletionPrompt = false,
 }) {
-  const [promptOpen, setPromptOpen] = useState(false);
+  const [promptOpen, setPromptOpen] = useState(openCompletionPrompt);
   const [completionStartDate, setCompletionStartDate] = useState(book.startDate);
 
   return (

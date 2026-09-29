@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 function Shelf({ title, books }) {
   if (!books.length) {
     return null;
@@ -8,9 +10,16 @@ function Shelf({ title, books }) {
       <h2 className="text-lg font-bold text-[#20180f]">{title}</h2>
       <div className="mt-4 flex gap-4 overflow-x-auto pb-3">
         {books.map((book, index) => {
-          const href = book.workKey
-            ? `https://openlibrary.org${book.workKey}`
-            : null;
+          const params = new URLSearchParams(
+            Object.entries({
+              title: book.title,
+              author: book.author,
+              coverUrl: book.coverUrl,
+              description: book.description,
+              pages: book.pageCount,
+              rating: book.rating,
+            }).filter(([, value]) => value)
+          );
 
           const content = (
             <>
@@ -25,20 +34,14 @@ function Shelf({ title, books }) {
             </>
           );
 
-          return href ? (
-            <a
+          return (
+            <Link
               key={`${book.title}-${index}`}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
+              href={`/dashboard/books/preview?${params.toString()}`}
               className="w-28 shrink-0 transition hover:-translate-y-1"
             >
               {content}
-            </a>
-          ) : (
-            <div key={`${book.title}-${index}`} className="w-28 shrink-0">
-              {content}
-            </div>
+            </Link>
           );
         })}
       </div>

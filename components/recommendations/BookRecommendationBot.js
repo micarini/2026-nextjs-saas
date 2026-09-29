@@ -129,8 +129,25 @@ function SparkleIcon() {
 function BookCard({
   book,
 }) {
+  const params = new URLSearchParams(
+    Object.entries({
+      title: book.title,
+      author: book.author,
+      coverUrl: book.coverUrl,
+      description: book.description,
+      genres: (book.genres || []).join(", "),
+      pages: book.pageCount,
+      rating: book.rating,
+      ratingsCount: book.ratingsCount,
+    }).filter(([, value]) => value)
+  );
+
   return (
-    <div className="group min-w-[116px] max-w-[116px]">
+    <Link
+      href={`/dashboard/books/preview?${params.toString()}`}
+      aria-label={`Open details for ${book.title}`}
+      className="group min-w-[116px] max-w-[116px] cursor-pointer"
+    >
 
       <div className="relative aspect-[2/3] overflow-hidden rounded-[10px] bg-[#29292d] shadow-[0_12px_25px_rgba(0,0,0,.3)]">
 
@@ -163,7 +180,7 @@ function BookCard({
         {book.author || "Unknown author"}
       </p>
 
-    </div>
+    </Link>
   );
 }
 
