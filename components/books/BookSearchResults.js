@@ -19,6 +19,7 @@ export default function BookSearchResults({ results }) {
               pages: result.totalPages,
               rating: result.averageRating,
               ratingsCount: result.ratingsCount,
+              isbn: result.isbn,
             }).filter(([, value]) => value)
           ).toString()}`}
           className="block w-full text-left"

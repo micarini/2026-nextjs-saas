@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createBook } from "@/app/dashboard/books/actions";
 import { getCurrentUser } from "@/lib/firebase/session";
-import { getUserBook } from "@/lib/books/books";
+import { getUserBook, isSameBook, listUserBooks } from "@/lib/books/books";
 import { getBookMetadata } from "@/lib/books/bookMetadata";
 import { listBookNotes } from "@/lib/books/notes";
 import { genreLabel } from "@/lib/books/genres";
@@ -31,6 +31,15 @@ function firstValue(value) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function normalizeBookValue(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function previewGenre(value) {
   const normalized = String(value || "").toLowerCase();
   const match = GENRES.find((genre) =>
@@ -50,6 +59,7 @@ async function PreviewBookDetail({ params }) {
   const pages = firstValue(params?.pages) || "";
   const rating = firstValue(params?.rating) || "";
   const ratingsCount = firstValue(params?.ratingsCount) || "";
+  const isbn = firstValue(params?.isbn) || "";
   const genre = previewGenre(genres);
   const relatedBooks = await getRelatedBooks({
     title,
@@ -115,6 +125,7 @@ async function PreviewBookDetail({ params }) {
               <input type="hidden" name="totalPages" value={pages} />
               <input type="hidden" name="averageRating" value={rating} />
               <input type="hidden" name="ratingsCount" value={ratingsCount} />
+              <input type="hidden" name="isbn" value={isbn} />
               <label className="block text-sm font-semibold text-[#4b473f]" htmlFor="preview-status">Choose a status</label>
               <select id="preview-status" name="status" defaultValue="to_read" className="h-12 w-full rounded-xl border border-[#dedbd2] bg-white px-3 text-sm text-[#2c3025]">
                 {STATUSES.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
@@ -151,12 +162,40 @@ export default async function BookDetailPage({ params, searchParams }) {
   }
 
   const { id } = await params;
+
+  if (id === "preview") {
+    const previewParams = await searchParams;
+      const previewBook = {
+        title: firstValue(previewParams?.title),
+        author: firstValue(previewParams?.author),
+        isbn: firstValue(previewParams?.isbn),
+        coverUrl: firstValue(previewParams?.coverUrl),
+      };
+      const previewIsbn = String(firstValue(previewParams?.isbn) || "")
+        .replace(/[^0-9X]/gi, "")
+        .toUpperCase();
+      const existingBooks = await listUserBooks(user.uid);
+      const existingBook =
+        (previewIsbn &&
+          existingBooks.find(
+            (candidate) =>
+              String(candidate.isbn || "")
+                .replace(/[^0-9X]/gi, "")
+                .toUpperCase() === previewIsbn &&
+              normalizeBookValue(candidate.title) === normalizeBookValue(previewBook.title)
+          )) ||
+        existingBooks.find((candidate) => isSameBook(candidate, previewBook));
+
+    if (existingBook) {
+      redirect(`/dashboard/books/${existingBook.id}`);
+    }
+
+    return <PreviewBookDetail params={previewParams} />;
+  }
+
   const book = await getUserBook(user.uid, id);
 
   if (!book) {
-    if (id === "preview") {
-      return <PreviewBookDetail params={await searchParams} />;
-    }
     notFound();
   }
 
