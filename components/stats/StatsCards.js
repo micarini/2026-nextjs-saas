@@ -10,6 +10,7 @@ function MetricCard({
   caption,
   variant = "light",
   children,
+  className = "",
 }) {
   const variants = {
     light:
@@ -31,6 +32,7 @@ function MetricCard({
         p-4
         shadow-[0_9px_25px_rgba(54,54,111,0.05)]
         ${variants[variant]}
+        ${className}
       `}
     >
 
@@ -107,7 +109,7 @@ export default function StatsCards({
           variant="lime"
         />
 
-        <MetricCard eyebrow="Goal">
+        <MetricCard eyebrow="Goal" className="col-span-2">
 
           <div className="mt-4 flex items-center gap-3">
 

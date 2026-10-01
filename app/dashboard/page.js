@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/firebase/session";
 import { getCurrentUserProfile } from "@/lib/users/users";
-import { listUserBooks } from "@/lib/books/books";
+import { listUserBooks, booksFinishedInYear } from "@/lib/books/books";
 
 import { getTrendingBooks } from "@/lib/discovery/trending";
 import { getNewReleases } from "@/lib/discovery/newReleases";
@@ -138,13 +138,13 @@ export default async function DashboardPage() {
 
 
   /*
-   * Terminados.
+   * Terminados este año — misma regla que
+   * /dashboard/stats, para que el número de
+   * la meta anual coincida en los dos lados.
    */
   const completedBooks =
-    books.filter(
-      (book) =>
-        book.status ===
-        "read"
+    booksFinishedInYear(
+      books
     );
 
 

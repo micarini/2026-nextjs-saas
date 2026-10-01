@@ -89,52 +89,53 @@ export default function TopFourBooks({
 
   return (
     <>
-      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-4 gap-2 sm:gap-3">
 
         {/* LIBROS SELECCIONADOS */}
 
         {selectedBooks.map((book) => (
-          <div
-            key={book.id}
-            className="group relative aspect-[0.72]"
-          >
-            <Link
-              href={`/dashboard/books/${book.id}`}
-              className="block h-full w-full overflow-hidden rounded-[18px] bg-[#d8d8d3]"
-            >
-              {book.coverUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={book.coverUrl}
-                  alt={book.title}
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-full items-end bg-[#36366f] p-3">
-                  <p className="text-sm font-medium text-white">
-                    {book.title}
-                  </p>
-                </div>
-              )}
+          <div key={book.id} className="group">
+            {/* 2:3 es la proporción real de una tapa, así que la
+                portada entra entera en vez de recortarse. */}
+            <div className="relative aspect-2/3">
+              <Link
+                href={`/dashboard/books/${book.id}`}
+                className="block h-full w-full overflow-hidden rounded-xl bg-[#d8d8d3]"
+              >
+                {book.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={book.coverUrl}
+                    alt={book.title}
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-end bg-[#36366f] p-2">
+                    <p className="line-clamp-3 text-[10px] font-medium leading-tight text-white">
+                      {book.title}
+                    </p>
+                  </div>
+                )}
+              </Link>
 
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-12">
-                <p className="line-clamp-2 text-xs font-medium text-white">
-                  {book.title}
-                </p>
-              </div>
-            </Link>
+              {/* ELIMINAR */}
 
-            {/* ELIMINAR */}
+              <button
+                type="button"
+                onClick={() => removeBook(book.id)}
+                disabled={isPending}
+                className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm text-[#4a4a55] shadow-md transition hover:scale-110 disabled:opacity-50"
+                aria-label={`Remove ${book.title}`}
+              >
+                ×
+              </button>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => removeBook(book.id)}
-              disabled={isPending}
-              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg text-[#4a4a55] shadow-md transition hover:scale-110 disabled:opacity-50"
-              aria-label={`Remove ${book.title}`}
-            >
-              ×
-            </button>
+            {/* El título va debajo: encima tapaba el borde inferior
+                de la portada. */}
+            <p className="mt-1.5 line-clamp-2 text-[10px] font-medium leading-tight text-[#55555f]">
+              {book.title}
+            </p>
           </div>
         ))}
 
@@ -151,13 +152,16 @@ export default function TopFourBooks({
             type="button"
             onClick={() => setIsOpen(true)}
             disabled={isPending}
-            className="group flex aspect-[0.72] flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-[#c9c8c2] bg-[#efeee9] transition hover:border-[#36366f] hover:bg-[#e8e7e1] disabled:opacity-50"
+            className="group flex aspect-2/3 w-full flex-col items-center justify-center self-start rounded-xl border-2 border-dashed border-[#c9c8c2] bg-[#efeee9] transition hover:border-[#36366f] hover:bg-[#e8e7e1] disabled:opacity-50"
+            aria-label="Add a book"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-3xl font-light text-[#36366f] shadow-sm transition group-hover:scale-110">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-xl font-light text-[#36366f] shadow-sm transition group-hover:scale-110">
               +
             </div>
 
-            <span className="mt-3 text-xs font-medium text-[#777780]">
+            {/* A cuatro columnas la etiqueta no entra en pantallas
+                chicas; el aria-label cubre la accesibilidad. */}
+            <span className="mt-2 hidden text-[10px] font-medium text-[#777780] sm:block">
               Add a book
             </span>
           </button>

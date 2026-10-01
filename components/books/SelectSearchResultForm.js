@@ -7,6 +7,9 @@ export default function SelectSearchResultForm({ result, className, children }) 
       author: result.author,
       description: result.description,
       coverUrl: result.coverUrl,
+      // Same key the recommendations bot already uses, so the preview
+      // page can resolve a real genre instead of its placeholder.
+      genres: (result.genres || []).join(", "),
       pages: result.totalPages,
       rating: result.averageRating,
       ratingsCount: result.ratingsCount,

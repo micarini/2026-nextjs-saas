@@ -23,7 +23,7 @@ import {
   deleteNote,
 } from "../actions";
 import { STATUSES } from "@/lib/books/statuses";
-import { GENRES } from "@/lib/books/genres";
+import { matchGenre } from "@/lib/books/genreMatch";
 
 export const dynamic = "force-dynamic";
 
@@ -40,16 +40,6 @@ function normalizeBookValue(value) {
     .trim();
 }
 
-function previewGenre(value) {
-  const normalized = String(value || "").toLowerCase();
-  const match = GENRES.find((genre) =>
-    normalized.includes(genre.label.toLowerCase()) ||
-    normalized.includes(genre.value.replace("_", " "))
-  );
-
-  return match?.value || "fantasy";
-}
-
 async function PreviewBookDetail({ params }) {
   const title = firstValue(params?.title) || "Recommended book";
   const author = firstValue(params?.author) || "Unknown author";
@@ -60,7 +50,10 @@ async function PreviewBookDetail({ params }) {
   const rating = firstValue(params?.rating) || "";
   const ratingsCount = firstValue(params?.ratingsCount) || "";
   const isbn = firstValue(params?.isbn) || "";
-  const genre = previewGenre(genres);
+  // Empty when none of the provider's tags map onto our genre list —
+  // better to save the book with no genre than to label everything with
+  // whichever genre happens to sit first in genres.js.
+  const genre = matchGenre(genres) || "";
   const relatedBooks = await getRelatedBooks({
     title,
     author,
@@ -102,7 +95,7 @@ async function PreviewBookDetail({ params }) {
           <div className="mt-6 grid grid-cols-2 divide-x divide-[#e7e3da] rounded-2xl bg-[#f8f8fa] py-4">
             <div className="text-center">
               <p className="text-xs text-[#a09c8f]">Genre</p>
-              <p className="mt-1 text-sm font-semibold text-[#20180f]">{genres.split(",")[0] || "Fantasy"}</p>
+              <p className="mt-1 text-sm font-semibold text-[#20180f]">{genres.split(",")[0]?.trim() || "—"}</p>
             </div>
             <div className="text-center">
               <p className="text-xs text-[#a09c8f]">Pages</p>
@@ -121,6 +114,10 @@ async function PreviewBookDetail({ params }) {
               <input type="hidden" name="author" value={author} />
               <input type="hidden" name="description" value={description} />
               <input type="hidden" name="genre" value={genre} />
+              {/* The provider's own tags, kept alongside the canonical
+                  genre so stats can still say something useful about a
+                  book whose tags didn't map onto our list. */}
+              <input type="hidden" name="genres" value={genres} />
               <input type="hidden" name="coverUrl" value={coverUrl} />
               <input type="hidden" name="totalPages" value={pages} />
               <input type="hidden" name="averageRating" value={rating} />

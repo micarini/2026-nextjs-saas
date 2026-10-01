@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/firebase/session";
-import { listUserBooks } from "@/lib/books/books";
+import { listUserBooks, booksFinishedInYear } from "@/lib/books/books";
 import {
   getCurrentUserProfile,
   getUserReadingDays,
 } from "@/lib/users/users";
 import { GENRES } from "@/lib/books/genres";
+import { matchGenre } from "@/lib/books/genreMatch";
 
 import BottomNav from "@/components/nav/BottomNav";
 import StatsDashboard from "@/components/stats/StatsDashboard";
@@ -136,42 +137,25 @@ function getBookGenres(book) {
     : typeof book.genre === "string"
       ? book.genre.split(",")
       : [];
-  const fallback = Array.isArray(book.genres) ? book.genres : [];
-  const metadata = [
-    ...fallback,
-    ...(Array.isArray(book.categories) ? book.categories : []),
-    ...(Array.isArray(book.shelves) ? book.shelves : []),
-  ];
   const primaryValues = primary.filter((value) => String(value || "").trim());
 
+  // A saved genre is trustworthy now. This used to treat "fantasy" as a
+  // placeholder and throw it away, because every book was being saved
+  // with it regardless of what it actually was — which is why the whole
+  // chart collapsed into "Other".
   if (primaryValues.length) {
-    const primaryIsDefault =
-      primaryValues.length === 1 &&
-      String(primaryValues[0]).trim().toLowerCase() === "fantasy";
-    const meaningfulFallback = fallback.filter(
-      (value) => String(value || "").trim().toLowerCase() !== "fantasy"
-    );
-
-    if (primaryIsDefault) {
-      if (meaningfulFallback.length) {
-        return meaningfulFallback.map(canonicalGenre).filter(Boolean);
-      }
-
-      const meaningfulMetadata = metadata.filter(
-        (value) => String(value || "").trim().toLowerCase() !== "fantasy"
-      );
-
-      return meaningfulMetadata.length
-        ? meaningfulMetadata.map(canonicalGenre).filter(Boolean)
-        : ["Other"];
-    }
-
     return primaryValues.map(canonicalGenre).filter(Boolean);
   }
 
-  return fallback.length
-    ? fallback.map(canonicalGenre).filter(Boolean)
-    : ["Other"];
+  // Nothing canonical saved: fall back to the provider's own tags.
+  const rawTags = [
+    ...(Array.isArray(book.genres) ? book.genres : []),
+    ...(Array.isArray(book.categories) ? book.categories : []),
+    ...(Array.isArray(book.shelves) ? book.shelves : []),
+  ];
+  const matched = matchGenre(rawTags);
+
+  return matched ? [canonicalGenre(matched)] : ["Other"];
 }
 
 
@@ -231,35 +215,10 @@ export default async function StatsPage() {
   ======================================================= */
 
   const finishedBooksThisYear =
-    books.filter((book) => {
-      if (book.status !== "read") {
-        return false;
-      }
-
-      /*
-        Mantengo el comportamiento que ya tenía
-        tu página:
-
-        Si está marcado como read pero no tiene
-        finishDate, lo consideramos del año actual.
-      */
-
-      if (!book.finishDate) {
-        return true;
-      }
-
-      const finishDate =
-        toDate(book.finishDate);
-
-      if (!finishDate) {
-        return true;
-      }
-
-      return (
-        finishDate.getFullYear() ===
-        currentYear
-      );
-    });
+    booksFinishedInYear(
+      books,
+      currentYear
+    );
 
 
   /* =======================================================

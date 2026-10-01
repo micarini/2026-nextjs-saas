@@ -25,6 +25,10 @@ import {
 } from "@/lib/books/genres";
 
 import {
+  matchGenre,
+} from "@/lib/books/genreMatch";
+
+import {
   STATUSES,
 } from "@/lib/books/statuses";
 
@@ -163,9 +167,11 @@ function parseBookForm(formData) {
 
 
   /*
-   * Si la API trae un género
-   * que nuestra app no reconoce,
-   * usamos uno válido.
+   * Si la API trae un género que nuestra app no
+   * reconoce, intentamos mapearlo. Si no se parece
+   * a ninguno, lo dejamos vacío: antes caía en el
+   * primero de la lista y todos los libros
+   * terminaban marcados como "fantasy".
    */
 
   if (
@@ -175,8 +181,8 @@ function parseBookForm(formData) {
     )
   ) {
     genre =
-      GENRES[0]?.value ||
-      "fantasy";
+      matchGenre(genre) ||
+      "";
   }
 
 
@@ -211,6 +217,16 @@ function parseBookForm(formData) {
       ).trim(),
 
     genre,
+
+    genres:
+      String(
+        formData.get(
+          "genres"
+        ) || ""
+      )
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean),
 
     status,
 
