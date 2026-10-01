@@ -6,14 +6,6 @@ import {
   useState,
 } from "react";
 
-function numberWords(value) {
-  if (value === 0) {
-    return "Zero";
-  }
-
-  return value.toLocaleString();
-}
-
 export default function WrappedStory({
   stats,
 }) {
@@ -57,9 +49,7 @@ export default function WrappedStory({
           value:
             stats.pagesRead.toLocaleString(),
 
-          headline: `${numberWords(
-            stats.pagesRead
-          )} pages read.`,
+          headline: `${stats.pagesRead.toLocaleString()} pages read.`,
 
           body:
             "Page by page, shelf by shelf — this is the distance you travelled through books this year.",

@@ -1,22 +1,29 @@
+import Link from "next/link";
+
 export default function ReadingGoalCard({
   completedBooks = 0,
   goal = 20,
 }) {
+  const safeGoal = Math.max(1, Number(goal) || 20);
   const percentage = Math.min(
     100,
-    Math.round((completedBooks / goal) * 100)
+    Math.round((completedBooks / safeGoal) * 100)
   );
 
   return (
-    <section className="rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+    <Link
+      href="/dashboard/stats"
+      className="block rounded-[2rem] border border-gray-50 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_34px_rgb(0,0,0,0.08)]"
+      aria-label="Open reading statistics"
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-            Reading goal 2026
+            Reading challenge 2026
           </p>
 
           <h2 className="mt-3 text-3xl font-extrabold text-gray-900">
-            <span className="text-[#322F7A]">{completedBooks}</span> of {goal}
+            <span className="text-[#322F7A]">{completedBooks}</span> of {safeGoal}
           </h2>
 
           <p className="mt-1 text-sm font-medium text-gray-500">
@@ -48,6 +55,6 @@ export default function ReadingGoalCard({
           style={{ width: `${percentage}%` }}
         />
       </div>
-    </section>
+    </Link>
   );
 }

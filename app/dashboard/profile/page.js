@@ -8,36 +8,12 @@ import TopFourBooks from "@/components/users/TopFourBooks";
 import { logout } from "@/app/dashboard/actions";
 import { saveTopFour, savePinnedQuoteBook } from "./actions";
 import PinnedQuotePicker from "@/components/profile/PinnedQuotePicker";
+import AchievementsCarousel from "@/components/profile/AchievementsCarousel";
+import ProfileShelfSummary from "@/components/profile/ProfileShelfSummary";
 
 import BottomNav from "@/components/nav/BottomNav";
 
 export const dynamic = "force-dynamic";
-
-/* =========================================
-   ACHIEVEMENT CARD
-========================================= */
-
-function Achievement({ emoji, title, description, unlocked = true }) {
-  return (
-    <div
-      className={`min-w-[145px] flex-1 rounded-[22px] border p-4 text-center ${
-        unlocked
-          ? "border-[#dedcd5] bg-[#f7f7f4]"
-          : "border-[#e8e8e4] bg-[#f2f2ef] opacity-50"
-      }`}
-    >
-      <div className="text-3xl">{emoji}</div>
-
-      <p className="mt-3 text-sm font-semibold text-[#34343b]">
-        {title}
-      </p>
-
-      <p className="mt-1 text-xs text-[#85858c]">
-        {description}
-      </p>
-    </div>
-  );
-}
 
 /* =========================================
    MAIN PAGE
@@ -156,6 +132,9 @@ export default async function ProfilePage() {
   const starReader = books.filter(
     (book) => book.rating === 5
   ).length >= 5;
+  const fiveStarBooks = books.filter(
+    (book) => book.rating === 5
+  ).length;
 
   const nightOwl = books.some((book) => {
     if (!book.updatedAt) return false;
@@ -219,19 +198,6 @@ export default async function ProfilePage() {
                 quire.app/{username}
               </p>
 
-
-              {/* Buttons */}
-
-              <div className="mt-6 flex gap-3 lg:mt-5">
-
-                <Link
-                  href={`/u/${username}`}
-                  className="rounded-full bg-[#f5f4f0] px-6 py-2.5 text-base font-medium text-[#39394a] shadow-sm transition hover:scale-[1.02]"
-                >
-                  Public Shelf
-                </Link>
-
-              </div>
 
             </div>
 
@@ -366,44 +332,48 @@ export default async function ProfilePage() {
           </p>
 
 
-          <div className="mt-5 flex gap-3 overflow-x-auto pb-2 lg:flex-wrap lg:overflow-visible">
-
-            <Achievement
-              emoji="📚"
-              title="Shelf starter"
-              description={
-                shelfStarter
-                  ? "First 5 books"
-                  : `${books.length}/5 books`
-              }
-              unlocked={shelfStarter}
-            />
-
-
-            <Achievement
-              emoji="🔥"
-              title="On a streak"
-              description={`${readingStreak} days`}
-              unlocked={onStreak}
-            />
-
-
-            <Achievement
-              emoji="⭐"
-              title="Star reader"
-              description="5 five-star books"
-              unlocked={starReader}
-            />
-
-
-            <Achievement
-              emoji="🌙"
-              title="Night owl"
-              description="Read past midnight"
-              unlocked={nightOwl}
-            />
-
-          </div>
+          <AchievementsCarousel
+            achievements={[
+              {
+                number: "01",
+                title: "Shelf starter",
+                description: shelfStarter
+                  ? "Five books in your library"
+                  : `${books.length} of 5 books added`,
+                progress: Math.min(100, (books.length / 5) * 100),
+                unlocked: shelfStarter,
+                accent: "indigo",
+              },
+              {
+                number: "02",
+                title: "On a streak",
+                description: onStreak
+                  ? `${readingStreak} days of reading activity`
+                  : `${readingStreak} of 7 days reached`,
+                progress: Math.min(100, (readingStreak / 7) * 100),
+                unlocked: onStreak,
+                accent: "lime",
+              },
+              {
+                number: "03",
+                title: "Star reader",
+                description: `${fiveStarBooks} of 5 five-star books`,
+                progress: Math.min(100, (fiveStarBooks / 5) * 100),
+                unlocked: starReader,
+                accent: "pink",
+              },
+              {
+                number: "04",
+                title: "Night owl",
+                description: nightOwl
+                  ? "Reading activity after midnight"
+                  : "Read or update a book after midnight",
+                progress: nightOwl ? 100 : 0,
+                unlocked: nightOwl,
+                accent: "sand",
+              },
+            ]}
+          />
 
         </section>
 
@@ -412,42 +382,10 @@ export default async function ProfilePage() {
             READING SUMMARY
         ====================================== */}
 
-        <section className="mt-4 grid grid-cols-2 gap-4 lg:max-w-md">
-
-          <div className="rounded-[25px] border border-[#deddd7] bg-white p-5">
-
-            <p className="text-sm text-[#85858c]">
-              Library
-            </p>
-
-            <p className="mt-2 text-3xl font-semibold">
-              {books.length}
-            </p>
-
-            <p className="mt-1 text-xs text-[#85858c]">
-              total books
-            </p>
-
-          </div>
-
-
-          <div className="rounded-[25px] border border-[#deddd7] bg-white p-5">
-
-            <p className="text-sm text-[#85858c]">
-              To read
-            </p>
-
-            <p className="mt-2 text-3xl font-semibold">
-              {wantToReadBooks.length}
-            </p>
-
-            <p className="mt-1 text-xs text-[#85858c]">
-              waiting for you
-            </p>
-
-          </div>
-
-        </section>
+        <ProfileShelfSummary
+          books={books}
+          wantToReadBooks={wantToReadBooks}
+        />
 
 
         <Link

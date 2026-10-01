@@ -2,7 +2,10 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/firebase/session";
 import { listUserBooks } from "@/lib/books/books";
-import { getUserReadingDays } from "@/lib/users/users";
+import {
+  getCurrentUserProfile,
+  getUserReadingDays,
+} from "@/lib/users/users";
 import { GENRES } from "@/lib/books/genres";
 
 import BottomNav from "@/components/nav/BottomNav";
@@ -207,9 +210,10 @@ export default async function StatsPage() {
      DATOS
   ======================================================= */
 
-  const [books, savedReadingDays] = await Promise.all([
+  const [books, savedReadingDays, profile] = await Promise.all([
     listUserBooks(user.uid),
     getUserReadingDays(user.uid),
+    getCurrentUserProfile(user),
   ]);
 
   const now =
@@ -310,14 +314,13 @@ export default async function StatsPage() {
   /* =======================================================
      META ANUAL
 
-     Mantengo la lógica que ya tenías:
-     mínimo 30 libros.
+     El challenge se configura en onboarding y se
+     comparte con el dashboard. No se calcula una
+     segunda meta independiente en Stats.
   ======================================================= */
 
   const yearlyGoal =
-    totalBooksFinished > 30
-      ? totalBooksFinished + 10
-      : 30;
+    Math.max(1, Number(profile?.yearlyGoal) || 20);
 
 
   const goalProgress =

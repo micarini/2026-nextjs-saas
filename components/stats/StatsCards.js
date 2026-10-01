@@ -136,19 +136,6 @@ export default function StatsCards({
 
         </MetricCard>
 
-        <MetricCard
-          eyebrow="Hours"
-          value={
-            stats.hoursRead ??
-            "—"
-          }
-          caption={
-            stats.hoursRead == null
-              ? "not tracked yet"
-              : "of reading"
-          }
-        />
-
       </div>
 
       {/* MONTHS */}
