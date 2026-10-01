@@ -84,7 +84,7 @@ export default function FocusMode({
   const [isSavingSpotify, startSpotifyTransition] = useTransition();
   const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false);
   const [playlistError, setPlaylistError] = useState("");
-  const [playlistUrl, setPlaylistUrl] = useState("");
+  const [playlistUrl, setPlaylistUrl] = useState(book.spotifyUrl || "");
 
   const canEditDuration = sessionId === null && endsAt === null;
 
@@ -303,6 +303,11 @@ export default function FocusMode({
         throw new Error(data.error || "Could not create playlist.");
       }
       setPlaylistUrl(data.url);
+
+      const formData = new FormData();
+      formData.set("spotifyUrl", data.url);
+      await setSpotifyUrlAction(formData);
+      router.refresh();
     } catch (error) {
       setPlaylistError(error.message);
     } finally {
@@ -477,7 +482,9 @@ export default function FocusMode({
         <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
           <p className="text-xs font-semibold text-white/80">Personalized playlist</p>
           <p className="mt-1 text-xs text-white/40">
-            {spotifyConnected
+            {hasOwnSpotifyUrl
+              ? "Playlist already created for this book."
+              : spotifyConnected
               ? `Create a private playlist for this ${book.genre || "book"} book.`
               : "Connect Spotify to create a private playlist by genre."}
           </p>
@@ -493,10 +500,14 @@ export default function FocusMode({
               <button
                 type="button"
                 onClick={handleCreatePlaylist}
-                disabled={isCreatingPlaylist}
+                disabled={isCreatingPlaylist || hasOwnSpotifyUrl}
                 className="rounded-lg bg-[#1DB954] px-3 py-2 text-xs font-bold text-black disabled:opacity-50"
               >
-                {isCreatingPlaylist ? "Creating..." : "Create playlist"}
+                {isCreatingPlaylist
+                  ? "Creating..."
+                  : hasOwnSpotifyUrl
+                    ? "Playlist already created"
+                    : "Create playlist"}
               </button>
             )}
             {playlistUrl ? (

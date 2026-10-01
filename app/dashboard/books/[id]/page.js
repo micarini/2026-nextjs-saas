@@ -88,7 +88,7 @@ async function PreviewBookDetail({ params }) {
 
           {rating ? (
             <p className="mt-4 text-center text-sm text-[#77766d]">
-              ★ {rating} / 5{ratingsCount ? ` (${ratingsCount})` : ""}
+              ★ {Number(rating).toFixed(2)} / 5{ratingsCount ? ` (${ratingsCount})` : ""}
             </p>
           ) : null}
 

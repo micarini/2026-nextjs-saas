@@ -468,7 +468,9 @@ Libro: `currentPage`/`totalPages`, estado y fechas. Sesión: usuario, libro, ini
 `app/dashboard/read/page.js`, `actions.js`, `FocusMode`, `lib/books/sessions.js`, `app/api/spotify/*`, `lib/spotify-api.js`.
 
 ## IA y ejemplo
-No hay IA.
+No hay IA en el modo lectura ni en la generación de playlists de Spotify. La playlist no analiza la sinopsis, el contenido, los temas ni el título del libro: usa únicamente el género persistido (`book.genre`) y lo transforma en un género de búsqueda compatible con Spotify. Por ejemplo, `fantasy` se busca como `ambient`, `classic` como `classical` y, si no hay resultados, se prueban géneros de fallback (`ambient`, `study` y `classical`). El título y el autor solo se usan para nombrar y describir la playlist.
+
+La única función con IA generativa de la aplicación es BookBot (`/dashboard/recommendations`), que usa Gemini junto con resultados verificados de Google Books/Open Library; sus recomendaciones no se guardan automáticamente. Spotify recibe una consulta de género y devuelve canciones del catálogo, no contenido generado por IA.
 ```js
 const selected = books.find(b => b.id === searchParams.book) ?? books.find(b => b.status === 'reading')
 ```
@@ -480,6 +482,8 @@ Sin libro en lectura, ID inexistente, progreso mayor que páginas, refresh duran
 El libro seleccionado es una lectura persistida; la sesión de lectura es un registro separado que permite iniciar/finalizar sin duplicar el libro. `FocusMode` mantiene controles interactivos en cliente, pero las actions vuelven a validar UID en servidor. Para un libro de 400 páginas en la página 120, avanzar debe persistir 121 (o el valor validado por la action), nunca una página negativa o mayor al total.
 
 La integración Spotify es opcional: sin token se oculta o deshabilita la playlist, pero el progreso sigue funcionando. Verificar recarga, dos sesiones abiertas y finalización repetida.
+
+Al crear una playlist, la URL devuelta por Spotify se guarda en `book.spotifyUrl` mediante la action `setBookSpotifyUrl`. El reproductor superior se vincula automáticamente a esa URL y el botón queda deshabilitado con el estado “Playlist already created”, incluso después de recargar, para evitar crear playlists duplicadas. Si el libro ya tiene una URL de Spotify válida, se considera que ya tiene playlist vinculada.
 
 ---
 
